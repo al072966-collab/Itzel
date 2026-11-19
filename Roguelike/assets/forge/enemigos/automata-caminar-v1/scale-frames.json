@@ -1,0 +1,409 @@
+{
+  "schema": "generate2dsprite.scale_frames.v1",
+  "scale": 1.0,
+  "scale_from": "1",
+  "target_body_px": null,
+  "resampler": "lanczos",
+  "canvas": [
+    256,
+    256
+  ],
+  "anchor_px": [
+    128,
+    240
+  ],
+  "padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "base_canvas": [
+    256,
+    256
+  ],
+  "base_anchor_px": [
+    128,
+    240
+  ],
+  "needed_padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "margin": null,
+  "anchor_mode": "stance",
+  "source_anchor": [
+    129.5,
+    226.0
+  ],
+  "reference_frame": 0,
+  "root_lock": "torso-x",
+  "lock": [
+    "feet"
+  ],
+  "row_baseline": false,
+  "shift_quantum": 1,
+  "alpha_threshold": 16,
+  "frames_per_row": 4,
+  "torso": {
+    "colors": [],
+    "band": [
+      0.4,
+      0.6
+    ],
+    "method": "trunk"
+  },
+  "frames": [
+    {
+      "source": {
+        "path": "../../enemigos/automata-caminar-v1/walk-1.png",
+        "sha256": "3b206f98f6f05826ee820624251bd7054ab49fe88cd48b0c7bccb2b3fd373247",
+        "bytes": 38522
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-1.png",
+        "sha256": "b9a5ad799053eb81eef628cc212eba8a4cb3415f390cf3b01d986576aa2d7767",
+        "bytes": 42130
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        73,
+        46,
+        199,
+        240
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 1.0,
+      "measure": {
+        "bbox": [
+          77,
+          32,
+          198,
+          226
+        ],
+        "ground": 226,
+        "body_height": 194,
+        "stance_x": 129.5,
+        "torso_x": 134.0,
+        "centroid_x": 138.28,
+        "hip_x": 134.0
+      }
+    },
+    {
+      "source": {
+        "path": "../../enemigos/automata-caminar-v1/walk-2.png",
+        "sha256": "c11939e7adcffa064ef05e2451101b18a77bea07edf9fbbefb98db8500f0d8a7",
+        "bytes": 36112
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-2.png",
+        "sha256": "cc95d9e187ee2e754a976409d1b2f947937c4626615a0af30a95bb92799c85b8",
+        "bytes": 38982
+      },
+      "shift": [
+        18,
+        1
+      ],
+      "output_bbox": [
+        74,
+        47,
+        199,
+        241
+      ],
+      "turn_slide_px": 16.0,
+      "turn_slide_output_px": 15.0,
+      "measure": {
+        "bbox": [
+          60,
+          33,
+          180,
+          225
+        ],
+        "ground": 225,
+        "body_height": 192,
+        "stance_x": 119.5,
+        "torso_x": 115.96,
+        "centroid_x": 120.19,
+        "hip_x": 116.0
+      }
+    },
+    {
+      "source": {
+        "path": "../../enemigos/automata-caminar-v1/walk-3.png",
+        "sha256": "3cf7e8a566616e38b5b6fb3aa7507c1a3897a8d1ebddab0b4e7b6f392f1a1061",
+        "bytes": 38376
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-3.png",
+        "sha256": "12efe342572a2f4026725befa22f99d46653cc668455550ef371dead7a8ea69e",
+        "bytes": 41667
+      },
+      "shift": [
+        0,
+        4
+      ],
+      "output_bbox": [
+        71,
+        49,
+        199,
+        241
+      ],
+      "turn_slide_px": 23.0,
+      "turn_slide_output_px": 24.0,
+      "measure": {
+        "bbox": [
+          75,
+          31,
+          198,
+          222
+        ],
+        "ground": 222,
+        "body_height": 191,
+        "stance_x": 141.0,
+        "torso_x": 134.04,
+        "centroid_x": 136.59,
+        "hip_x": 134.5
+      }
+    },
+    {
+      "source": {
+        "path": "../../enemigos/automata-caminar-v1/walk-4.png",
+        "sha256": "3c30cf6f26e36e8e553e012d8318ae091e8b1362ec2b0c215cc93a40e959f588",
+        "bytes": 38345
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-4.png",
+        "sha256": "0d6c42ac925a811d90dda78be0948ec4eabab9e6892f23d5b1b7ba1357c195ee",
+        "bytes": 41863
+      },
+      "shift": [
+        18,
+        5
+      ],
+      "output_bbox": [
+        72,
+        50,
+        199,
+        241
+      ],
+      "turn_slide_px": 17.0,
+      "turn_slide_output_px": 17.0,
+      "measure": {
+        "bbox": [
+          58,
+          31,
+          180,
+          221
+        ],
+        "ground": 221,
+        "body_height": 190,
+        "stance_x": 120.0,
+        "torso_x": 115.94,
+        "centroid_x": 119.7,
+        "hip_x": 115.75
+      }
+    }
+  ],
+  "transitions": {
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "before": [
+      44.11,
+      46.568,
+      49.657,
+      52.333
+    ],
+    "after": [
+      20.354,
+      23.263,
+      17.386,
+      25.509
+    ],
+    "metric": "forge_core.transition_mae (premultiplied RGBA) on one shared crop"
+  },
+  "seam": {
+    "before": {
+      "frames": 4,
+      "seam": 52.33324923072678,
+      "adjacent_median": 46.56822111603262,
+      "adjacent_p95": 49.34801000745126,
+      "adjacent_max": 49.656875439831104,
+      "seam_over_median": 1.1237974733956364,
+      "seam_over_p95": 1.0604936090193864,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    },
+    "after": {
+      "frames": 4,
+      "seam": 25.509007741027446,
+      "adjacent_median": 20.354055449766115,
+      "adjacent_p95": 22.971706834457922,
+      "adjacent_max": 23.262556988312568,
+      "seam_over_median": 1.2532641371634154,
+      "seam_over_p95": 1.1104533034856396,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    }
+  },
+  "input": {
+    "frames": [
+      {
+        "sha256": "3b206f98f6f05826ee820624251bd7054ab49fe88cd48b0c7bccb2b3fd373247",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "c11939e7adcffa064ef05e2451101b18a77bea07edf9fbbefb98db8500f0d8a7",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "3cf7e8a566616e38b5b6fb3aa7507c1a3897a8d1ebddab0b4e7b6f392f1a1061",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "3c30cf6f26e36e8e553e012d8318ae091e8b1362ec2b0c215cc93a40e959f588",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      }
+    ]
+  },
+  "profile": null,
+  "qa": {
+    "status": "pass",
+    "method": "one pinned resample per frame (forge_core.resample_rgba) on a work canvas holding every frame, then one crop; the crop is checked to keep every visible pixel",
+    "notProven": [
+      "That the locked feature (torso, stance, hip) is the right root for this action.",
+      "Pose quality and smoothness: review scale-review.png and play the clip."
+    ],
+    "checks": [
+      {
+        "id": "no_clipping",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "every visible source pixel is on the canvas"
+      },
+      {
+        "id": "integer_nearest",
+        "status": "skipped",
+        "value": null,
+        "threshold": "N or 1/N"
+      },
+      {
+        "id": "registration",
+        "status": "pass",
+        "value": {
+          "horizontal": "torso-x",
+          "vertical": "feet",
+          "row_grounds": {
+            "0": 226
+          },
+          "feature_values": [
+            134.0,
+            115.96,
+            134.04,
+            115.94
+          ]
+        },
+        "threshold": null,
+        "note": "per-frame whole-pixel shifts against the reference frame"
+      },
+      {
+        "id": "turn_slide",
+        "status": "pass",
+        "value": {
+          "design": 23.0,
+          "output": 24.0
+        },
+        "threshold": null,
+        "note": "2 x |stance x - anchor x| in output px, before (design) and after pixel sampling (output); 0 means a mirrored turn keeps the feet in place"
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../../enemigos/automata-caminar-v1/walk-1.png",
+        "sha256": "3b206f98f6f05826ee820624251bd7054ab49fe88cd48b0c7bccb2b3fd373247",
+        "bytes": 38522
+      },
+      {
+        "path": "../../enemigos/automata-caminar-v1/walk-2.png",
+        "sha256": "c11939e7adcffa064ef05e2451101b18a77bea07edf9fbbefb98db8500f0d8a7",
+        "bytes": 36112
+      },
+      {
+        "path": "../../enemigos/automata-caminar-v1/walk-3.png",
+        "sha256": "3cf7e8a566616e38b5b6fb3aa7507c1a3897a8d1ebddab0b4e7b6f392f1a1061",
+        "bytes": 38376
+      },
+      {
+        "path": "../../enemigos/automata-caminar-v1/walk-4.png",
+        "sha256": "3c30cf6f26e36e8e553e012d8318ae091e8b1362ec2b0c215cc93a40e959f588",
+        "bytes": 38345
+      }
+    ],
+    "outputs": [
+      {
+        "path": "scale-review.png",
+        "sha256": "0a05dfe7fd63b12710f630c8ee4bf92ffd0e3a712da1c98a2abcf407f2bdf094",
+        "bytes": 129697
+      }
+    ],
+    "tool": {
+      "name": "scale_frames.py",
+      "version": "0.5.0"
+    }
+  },
+  "tool": {
+    "name": "scale_frames.py",
+    "version": "0.5.0"
+  }
+}

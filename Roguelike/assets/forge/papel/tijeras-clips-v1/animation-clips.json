@@ -1,0 +1,648 @@
+{
+  "schema": "generate2dsprite.animation_clips.v2",
+  "source_manifest": {
+    "path": "../tijeras-poses-v1/clips.json",
+    "file_sha256": "809119bd5c6d35d850c38bfc8703bf215c369c5854bf293be7da517b9e78a2e9",
+    "copy": "source-manifest.json"
+  },
+  "frame_size": [
+    116,
+    98
+  ],
+  "anchor_px": [
+    27,
+    97
+  ],
+  "anchor_semantics": "shared canvas/root origin, often a ground reference; not per-frame visible bottom",
+  "frames": [
+    {
+      "index": 0,
+      "name": "tijeras0",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras0.png",
+        "file_sha256": "e841af0c4dff57194a4e09a6086d9017f5897d1e5bfe53852a251c416082e483",
+        "bytes": 20972,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "2b370e0aa54218ad69531d8cd5038a3efc58985c06ba4d7a4ba5c84590a82d8d",
+      "transparent_pixel_count": 5361,
+      "visible_pixel_count": 6007,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-00.png"
+    },
+    {
+      "index": 1,
+      "name": "tijeras1",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras1.png",
+        "file_sha256": "bb7dc59f64488fae85c5ed97eb46be7bbf39450cebbf5e0bda175a01ec7cf225",
+        "bytes": 18422,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "68e10cedebf6ff7429778e70fec69a7052334109aba15a296c7a28dc2d4f0bd0",
+      "transparent_pixel_count": 6041,
+      "visible_pixel_count": 5327,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-01.png"
+    },
+    {
+      "index": 2,
+      "name": "tijeras2",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras2.png",
+        "file_sha256": "d543fbe4eaec111f7754dd8e53b8741016ffbbf52188430ee846ab952ca28be0",
+        "bytes": 16526,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "9567ec8e9a245b8dd081c27345980f9b588d9359a153623da4cb6087f67dba3e",
+      "transparent_pixel_count": 6530,
+      "visible_pixel_count": 4838,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-02.png"
+    },
+    {
+      "index": 3,
+      "name": "tijeras3",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras3.png",
+        "file_sha256": "c934e8abb9eb9bce134650daff1f08ae0195f7229572005f8fd3bc43d7e87591",
+        "bytes": 14880,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "5a678bffd39877677b562a7e75f874f3efd9988a72e6f4c50fcccd75dfaca5f6",
+      "transparent_pixel_count": 6993,
+      "visible_pixel_count": 4375,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-03.png"
+    },
+    {
+      "index": 4,
+      "name": "tijeras4",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras4.png",
+        "file_sha256": "c8abda14f8c3b009797ce8b3bf9e1ad82ee6f6c8bc64db9a1810674a8f80198b",
+        "bytes": 20136,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "11fec59371458e7e0b9b11874c40dc4382997ea11c1510efc2159885e7e3c87f",
+      "transparent_pixel_count": 5738,
+      "visible_pixel_count": 5630,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-04.png"
+    },
+    {
+      "index": 5,
+      "name": "tijeras5",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras5.png",
+        "file_sha256": "1d4541e563ddd8436d590b58ded4d52184446036516e5914cb67deab9425de6a",
+        "bytes": 19173,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "3908b01902c2a0577abba8856f15ba113908715e22d1f02e21c53463219915b2",
+      "transparent_pixel_count": 5993,
+      "visible_pixel_count": 5375,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-05.png"
+    },
+    {
+      "index": 6,
+      "name": "tijeras6",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras6.png",
+        "file_sha256": "6cb540498e5b914be4078008bbf57118255ba5977c0101c54bf5db30f45e6bc4",
+        "bytes": 17750,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "bdd3c63c879f4c621f53263c0303694f0df0d4b4a5fe1501d7210302f7abcbfa",
+      "transparent_pixel_count": 6288,
+      "visible_pixel_count": 5080,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-06.png"
+    },
+    {
+      "index": 7,
+      "name": "tijeras7",
+      "source": {
+        "path": "../tijeras-poses-v1/frames/tijeras7.png",
+        "file_sha256": "a3fb5da722a5c760218111f9ee462e3fa98ea89229a5c84372e4a14080364c18",
+        "bytes": 16492,
+        "size": [
+          116,
+          98
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "5f1da8422847243ddf0dc17996794011415ba0c0bfe058f13a2f3be6628e99df",
+      "transparent_pixel_count": 6702,
+      "visible_pixel_count": 4666,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-07.png"
+    }
+  ],
+  "clips": {
+    "tijeras": {
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "duration_ms": [
+        133,
+        134,
+        133,
+        133,
+        134,
+        133,
+        133,
+        134
+      ],
+      "loop": true,
+      "total_duration_ms": 1067,
+      "nominal_fps": 7.5,
+      "average_fps": 7.497656982193065,
+      "loop_policy": "cycle",
+      "timing_source": "ticks",
+      "ticks": [
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8,
+        8
+      ],
+      "tick_hz": 60,
+      "fps_rational": "15/2",
+      "events_ms": [],
+      "tick_grid": {
+        "hz": 60,
+        "max_drift_ms": 0.333,
+        "frame_ticks": [
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8,
+          8
+        ],
+        "zero_tick_positions": [],
+        "even": true,
+        "cycle_ticks": 64.02,
+        "cycle_aligned": false,
+        "method": "cumulative integer-ms frame boundaries rounded half-up to the nearest tick"
+      },
+      "holds": [],
+      "seam": {
+        "frames": 8,
+        "seam": 65.988631,
+        "adjacent_median": 39.908421,
+        "adjacent_p95": 66.499046,
+        "adjacent_max": 73.179611,
+        "seam_over_median": 1.653501,
+        "seam_over_p95": 0.992324,
+        "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first",
+        "adjacent_mean": 43.315398,
+        "wrap_ratio": 1.523445
+      },
+      "preview": {
+        "file": "clips/clip-00.webp",
+        "decoded_frames": [
+          {
+            "index": 0,
+            "start_ms": 0,
+            "duration_ms": 133,
+            "clip_positions": [
+              0
+            ]
+          },
+          {
+            "index": 1,
+            "start_ms": 133,
+            "duration_ms": 134,
+            "clip_positions": [
+              1
+            ]
+          },
+          {
+            "index": 2,
+            "start_ms": 267,
+            "duration_ms": 133,
+            "clip_positions": [
+              2
+            ]
+          },
+          {
+            "index": 3,
+            "start_ms": 400,
+            "duration_ms": 133,
+            "clip_positions": [
+              3
+            ]
+          },
+          {
+            "index": 4,
+            "start_ms": 533,
+            "duration_ms": 134,
+            "clip_positions": [
+              4
+            ]
+          },
+          {
+            "index": 5,
+            "start_ms": 667,
+            "duration_ms": 133,
+            "clip_positions": [
+              5
+            ]
+          },
+          {
+            "index": 6,
+            "start_ms": 800,
+            "duration_ms": 133,
+            "clip_positions": [
+              6
+            ]
+          },
+          {
+            "index": 7,
+            "start_ms": 933,
+            "duration_ms": 134,
+            "clip_positions": [
+              7
+            ]
+          }
+        ],
+        "decoded_frame_count": 8,
+        "total_duration_ms": 1067,
+        "native_loop_count": 0,
+        "timeline_verified": true,
+        "alpha_and_visible_rgb_exact": true,
+        "hidden_rgb_guaranteed": false,
+        "lossless": true,
+        "file_sha256": "aa0669299dd6b8db950ced65bfcf21399b5e5e29745e0ec82bbbacd723e5b5a1",
+        "scale": 2
+      },
+      "transitions": [
+        {
+          "from_position": 0,
+          "to_position": 1,
+          "premultiplied_rgb_mae": 52.230907,
+          "alpha_mae": 46.951531,
+          "changed_visible_pixels": 6757
+        },
+        {
+          "from_position": 1,
+          "to_position": 2,
+          "premultiplied_rgb_mae": 41.722782,
+          "alpha_mae": 34.465341,
+          "changed_visible_pixels": 5899
+        },
+        {
+          "from_position": 2,
+          "to_position": 3,
+          "premultiplied_rgb_mae": 26.857311,
+          "alpha_mae": 17.521024,
+          "changed_visible_pixels": 5090
+        },
+        {
+          "from_position": 3,
+          "to_position": 4,
+          "premultiplied_rgb_mae": 68.918755,
+          "alpha_mae": 85.962175,
+          "changed_visible_pixels": 7003
+        },
+        {
+          "from_position": 4,
+          "to_position": 5,
+          "premultiplied_rgb_mae": 40.64521,
+          "alpha_mae": 32.367435,
+          "changed_visible_pixels": 6347
+        },
+        {
+          "from_position": 5,
+          "to_position": 6,
+          "premultiplied_rgb_mae": 49.109562,
+          "alpha_mae": 42.180859,
+          "changed_visible_pixels": 6251
+        },
+        {
+          "from_position": 6,
+          "to_position": 7,
+          "premultiplied_rgb_mae": 30.315037,
+          "alpha_mae": 23.984078,
+          "changed_visible_pixels": 5464
+        }
+      ],
+      "last_to_first": {
+        "applies_to_playback": true,
+        "premultiplied_rgb_mae": 64.241821,
+        "alpha_mae": 71.229064,
+        "changed_visible_pixels": 7070
+      }
+    }
+  },
+  "states": {},
+  "diagnostics": {
+    "visible_pixel_duplicate_groups": [],
+    "visual_approval": false,
+    "note": "Pixel differences and duplicates do not establish animation quality or physical root stability.",
+    "near_duplicate_mae": 1.5,
+    "near_duplicate_pairs": [],
+    "tick_hz": 60,
+    "lint": []
+  },
+  "contact_sheet": {
+    "file": "contact-sheet.png",
+    "native_scale": false,
+    "scale": 2,
+    "requested_scale": 2,
+    "annotated_with_shared_root": true,
+    "not_a_runtime_atlas": true,
+    "file_sha256": "1161ef8e66b4521b9a2548649ff86eb3d7de56f02bbefb18918a2d1c1e58fae8"
+  },
+  "review": {
+    "scale": 2,
+    "requested_scale": 2,
+    "backgrounds": [
+      "light",
+      "dark",
+      "checker"
+    ],
+    "filmstrips": {
+      "tijeras": {
+        "file": "review/filmstrip-00.png",
+        "backgrounds": [
+          "light",
+          "dark",
+          "checker"
+        ],
+        "positions_shown": 8,
+        "truncated": false
+      }
+    },
+    "onion": {
+      "tijeras": {
+        "file": "review/onion-00.png",
+        "background": "checker",
+        "positions_shown": 8,
+        "truncated": false
+      }
+    },
+    "transitions": [],
+    "turn_test": {
+      "file": "review/turn-test.png",
+      "background": "dark",
+      "anchor_mark_rgb": [
+        255,
+        220,
+        80
+      ],
+      "cells": [
+        {
+          "clip": "tijeras",
+          "frame": 0,
+          "anchor_screen_x": 186,
+          "rows": [
+            [
+              32,
+              228
+            ],
+            [
+              244,
+              440
+            ]
+          ],
+          "mirrored_offset_px": -124,
+          "turn_slide_px": 1.0
+        }
+      ],
+      "clips_shown": 1,
+      "truncated": false
+    }
+  },
+  "processing": {
+    "source_pngs_byte_identical": true,
+    "resized": false,
+    "cropped": false,
+    "per_frame_alignment": false,
+    "chroma_keyed": false
+  },
+  "alpha_validation": "Every input has fully transparent and visible pixels; edge quality still requires visual review.",
+  "qa": {
+    "status": "needs-visual-review",
+    "method": "Frame PNGs are byte copies (sha256 checked); each WebP preview is decoded and its timing, alpha and visible RGB compared with the source frames; tick grid = cumulative integer-ms boundaries rounded to the nearest tick; holds = repeated indices or premultiplied union-visible MAE <= 1.5; seams = forge_core.seam_report with wrap_ratio = seam / mean adjacent step; telegraph = tell -> hit in 60 Hz ticks.",
+    "notProven": [
+      "animation quality, gait, anatomy or identity",
+      "physical root stability or foot contact (anchor_px is declared, not measured)",
+      "runtime playback on a device (previews are verified files, not a game loop)",
+      "that near-duplicate thresholds suit every art style (heuristic)"
+    ],
+    "checks": [
+      {
+        "id": "png_byte_copy",
+        "status": "pass",
+        "value": 8,
+        "threshold": null
+      },
+      {
+        "id": "webp_timeline",
+        "status": "pass",
+        "value": 1,
+        "threshold": null
+      },
+      {
+        "id": "tick_grid",
+        "status": "pass",
+        "value": 0.333,
+        "threshold": null
+      },
+      {
+        "id": "telegraph",
+        "threshold": 28,
+        "status": "skipped",
+        "value": null
+      },
+      {
+        "id": "near_duplicate_holds",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      },
+      {
+        "id": "loop_seam",
+        "status": "needs-visual-review",
+        "value": 1.523445,
+        "threshold": null
+      },
+      {
+        "id": "manifest_lint",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../tijeras-poses-v1/clips.json",
+        "sha256": "809119bd5c6d35d850c38bfc8703bf215c369c5854bf293be7da517b9e78a2e9",
+        "bytes": 548
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras0.png",
+        "sha256": "e841af0c4dff57194a4e09a6086d9017f5897d1e5bfe53852a251c416082e483",
+        "bytes": 20972
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras1.png",
+        "sha256": "bb7dc59f64488fae85c5ed97eb46be7bbf39450cebbf5e0bda175a01ec7cf225",
+        "bytes": 18422
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras2.png",
+        "sha256": "d543fbe4eaec111f7754dd8e53b8741016ffbbf52188430ee846ab952ca28be0",
+        "bytes": 16526
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras3.png",
+        "sha256": "c934e8abb9eb9bce134650daff1f08ae0195f7229572005f8fd3bc43d7e87591",
+        "bytes": 14880
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras4.png",
+        "sha256": "c8abda14f8c3b009797ce8b3bf9e1ad82ee6f6c8bc64db9a1810674a8f80198b",
+        "bytes": 20136
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras5.png",
+        "sha256": "1d4541e563ddd8436d590b58ded4d52184446036516e5914cb67deab9425de6a",
+        "bytes": 19173
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras6.png",
+        "sha256": "6cb540498e5b914be4078008bbf57118255ba5977c0101c54bf5db30f45e6bc4",
+        "bytes": 17750
+      },
+      {
+        "path": "../tijeras-poses-v1/frames/tijeras7.png",
+        "sha256": "a3fb5da722a5c760218111f9ee462e3fa98ea89229a5c84372e4a14080364c18",
+        "bytes": 16492
+      }
+    ],
+    "outputs": [
+      {
+        "path": "frames/frame-00.png",
+        "sha256": "e841af0c4dff57194a4e09a6086d9017f5897d1e5bfe53852a251c416082e483",
+        "bytes": 20972
+      },
+      {
+        "path": "frames/frame-01.png",
+        "sha256": "bb7dc59f64488fae85c5ed97eb46be7bbf39450cebbf5e0bda175a01ec7cf225",
+        "bytes": 18422
+      },
+      {
+        "path": "frames/frame-02.png",
+        "sha256": "d543fbe4eaec111f7754dd8e53b8741016ffbbf52188430ee846ab952ca28be0",
+        "bytes": 16526
+      },
+      {
+        "path": "frames/frame-03.png",
+        "sha256": "c934e8abb9eb9bce134650daff1f08ae0195f7229572005f8fd3bc43d7e87591",
+        "bytes": 14880
+      },
+      {
+        "path": "frames/frame-04.png",
+        "sha256": "c8abda14f8c3b009797ce8b3bf9e1ad82ee6f6c8bc64db9a1810674a8f80198b",
+        "bytes": 20136
+      },
+      {
+        "path": "frames/frame-05.png",
+        "sha256": "1d4541e563ddd8436d590b58ded4d52184446036516e5914cb67deab9425de6a",
+        "bytes": 19173
+      },
+      {
+        "path": "frames/frame-06.png",
+        "sha256": "6cb540498e5b914be4078008bbf57118255ba5977c0101c54bf5db30f45e6bc4",
+        "bytes": 17750
+      },
+      {
+        "path": "frames/frame-07.png",
+        "sha256": "a3fb5da722a5c760218111f9ee462e3fa98ea89229a5c84372e4a14080364c18",
+        "bytes": 16492
+      },
+      {
+        "path": "clips/clip-00.webp",
+        "sha256": "aa0669299dd6b8db950ced65bfcf21399b5e5e29745e0ec82bbbacd723e5b5a1",
+        "bytes": 138628
+      },
+      {
+        "path": "contact-sheet.png",
+        "sha256": "1161ef8e66b4521b9a2548649ff86eb3d7de56f02bbefb18918a2d1c1e58fae8",
+        "bytes": 171649
+      },
+      {
+        "path": "review/filmstrip-00.png",
+        "sha256": "a7e82ccf48c04e07e2ff74484f973475a130cf73608c8e031205f7be7e601e65",
+        "bytes": 493000
+      },
+      {
+        "path": "review/onion-00.png",
+        "sha256": "1c3d2a7e896e5cc9addfaf0c4e1e1275f454076745bca31fb80007832e103141",
+        "bytes": 190212
+      },
+      {
+        "path": "review/turn-test.png",
+        "sha256": "2d00864baba266468f332c316a37fe0b247b7ad348bbe210ed89e4d792f22d1c",
+        "bytes": 55433
+      }
+    ],
+    "tool": {
+      "name": "build_animation_clips",
+      "version": "0.5.0"
+    }
+  }
+}

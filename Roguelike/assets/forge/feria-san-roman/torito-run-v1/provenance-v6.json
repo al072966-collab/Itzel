@@ -1,0 +1,22 @@
+{
+  "schema": "itzel.sprite.provenance.v1",
+  "art_source": "host_image",
+  "tool": "Codex image_gen",
+  "route": "host_image",
+  "reference": "Roguelike/assets/forge/feria-san-roman/torito-run-v1/sheet-source-v3.png",
+  "accepted_source": "Roguelike/assets/forge/feria-san-roman/torito-run-v1/sheet-source-v6.png",
+  "processed": "processed-v6",
+  "frames_generated": 4,
+  "frames_used_zero_based": [
+    0,
+    2
+  ],
+  "action": "run",
+  "timing_ticks_at_60hz": [
+    8,
+    8
+  ],
+  "reason_for_selection": "La hoja completa v6 no alterna de forma fiable en dos cuadros intermedios; el par 0/2 alterna near/far y pasa identidad, torso_drift 0.04, seam 1.0.",
+  "model": "not returned by the image tool",
+  "estimate_usd": "not returned by the image tool"
+}

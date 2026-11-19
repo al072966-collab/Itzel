@@ -1,0 +1,38 @@
+{
+  "schema": "generate2dsprite.animation_clips.v2",
+  "frames": [
+    "frames/garza0.png",
+    "frames/garza1.png",
+    "frames/garza2.png",
+    "frames/garza3.png",
+    "frames/garza4.png",
+    "frames/garza5.png",
+    "frames/garza6.png",
+    "frames/garza7.png",
+    "frames/garza8.png",
+    "frames/garza9.png"
+  ],
+  "anchor_px": [
+    76,
+    157
+  ],
+  "clips": {
+    "poses": {
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "ticks": 8,
+      "tick_hz": 60,
+      "loop_policy": "cycle"
+    }
+  }
+}

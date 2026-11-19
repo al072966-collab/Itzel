@@ -1,0 +1,160 @@
+{
+  "schema": "video2dsprite.registration_job.v1",
+  "tool": {
+    "name": "prepare_i2v_input",
+    "version": "0.5.0"
+  },
+  "action": "attack",
+  "actionKind": "oneshot",
+  "returnsToRest": true,
+  "master": {
+    "path": "master.png",
+    "sha256": "92329533842f7daf0c770cfabddc0356416832920a01129df6d86806cd45f18c",
+    "size": [
+      1024,
+      1024
+    ],
+    "anchor": [
+      517.0,
+      926.0
+    ],
+    "sourceName": "master.png"
+  },
+  "sourceSize": [
+    1024,
+    1024
+  ],
+  "sourceAnchor": [
+    517.0,
+    926.0
+  ],
+  "anchorMode": "explicit",
+  "referenceCanvas": [
+    768,
+    1024
+  ],
+  "referenceScale": 0.73237,
+  "referenceOffset": [
+    5.364710000000002,
+    247.82538
+  ],
+  "referenceRoot": [
+    384.0,
+    926.0
+  ],
+  "pixelArt": false,
+  "placementResampler": "lanczos",
+  "keyColor": "magenta",
+  "keyChoice": {
+    "requested": "magenta",
+    "status": "ok",
+    "candidates": [
+      {
+        "key": "magenta",
+        "overlapShare": 0.001635,
+        "rejected": false
+      }
+    ],
+    "rule": "reject a key when more than 0.5% of subject pixels have key dominance >= 40; first acceptable candidate wins"
+  },
+  "workRegion": [
+    20,
+    20,
+    748,
+    1004
+  ],
+  "workRegionClipped": [
+    20.494,
+    20.448,
+    20.494,
+    20.138
+  ],
+  "margin": 20.0,
+  "padding": [
+    8,
+    339,
+    18,
+    36
+  ],
+  "durationS": 6.0,
+  "calmSpanS": 0.4,
+  "timeline": [
+    {
+      "startS": 0.0,
+      "endS": 0.4,
+      "text": "hold exactly the supplied reference pose, nothing moves yet"
+    },
+    {
+      "startS": 0.4,
+      "endS": 1.2,
+      "text": "obvious anticipation: wind up away from the target"
+    },
+    {
+      "startS": 1.2,
+      "endS": 1.7,
+      "text": "ONE sharp strike toward the facing direction"
+    },
+    {
+      "startS": 1.7,
+      "endS": 3.2,
+      "text": "recoil and fully return to the neutral stance"
+    },
+    {
+      "startS": 3.2,
+      "endS": 6.0,
+      "text": "hold the exact original neutral stance"
+    }
+  ],
+  "prompt": {
+    "path": "prompt.txt",
+    "sha256": "d82163fce68bee5913df0183399b7cc7aeb03f40ba190f9944ce102a263fced1"
+  },
+  "lint": [
+    {
+      "rule": "missing-work-region",
+      "message": "give the numeric work region, e.g. 'inside the work region x=316..965, y=20..646 of this 1280x720 image'"
+    },
+    {
+      "rule": "missing-timeline",
+      "message": "give a timeline in seconds, e.g. '0.0-0.4 s hold the reference pose; ...'"
+    }
+  ],
+  "warnings": [
+    "lint missing-work-region: give the numeric work region, e.g. 'inside the work region x=316..965, y=20..646 of this 1280x720 image'",
+    "lint missing-timeline: give a timeline in seconds, e.g. '0.0-0.4 s hold the reference pose; ...'",
+    "the master was opaque: keyed its magenta backdrop with forge_matte.key_still (masterKeying in the job); check master.png over light and dark"
+  ],
+  "masterKeying": {
+    "method": "forge_matte.key_still (soft matte)",
+    "backdrop": "magenta",
+    "requested": "magenta",
+    "keyRgb": [
+      255.0,
+      0.0,
+      255.0
+    ],
+    "quality": "soft",
+    "transparentShare": 0.769183,
+    "qa": {
+      "opaque_key_px": 0,
+      "outer_ring_spill_fraction": 0.0,
+      "enclosed_key_pockets": 0,
+      "key_hued_px": 0
+    },
+    "sourceName": "master.png",
+    "sourceSha256": "0d1fe0b75dc95d8f992e9cbbf423bcb5347c7da40e80080967190eade1d8c939"
+  },
+  "input": {
+    "path": "input.png",
+    "sha256": "a825a57f9e7a03cff44b7c3efe56d3a02eb8c33f644369786c53e553570e5ab7",
+    "size": [
+      768,
+      1024
+    ]
+  },
+  "reviewGuide": {
+    "path": "review-guide.png",
+    "sha256": "f3618767e5ed2bb58f2d6e7abc10f0f69e54d7437f803d6f7dcab5d487ca6a51",
+    "note": "review aid only; never send it to the provider"
+  }
+}

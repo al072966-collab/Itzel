@@ -1,0 +1,26 @@
+{
+  "schema": "generate2dsprite.animation_clips.v2",
+  "frames": [
+    "frames/alux2.png",
+    "frames/alux3.png",
+    "frames/alux4.png",
+    "frames/alux5.png"
+  ],
+  "anchor_px": [
+    31,
+    91
+  ],
+  "clips": {
+    "caminar": {
+      "frames": [
+        0,
+        1,
+        2,
+        3
+      ],
+      "ticks": 9,
+      "tick_hz": 60,
+      "loop_policy": "cycle"
+    }
+  }
+}

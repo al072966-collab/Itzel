@@ -1,0 +1,636 @@
+{
+  "schema": "generate2dsprite.scale_frames.v1",
+  "scale": 1.0,
+  "scale_from": "1",
+  "target_body_px": null,
+  "resampler": "lanczos",
+  "canvas": [
+    134,
+    105
+  ],
+  "anchor_px": [
+    65,
+    104
+  ],
+  "padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "base_canvas": null,
+  "base_anchor_px": null,
+  "needed_padding": null,
+  "margin": 1,
+  "anchor_mode": "stance",
+  "source_anchor": [
+    78.0,
+    120.0
+  ],
+  "reference_frame": 0,
+  "root_lock": "none",
+  "lock": [],
+  "row_baseline": false,
+  "shift_quantum": 1,
+  "alpha_threshold": 16,
+  "frames_per_row": 8,
+  "torso": {
+    "colors": [],
+    "band": [
+      0.4,
+      0.6
+    ],
+    "method": "trunk"
+  },
+  "frames": [
+    {
+      "source": {
+        "path": "../fuentes/grulla0.png",
+        "sha256": "f16319008fe3fd4826d5e2c05c6242b2f911352640bef237385896035084a12e",
+        "bytes": 11944
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla0.png",
+        "sha256": "4354e4ec467178327a6392c9ca9b748f0fd9e76a1e730ec06b09143bfab87532",
+        "bytes": 11484
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        1,
+        1,
+        133,
+        104
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 0.0,
+      "measure": {
+        "bbox": [
+          14,
+          17,
+          146,
+          120
+        ],
+        "ground": 120,
+        "body_height": 103,
+        "stance_x": 78.0,
+        "torso_x": 63.98,
+        "centroid_x": 74.2,
+        "hip_x": 64.5
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla1.png",
+        "sha256": "a8b118bc8b3ad058d5929f31d84c4eba5144e081db5fad4bce12d5dbc4a137fb",
+        "bytes": 10725
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla1.png",
+        "sha256": "329b26468310edb1216c0877386371a2437cc762dd59ae309c358310c58da6bb",
+        "bytes": 10354
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        2,
+        17,
+        132,
+        104
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 0.0,
+      "measure": {
+        "bbox": [
+          15,
+          33,
+          145,
+          120
+        ],
+        "ground": 120,
+        "body_height": 87,
+        "stance_x": 78.0,
+        "torso_x": 63.0,
+        "centroid_x": 73.92,
+        "hip_x": 64.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla2.png",
+        "sha256": "d688ebbe6a66a4ce133cac8cee22b468aa8d80a8e845ea976e4ace2e9613893e",
+        "bytes": 9354
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla2.png",
+        "sha256": "76e18bb70c19ac5e9c664aa014c820176a29db33fab7b45b4db396e6c3c97d92",
+        "bytes": 8967
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        2,
+        40,
+        131,
+        104
+      ],
+      "turn_slide_px": 5.0,
+      "turn_slide_output_px": 4.0,
+      "measure": {
+        "bbox": [
+          15,
+          56,
+          144,
+          120
+        ],
+        "ground": 120,
+        "body_height": 64,
+        "stance_x": 75.5,
+        "torso_x": 58.52,
+        "centroid_x": 73.24,
+        "hip_x": 56.5
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla3.png",
+        "sha256": "93ad01e0230ed414d0820e3b377499c93f07f03a81aa8b87b1e962536d25462c",
+        "bytes": 10770
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla3.png",
+        "sha256": "0ac00e517a9ec4eed8099dbd8552d1eca4cf058c846794ee449303d3a3e51ef6",
+        "bytes": 10363
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        2,
+        13,
+        131,
+        104
+      ],
+      "turn_slide_px": 4.0,
+      "turn_slide_output_px": 4.0,
+      "measure": {
+        "bbox": [
+          15,
+          29,
+          144,
+          120
+        ],
+        "ground": 120,
+        "body_height": 91,
+        "stance_x": 76.0,
+        "torso_x": 62.95,
+        "centroid_x": 72.81,
+        "hip_x": 63.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla4.png",
+        "sha256": "29ae919804a9474ee0c40617f685b49d00d60965e192df126cdf3842a4299183",
+        "bytes": 10975
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla4.png",
+        "sha256": "880e5cc71516063870dd762d21fd84aac6b57b9d35324eb55cb9ee5c4c151f47",
+        "bytes": 10607
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        4,
+        11,
+        130,
+        104
+      ],
+      "turn_slide_px": 6.0,
+      "turn_slide_output_px": 6.0,
+      "measure": {
+        "bbox": [
+          17,
+          27,
+          143,
+          120
+        ],
+        "ground": 120,
+        "body_height": 93,
+        "stance_x": 75.0,
+        "torso_x": 64.97,
+        "centroid_x": 74.96,
+        "hip_x": 65.5
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla5.png",
+        "sha256": "e33c65f82b5c5cc6d656f15afbfaebeb1b7e83a64096fd8f6ab0fda0860424ff",
+        "bytes": 9823
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla5.png",
+        "sha256": "95d528447c9394c02eb53511b2c37ed28f3436828af42dc154a07ac3d7129155",
+        "bytes": 9512
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        3,
+        31,
+        130,
+        104
+      ],
+      "turn_slide_px": 9.0,
+      "turn_slide_output_px": 8.0,
+      "measure": {
+        "bbox": [
+          16,
+          47,
+          143,
+          120
+        ],
+        "ground": 120,
+        "body_height": 73,
+        "stance_x": 82.5,
+        "torso_x": 66.4,
+        "centroid_x": 75.51,
+        "hip_x": 66.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla6.png",
+        "sha256": "96d70258e207b75776c487f1b129863d41adc9341ffae98b9676e1d01e56dd35",
+        "bytes": 11247
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla6.png",
+        "sha256": "52558eff69e3c61c4e16a78f2443d10d763a8a81165cccc242741c12ddc65812",
+        "bytes": 10676
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        5,
+        18,
+        128,
+        104
+      ],
+      "turn_slide_px": 4.0,
+      "turn_slide_output_px": 4.0,
+      "measure": {
+        "bbox": [
+          18,
+          34,
+          141,
+          120
+        ],
+        "ground": 120,
+        "body_height": 86,
+        "stance_x": 76.0,
+        "torso_x": 63.42,
+        "centroid_x": 71.38,
+        "hip_x": 63.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/grulla7.png",
+        "sha256": "0dfed7b1ac55d713777dbd0ed41975f7395b17de6511aab3ac7215ad8f4e8880",
+        "bytes": 11784
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/grulla7.png",
+        "sha256": "2daae3511ca31e7c36ebc388f711554e2f8ae40491d62ceb02d937c7aa8df912",
+        "bytes": 11222
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        14,
+        7,
+        119,
+        104
+      ],
+      "turn_slide_px": 40.0,
+      "turn_slide_output_px": 40.0,
+      "measure": {
+        "bbox": [
+          27,
+          23,
+          132,
+          120
+        ],
+        "ground": 120,
+        "body_height": 97,
+        "stance_x": 98.0,
+        "torso_x": 69.5,
+        "centroid_x": 76.03,
+        "hip_x": 72.0
+      }
+    }
+  ],
+  "transitions": {
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        0
+      ]
+    ],
+    "before": [
+      22.885,
+      27.573,
+      24.884,
+      18.576,
+      20.497,
+      27.188,
+      43.214,
+      46.333
+    ],
+    "after": [
+      22.885,
+      27.573,
+      24.884,
+      18.576,
+      20.497,
+      27.188,
+      43.214,
+      46.333
+    ],
+    "metric": "forge_core.transition_mae (premultiplied RGBA) on one shared crop"
+  },
+  "seam": {
+    "before": {
+      "frames": 8,
+      "seam": 46.33262017663788,
+      "adjacent_median": 24.884099129501756,
+      "adjacent_p95": 38.522008231948256,
+      "adjacent_max": 43.2143920645634,
+      "seam_over_median": 1.8619368109536052,
+      "seam_over_p95": 1.2027571329526867,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    },
+    "after": {
+      "frames": 8,
+      "seam": 46.33262017663788,
+      "adjacent_median": 24.884099129501756,
+      "adjacent_p95": 38.522008231948256,
+      "adjacent_max": 43.2143920645634,
+      "seam_over_median": 1.8619368109536052,
+      "seam_over_p95": 1.2027571329526867,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    }
+  },
+  "input": {
+    "frames": [
+      {
+        "sha256": "f16319008fe3fd4826d5e2c05c6242b2f911352640bef237385896035084a12e",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "a8b118bc8b3ad058d5929f31d84c4eba5144e081db5fad4bce12d5dbc4a137fb",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "d688ebbe6a66a4ce133cac8cee22b468aa8d80a8e845ea976e4ace2e9613893e",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "93ad01e0230ed414d0820e3b377499c93f07f03a81aa8b87b1e962536d25462c",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "29ae919804a9474ee0c40617f685b49d00d60965e192df126cdf3842a4299183",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "e33c65f82b5c5cc6d656f15afbfaebeb1b7e83a64096fd8f6ab0fda0860424ff",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "96d70258e207b75776c487f1b129863d41adc9341ffae98b9676e1d01e56dd35",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "0dfed7b1ac55d713777dbd0ed41975f7395b17de6511aab3ac7215ad8f4e8880",
+        "size": [
+          160,
+          120
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      }
+    ]
+  },
+  "profile": null,
+  "qa": {
+    "status": "pass",
+    "method": "one pinned resample per frame (forge_core.resample_rgba) on a work canvas holding every frame, then one crop; the crop is checked to keep every visible pixel",
+    "notProven": [
+      "That the locked feature (torso, stance, hip) is the right root for this action.",
+      "Pose quality and smoothness: review scale-review.png and play the clip."
+    ],
+    "checks": [
+      {
+        "id": "no_clipping",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "every visible source pixel is on the canvas"
+      },
+      {
+        "id": "integer_nearest",
+        "status": "skipped",
+        "value": null,
+        "threshold": "N or 1/N"
+      },
+      {
+        "id": "registration",
+        "status": "pass",
+        "value": {
+          "horizontal": null,
+          "vertical": null,
+          "row_grounds": {
+            "0": 120
+          },
+          "feature_values": null
+        },
+        "threshold": null,
+        "note": "per-frame whole-pixel shifts against the reference frame"
+      },
+      {
+        "id": "turn_slide",
+        "status": "pass",
+        "value": {
+          "design": 40.0,
+          "output": 40.0
+        },
+        "threshold": null,
+        "note": "2 x |stance x - anchor x| in output px, before (design) and after pixel sampling (output); 0 means a mirrored turn keeps the feet in place"
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../fuentes/grulla0.png",
+        "sha256": "f16319008fe3fd4826d5e2c05c6242b2f911352640bef237385896035084a12e",
+        "bytes": 11944
+      },
+      {
+        "path": "../fuentes/grulla1.png",
+        "sha256": "a8b118bc8b3ad058d5929f31d84c4eba5144e081db5fad4bce12d5dbc4a137fb",
+        "bytes": 10725
+      },
+      {
+        "path": "../fuentes/grulla2.png",
+        "sha256": "d688ebbe6a66a4ce133cac8cee22b468aa8d80a8e845ea976e4ace2e9613893e",
+        "bytes": 9354
+      },
+      {
+        "path": "../fuentes/grulla3.png",
+        "sha256": "93ad01e0230ed414d0820e3b377499c93f07f03a81aa8b87b1e962536d25462c",
+        "bytes": 10770
+      },
+      {
+        "path": "../fuentes/grulla4.png",
+        "sha256": "29ae919804a9474ee0c40617f685b49d00d60965e192df126cdf3842a4299183",
+        "bytes": 10975
+      },
+      {
+        "path": "../fuentes/grulla5.png",
+        "sha256": "e33c65f82b5c5cc6d656f15afbfaebeb1b7e83a64096fd8f6ab0fda0860424ff",
+        "bytes": 9823
+      },
+      {
+        "path": "../fuentes/grulla6.png",
+        "sha256": "96d70258e207b75776c487f1b129863d41adc9341ffae98b9676e1d01e56dd35",
+        "bytes": 11247
+      },
+      {
+        "path": "../fuentes/grulla7.png",
+        "sha256": "0dfed7b1ac55d713777dbd0ed41975f7395b17de6511aab3ac7215ad8f4e8880",
+        "bytes": 11784
+      }
+    ],
+    "outputs": [
+      {
+        "path": "scale-review.png",
+        "sha256": "6b0be506cf0a8f23e8e4824083fdc316bc05e35799a5417b7aa850813258db73",
+        "bytes": 67892
+      }
+    ],
+    "tool": {
+      "name": "scale_frames.py",
+      "version": "0.5.0"
+    }
+  },
+  "tool": {
+    "name": "scale_frames.py",
+    "version": "0.5.0"
+  },
+  "clips": "clips.json"
+}

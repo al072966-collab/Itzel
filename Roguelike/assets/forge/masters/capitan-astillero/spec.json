@@ -1,0 +1,22 @@
+{
+  "schema": "generate2dsprite.master_spec.v1",
+  "name": "capitan-astillero",
+  "subject": "pirate captain with curved cutlass",
+  "identity": "Dark tricorn with gold trim, dark blue coat with gold trim, red sash, black beard, curved cutlass, engraved illustration",
+  "pose": null,
+  "recap": "pirate captain with curved cutlass (Dark tricorn with gold trim, dark blue coat with gold trim, red sash, black beard, curved cutlass, engraved illustration)",
+  "facing": "right",
+  "facing_parts": null,
+  "view": null,
+  "class": "boss",
+  "finish": "hd",
+  "key": "#FF00FF",
+  "genre": null,
+  "pronoun": "they",
+  "identity_ref": null,
+  "style_ref": null,
+  "allowed_text": null,
+  "extra_bans": [],
+  "opaque_parts": null,
+  "extra": null
+}

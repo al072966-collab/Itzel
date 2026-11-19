@@ -1,0 +1,636 @@
+{
+  "schema": "generate2dsprite.scale_frames.v1",
+  "scale": 1.0,
+  "scale_from": "1",
+  "target_body_px": null,
+  "resampler": "lanczos",
+  "canvas": [
+    113,
+    87
+  ],
+  "anchor_px": [
+    57,
+    86
+  ],
+  "padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "base_canvas": null,
+  "base_anchor_px": null,
+  "needed_padding": null,
+  "margin": 1,
+  "anchor_mode": "stance",
+  "source_anchor": [
+    64.5,
+    112.0
+  ],
+  "reference_frame": 0,
+  "root_lock": "none",
+  "lock": [],
+  "row_baseline": false,
+  "shift_quantum": 1,
+  "alpha_threshold": 16,
+  "frames_per_row": 8,
+  "torso": {
+    "colors": [],
+    "band": [
+      0.4,
+      0.6
+    ],
+    "method": "trunk"
+  },
+  "frames": [
+    {
+      "source": {
+        "path": "../fuentes/avispa0.png",
+        "sha256": "e5c1f3e63a5b2602d74982afb26ade55d495c943b76d3e7a7c6f744b3782c17a",
+        "bytes": 15226
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa0.png",
+        "sha256": "8efe48bd2e2e831b7881a076223fa66e57c0e574524df692713bc6990a9ecec4",
+        "bytes": 17050
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        3,
+        1,
+        110,
+        86
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 1.0,
+      "measure": {
+        "bbox": [
+          13,
+          27,
+          115,
+          112
+        ],
+        "ground": 112,
+        "body_height": 85,
+        "stance_x": 64.5,
+        "torso_x": 61.33,
+        "centroid_x": 55.32,
+        "hip_x": 59.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa1.png",
+        "sha256": "64498700fe72c6b2949becfa78279a93510f047675e815b925585f3401851cf4",
+        "bytes": 13937
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa1.png",
+        "sha256": "404bb8f466487d120b3d9e481eb222865909849e57e4461137ff1ecfe5b8f401",
+        "bytes": 15430
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        1,
+        15,
+        111,
+        86
+      ],
+      "turn_slide_px": 2.0,
+      "turn_slide_output_px": 2.0,
+      "measure": {
+        "bbox": [
+          11,
+          41,
+          116,
+          112
+        ],
+        "ground": 112,
+        "body_height": 71,
+        "stance_x": 63.5,
+        "torso_x": 63.16,
+        "centroid_x": 57.05,
+        "hip_x": 60.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa2.png",
+        "sha256": "7989f9203492fb3a621a1d404e966e9926e8fec7873312b30659f09bee8f85a2",
+        "bytes": 12689
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa2.png",
+        "sha256": "56fdec524447f499e4d838a94f8fc8faaf7b7cdb5079db2a5eb37ebb9607ebbc",
+        "bytes": 13771
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        1,
+        16,
+        112,
+        86
+      ],
+      "turn_slide_px": 5.0,
+      "turn_slide_output_px": 6.0,
+      "measure": {
+        "bbox": [
+          11,
+          42,
+          117,
+          112
+        ],
+        "ground": 112,
+        "body_height": 70,
+        "stance_x": 67.0,
+        "torso_x": 61.8,
+        "centroid_x": 59.68,
+        "hip_x": 55.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa3.png",
+        "sha256": "0160d59f76fcdc35bc11602cdfe7d1fe9a20ce94ae9628d748367b54978de9ab",
+        "bytes": 15036
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa3.png",
+        "sha256": "5e45622873039f660257caf939f2876c8f1d4d7fd225918c8bbb35c38ad61cf8",
+        "bytes": 16572
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        3,
+        1,
+        109,
+        86
+      ],
+      "turn_slide_px": 1.0,
+      "turn_slide_output_px": 2.0,
+      "measure": {
+        "bbox": [
+          13,
+          27,
+          114,
+          112
+        ],
+        "ground": 112,
+        "body_height": 85,
+        "stance_x": 64.0,
+        "torso_x": 60.23,
+        "centroid_x": 54.67,
+        "hip_x": 58.5
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa4.png",
+        "sha256": "0bac385e89e4d65db810ffbd7f12b4067bb718f30962e2f0f42ce6755f5200c1",
+        "bytes": 15230
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa4.png",
+        "sha256": "0e4991599a788bfbc4871924900fead2b101a4a68c771146b7c70d5bb75c2db2",
+        "bytes": 16898
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        3,
+        1,
+        110,
+        86
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 0.0,
+      "measure": {
+        "bbox": [
+          13,
+          27,
+          115,
+          112
+        ],
+        "ground": 112,
+        "body_height": 85,
+        "stance_x": 64.5,
+        "torso_x": 57.17,
+        "centroid_x": 55.03,
+        "hip_x": 59.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa5.png",
+        "sha256": "5aa71ec2849c97909c369ec1058a3e3c2eab7f2decb099b086ead40045206f23",
+        "bytes": 13084
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa5.png",
+        "sha256": "f1ed8e66f5f38fe7034a4be8d059a7c5312b63ea16aae2c2e3609f6a4a63c637",
+        "bytes": 14475
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        2,
+        14,
+        111,
+        86
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 1.0,
+      "measure": {
+        "bbox": [
+          12,
+          40,
+          116,
+          112
+        ],
+        "ground": 112,
+        "body_height": 72,
+        "stance_x": 64.5,
+        "torso_x": 62.6,
+        "centroid_x": 58.3,
+        "hip_x": 58.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa6.png",
+        "sha256": "b0978465fbde9b4bd4f612ab6884635b432fc0946e705d1db361e81c5497ccd2",
+        "bytes": 12070
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa6.png",
+        "sha256": "4073efecac4c945885c17dab0055756e6cc43b481f481f8efcb042b2912d50eb",
+        "bytes": 13111
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        1,
+        19,
+        111,
+        86
+      ],
+      "turn_slide_px": 49.0,
+      "turn_slide_output_px": 49.0,
+      "measure": {
+        "bbox": [
+          11,
+          45,
+          116,
+          112
+        ],
+        "ground": 112,
+        "body_height": 67,
+        "stance_x": 40.0,
+        "torso_x": 55.91,
+        "centroid_x": 59.17,
+        "hip_x": 55.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/avispa7.png",
+        "sha256": "1765efb75a0c3835ff13a3570a0d62689c7421e08df9c63777078c52a52e3308",
+        "bytes": 14398
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/avispa7.png",
+        "sha256": "70c0fde9b66cd557f8dbb65e7c29e35764a7522108d62e64625709b60a351516",
+        "bytes": 15851
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        2,
+        11,
+        110,
+        86
+      ],
+      "turn_slide_px": 4.0,
+      "turn_slide_output_px": 4.0,
+      "measure": {
+        "bbox": [
+          12,
+          37,
+          115,
+          112
+        ],
+        "ground": 112,
+        "body_height": 75,
+        "stance_x": 62.5,
+        "torso_x": 64.26,
+        "centroid_x": 55.45,
+        "hip_x": 59.5
+      }
+    }
+  ],
+  "transitions": {
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        5
+      ],
+      [
+        5,
+        6
+      ],
+      [
+        6,
+        7
+      ],
+      [
+        7,
+        0
+      ]
+    ],
+    "before": [
+      41.37,
+      35.017,
+      60.439,
+      20.562,
+      48.878,
+      47.198,
+      49.435,
+      41.423
+    ],
+    "after": [
+      41.37,
+      35.017,
+      60.439,
+      20.562,
+      48.878,
+      47.198,
+      49.435,
+      41.423
+    ],
+    "metric": "forge_core.transition_mae (premultiplied RGBA) on one shared crop"
+  },
+  "seam": {
+    "before": {
+      "frames": 8,
+      "seam": 41.4227248355622,
+      "adjacent_median": 47.197941228425655,
+      "adjacent_p95": 57.13764565603666,
+      "adjacent_max": 60.43860407119924,
+      "seam_over_median": 0.8776383833160661,
+      "seam_over_p95": 0.7249638020600844,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    },
+    "after": {
+      "frames": 8,
+      "seam": 41.4227248355622,
+      "adjacent_median": 47.197941228425655,
+      "adjacent_p95": 57.13764565603666,
+      "adjacent_max": 60.43860407119924,
+      "seam_over_median": 0.8776383833160661,
+      "seam_over_p95": 0.7249638020600844,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    }
+  },
+  "input": {
+    "frames": [
+      {
+        "sha256": "e5c1f3e63a5b2602d74982afb26ade55d495c943b76d3e7a7c6f744b3782c17a",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "64498700fe72c6b2949becfa78279a93510f047675e815b925585f3401851cf4",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "7989f9203492fb3a621a1d404e966e9926e8fec7873312b30659f09bee8f85a2",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "0160d59f76fcdc35bc11602cdfe7d1fe9a20ce94ae9628d748367b54978de9ab",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "0bac385e89e4d65db810ffbd7f12b4067bb718f30962e2f0f42ce6755f5200c1",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "5aa71ec2849c97909c369ec1058a3e3c2eab7f2decb099b086ead40045206f23",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "b0978465fbde9b4bd4f612ab6884635b432fc0946e705d1db361e81c5497ccd2",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "1765efb75a0c3835ff13a3570a0d62689c7421e08df9c63777078c52a52e3308",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      }
+    ]
+  },
+  "profile": null,
+  "qa": {
+    "status": "pass",
+    "method": "one pinned resample per frame (forge_core.resample_rgba) on a work canvas holding every frame, then one crop; the crop is checked to keep every visible pixel",
+    "notProven": [
+      "That the locked feature (torso, stance, hip) is the right root for this action.",
+      "Pose quality and smoothness: review scale-review.png and play the clip."
+    ],
+    "checks": [
+      {
+        "id": "no_clipping",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "every visible source pixel is on the canvas"
+      },
+      {
+        "id": "integer_nearest",
+        "status": "skipped",
+        "value": null,
+        "threshold": "N or 1/N"
+      },
+      {
+        "id": "registration",
+        "status": "pass",
+        "value": {
+          "horizontal": null,
+          "vertical": null,
+          "row_grounds": {
+            "0": 112
+          },
+          "feature_values": null
+        },
+        "threshold": null,
+        "note": "per-frame whole-pixel shifts against the reference frame"
+      },
+      {
+        "id": "turn_slide",
+        "status": "pass",
+        "value": {
+          "design": 49.0,
+          "output": 49.0
+        },
+        "threshold": null,
+        "note": "2 x |stance x - anchor x| in output px, before (design) and after pixel sampling (output); 0 means a mirrored turn keeps the feet in place"
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../fuentes/avispa0.png",
+        "sha256": "e5c1f3e63a5b2602d74982afb26ade55d495c943b76d3e7a7c6f744b3782c17a",
+        "bytes": 15226
+      },
+      {
+        "path": "../fuentes/avispa1.png",
+        "sha256": "64498700fe72c6b2949becfa78279a93510f047675e815b925585f3401851cf4",
+        "bytes": 13937
+      },
+      {
+        "path": "../fuentes/avispa2.png",
+        "sha256": "7989f9203492fb3a621a1d404e966e9926e8fec7873312b30659f09bee8f85a2",
+        "bytes": 12689
+      },
+      {
+        "path": "../fuentes/avispa3.png",
+        "sha256": "0160d59f76fcdc35bc11602cdfe7d1fe9a20ce94ae9628d748367b54978de9ab",
+        "bytes": 15036
+      },
+      {
+        "path": "../fuentes/avispa4.png",
+        "sha256": "0bac385e89e4d65db810ffbd7f12b4067bb718f30962e2f0f42ce6755f5200c1",
+        "bytes": 15230
+      },
+      {
+        "path": "../fuentes/avispa5.png",
+        "sha256": "5aa71ec2849c97909c369ec1058a3e3c2eab7f2decb099b086ead40045206f23",
+        "bytes": 13084
+      },
+      {
+        "path": "../fuentes/avispa6.png",
+        "sha256": "b0978465fbde9b4bd4f612ab6884635b432fc0946e705d1db361e81c5497ccd2",
+        "bytes": 12070
+      },
+      {
+        "path": "../fuentes/avispa7.png",
+        "sha256": "1765efb75a0c3835ff13a3570a0d62689c7421e08df9c63777078c52a52e3308",
+        "bytes": 14398
+      }
+    ],
+    "outputs": [
+      {
+        "path": "scale-review.png",
+        "sha256": "d7a8424886278aa0c376f15b8fc07874dfcbd479980a203dedd8cdf51f84b06c",
+        "bytes": 124857
+      }
+    ],
+    "tool": {
+      "name": "scale_frames.py",
+      "version": "0.5.0"
+    }
+  },
+  "tool": {
+    "name": "scale_frames.py",
+    "version": "0.5.0"
+  },
+  "clips": "clips.json"
+}

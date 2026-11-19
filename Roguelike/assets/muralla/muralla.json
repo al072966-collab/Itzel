@@ -1,0 +1,254 @@
+{
+ "garita": {
+  "w": 19,
+  "h": 36,
+  "ax": 9.5,
+  "ay": 36
+ },
+ "plat-entera": {
+  "w": 35,
+  "h": 12,
+  "ax": 17.5,
+  "ay": 12
+ },
+ "plat-cuarteada": {
+  "w": 27,
+  "h": 12,
+  "ax": 13.5,
+  "ay": 12
+ },
+ "plat-cae": {
+  "w": 32,
+  "h": 13,
+  "ax": 16.0,
+  "ay": 13
+ },
+ "rocas-grandes": {
+  "w": 29,
+  "h": 11,
+  "ax": 14.5,
+  "ay": 11
+ },
+ "rocas": {
+  "w": 18,
+  "h": 8,
+  "ax": 9.0,
+  "ay": 8
+ },
+ "piedrita": {
+  "w": 12,
+  "h": 6,
+  "ax": 6.0,
+  "ay": 6
+ },
+ "pasto-chico": {
+  "w": 10,
+  "h": 6,
+  "ax": 5.0,
+  "ay": 6
+ },
+ "pasto": {
+  "w": 14,
+  "h": 8,
+  "ax": 7.0,
+  "ay": 8
+ },
+ "pasto-espiga": {
+  "w": 20,
+  "h": 10,
+  "ax": 10.0,
+  "ay": 10
+ },
+ "pasto-rocas": {
+  "w": 26,
+  "h": 10,
+  "ax": 13.0,
+  "ay": 10
+ },
+ "palmera": {
+  "w": 42,
+  "h": 48,
+  "ax": 21.0,
+  "ay": 48
+ },
+ "farol": {
+  "w": 10,
+  "h": 36,
+  "ax": 5.0,
+  "ay": 36
+ },
+ "balaustrada": {
+  "w": 44,
+  "h": 17,
+  "ax": 22.0,
+  "ay": 17
+ },
+ "poste": {
+  "w": 7,
+  "h": 13,
+  "ax": 3.5,
+  "ay": 13
+ },
+ "buganvilia": {
+  "w": 21,
+  "h": 16,
+  "ax": 10.5,
+  "ay": 16
+ },
+ "maceta": {
+  "w": 15,
+  "h": 16,
+  "ax": 7.5,
+  "ay": 16
+ },
+ "bolardo": {
+  "w": 13,
+  "h": 11,
+  "ax": 6.5,
+  "ay": 11
+ },
+ "canon": {
+  "w": 26,
+  "h": 15,
+  "ax": 13.0,
+  "ay": 15
+ },
+ "canon-fuego": {
+  "w": 33,
+  "h": 16,
+  "ax": 16.5,
+  "ay": 16
+ },
+ "bala": {
+  "w": 8,
+  "h": 8,
+  "ax": 4.0,
+  "ay": 8
+ },
+ "humo": {
+  "w": 8,
+  "h": 8,
+  "ax": 4.0,
+  "ay": 4.0
+ },
+ "bloque": {
+  "w": 16,
+  "h": 16,
+  "ax": 8.0,
+  "ay": 8.0
+ },
+ "canistel": {
+  "w": 9,
+  "h": 9,
+  "ax": 4.5,
+  "ay": 4.5
+ },
+ "corazon": {
+  "w": 12,
+  "h": 11,
+  "ax": 6.0,
+  "ay": 5.5
+ },
+ "meta": {
+  "w": 58,
+  "h": 46,
+  "ax": 29.0,
+  "ay": 46
+ },
+ "cangrejo-reposo": {
+  "w": 20,
+  "h": 13,
+  "ax": 10.0,
+  "ay": 13
+ },
+ "cangrejo-movimiento": {
+  "w": 20,
+  "h": 13,
+  "ax": 10.0,
+  "ay": 13
+ },
+ "cangrejo-accion": {
+  "w": 20,
+  "h": 13,
+  "ax": 10.0,
+  "ay": 13
+ },
+ "cangrejo-derrota": {
+  "w": 22,
+  "h": 11,
+  "ax": 11.0,
+  "ay": 11
+ },
+ "centinela-reposo": {
+  "w": 19,
+  "h": 20,
+  "ax": 9.5,
+  "ay": 20
+ },
+ "centinela-movimiento": {
+  "w": 21,
+  "h": 20,
+  "ax": 10.5,
+  "ay": 20
+ },
+ "centinela-accion": {
+  "w": 21,
+  "h": 21,
+  "ax": 10.5,
+  "ay": 21
+ },
+ "centinela-derrota": {
+  "w": 32,
+  "h": 13,
+  "ax": 16.0,
+  "ay": 13
+ },
+ "gaviota-reposo": {
+  "w": 20,
+  "h": 13,
+  "ax": 10.0,
+  "ay": 13
+ },
+ "gaviota-movimiento": {
+  "w": 21,
+  "h": 11,
+  "ax": 10.5,
+  "ay": 11
+ },
+ "gaviota-accion": {
+  "w": 24,
+  "h": 13,
+  "ax": 12.0,
+  "ay": 13
+ },
+ "gaviota-derrota": {
+  "w": 20,
+  "h": 10,
+  "ax": 10.0,
+  "ay": 10
+ },
+ "tortuga-reposo": {
+  "w": 21,
+  "h": 11,
+  "ax": 10.5,
+  "ay": 11
+ },
+ "tortuga-movimiento": {
+  "w": 20,
+  "h": 11,
+  "ax": 10.0,
+  "ay": 11
+ },
+ "tortuga-accion": {
+  "w": 20,
+  "h": 12,
+  "ax": 10.0,
+  "ay": 12
+ },
+ "tortuga-derrota": {
+  "w": 16,
+  "h": 10,
+  "ax": 8.0,
+  "ay": 10
+ }
+}

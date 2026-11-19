@@ -1,0 +1,459 @@
+{
+  "schema": "generate2dsprite.scale_frames.v1",
+  "scale": 1.0,
+  "scale_from": "1",
+  "target_body_px": null,
+  "resampler": "lanczos",
+  "canvas": [
+    150,
+    100
+  ],
+  "anchor_px": [
+    87,
+    99
+  ],
+  "padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "base_canvas": null,
+  "base_anchor_px": null,
+  "needed_padding": null,
+  "margin": 1,
+  "anchor_mode": "stance",
+  "source_anchor": [
+    65.0,
+    112.0
+  ],
+  "reference_frame": 0,
+  "root_lock": "torso-x",
+  "lock": [],
+  "row_baseline": false,
+  "shift_quantum": 1,
+  "alpha_threshold": 16,
+  "frames_per_row": 5,
+  "torso": {
+    "colors": [],
+    "band": [
+      0.4,
+      0.6
+    ],
+    "method": "trunk"
+  },
+  "frames": [
+    {
+      "source": {
+        "path": "../fuentes/nahual1.png",
+        "sha256": "f5568e5cdf32ccf57be6cd3e762eed96a9bda0726ae9d914fd7ce026c8835003",
+        "bytes": 12891
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/nahual1.png",
+        "sha256": "e1b8cdb359dc9c0c6279347edefba418627a9056267f06aa2bdd827983a3e8bf",
+        "bytes": 12713
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        39,
+        1,
+        132,
+        99
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 0.0,
+      "measure": {
+        "bbox": [
+          17,
+          14,
+          110,
+          112
+        ],
+        "ground": 112,
+        "body_height": 98,
+        "stance_x": 65.0,
+        "torso_x": 40.59,
+        "centroid_x": 63.49,
+        "hip_x": 59.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/nahual2.png",
+        "sha256": "e1ea49f9402d7580ea9531c8e59c14cf10300c868b9265efcc7fbee5d75ca8a1",
+        "bytes": 12689
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/nahual2.png",
+        "sha256": "e8f35528302cf6eead9e27b4ec43d512bbc7c270e2e918948251a15e6783868e",
+        "bytes": 12537
+      },
+      "shift": [
+        5,
+        0
+      ],
+      "output_bbox": [
+        41,
+        4,
+        140,
+        99
+      ],
+      "turn_slide_px": 16.0,
+      "turn_slide_output_px": 16.0,
+      "measure": {
+        "bbox": [
+          14,
+          17,
+          113,
+          112
+        ],
+        "ground": 112,
+        "body_height": 95,
+        "stance_x": 68.0,
+        "torso_x": 35.47,
+        "centroid_x": 65.05,
+        "hip_x": 58.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/nahual3.png",
+        "sha256": "7bac62aec8042eeaa566b8a5764fccbef24092a0bc5f5868910ce5aa9f454841",
+        "bytes": 12529
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/nahual3.png",
+        "sha256": "a6b9f6dac84c78c26f756396ee8dce61eccfe4828b6c0175b2ce10ac55eadd6a",
+        "bytes": 12403
+      },
+      "shift": [
+        -12,
+        0
+      ],
+      "output_bbox": [
+        20,
+        20,
+        127,
+        99
+      ],
+      "turn_slide_px": 20.0,
+      "turn_slide_output_px": 20.0,
+      "measure": {
+        "bbox": [
+          10,
+          33,
+          117,
+          112
+        ],
+        "ground": 112,
+        "body_height": 79,
+        "stance_x": 67.0,
+        "torso_x": 52.55,
+        "centroid_x": 64.06,
+        "hip_x": 55.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/nahual4.png",
+        "sha256": "23d022c735821f6d9890b433748ba769bb665f858b9d22c1cf83bebd0b215685",
+        "bytes": 11470
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/nahual4.png",
+        "sha256": "dfb2366bf8ce29e4af06d488f633a4430ec48028bdda9e7f0dd03c6b8f3469e7",
+        "bytes": 11292
+      },
+      "shift": [
+        10,
+        0
+      ],
+      "output_bbox": [
+        42,
+        25,
+        149,
+        99
+      ],
+      "turn_slide_px": 15.0,
+      "turn_slide_output_px": 15.0,
+      "measure": {
+        "bbox": [
+          10,
+          38,
+          117,
+          112
+        ],
+        "ground": 112,
+        "body_height": 74,
+        "stance_x": 62.5,
+        "torso_x": 30.56,
+        "centroid_x": 62.43,
+        "hip_x": 62.0
+      }
+    },
+    {
+      "source": {
+        "path": "../fuentes/nahual5.png",
+        "sha256": "3450fbd6f6a36921e7d32aff22f81e6dd6150c2ad64bc1a4f4231ce2579e3261",
+        "bytes": 12054
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/nahual5.png",
+        "sha256": "481e28554a3afed77bfa8d0628ed636cd6da9622b29aab53bc89444061aea33f",
+        "bytes": 11899
+      },
+      "shift": [
+        -32,
+        0
+      ],
+      "output_bbox": [
+        1,
+        27,
+        106,
+        99
+      ],
+      "turn_slide_px": 62.0,
+      "turn_slide_output_px": 62.0,
+      "measure": {
+        "bbox": [
+          11,
+          40,
+          116,
+          112
+        ],
+        "ground": 112,
+        "body_height": 72,
+        "stance_x": 66.0,
+        "torso_x": 72.97,
+        "centroid_x": 64.83,
+        "hip_x": 73.0
+      }
+    }
+  ],
+  "transitions": {
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        4
+      ],
+      [
+        4,
+        0
+      ]
+    ],
+    "before": [
+      22.084,
+      31.164,
+      31.011,
+      17.542,
+      48.547
+    ],
+    "after": [
+      27.741,
+      44.991,
+      45.696,
+      54.282,
+      64.319
+    ],
+    "metric": "forge_core.transition_mae (premultiplied RGBA) on one shared crop"
+  },
+  "seam": {
+    "before": {
+      "frames": 5,
+      "seam": 48.54707727685669,
+      "adjacent_median": 26.547483013475663,
+      "adjacent_p95": 31.141010339946792,
+      "adjacent_max": 31.16401195613381,
+      "seam_over_median": 1.828688514546328,
+      "seam_over_p95": 1.5589435521487207,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    },
+    "after": {
+      "frames": 5,
+      "seam": 64.31866550674324,
+      "adjacent_median": 45.34353569130354,
+      "adjacent_p95": 52.994095188751174,
+      "adjacent_max": 54.28201834787969,
+      "seam_over_median": 1.418474861436069,
+      "seam_over_p95": 1.2136949461568671,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    }
+  },
+  "input": {
+    "frames": [
+      {
+        "sha256": "f5568e5cdf32ccf57be6cd3e762eed96a9bda0726ae9d914fd7ce026c8835003",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "e1ea49f9402d7580ea9531c8e59c14cf10300c868b9265efcc7fbee5d75ca8a1",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "7bac62aec8042eeaa566b8a5764fccbef24092a0bc5f5868910ce5aa9f454841",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "23d022c735821f6d9890b433748ba769bb665f858b9d22c1cf83bebd0b215685",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "3450fbd6f6a36921e7d32aff22f81e6dd6150c2ad64bc1a4f4231ce2579e3261",
+        "size": [
+          128,
+          112
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      }
+    ]
+  },
+  "profile": null,
+  "qa": {
+    "status": "pass",
+    "method": "one pinned resample per frame (forge_core.resample_rgba) on a work canvas holding every frame, then one crop; the crop is checked to keep every visible pixel",
+    "notProven": [
+      "That the locked feature (torso, stance, hip) is the right root for this action.",
+      "Pose quality and smoothness: review scale-review.png and play the clip."
+    ],
+    "checks": [
+      {
+        "id": "no_clipping",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "every visible source pixel is on the canvas"
+      },
+      {
+        "id": "integer_nearest",
+        "status": "skipped",
+        "value": null,
+        "threshold": "N or 1/N"
+      },
+      {
+        "id": "registration",
+        "status": "pass",
+        "value": {
+          "horizontal": "torso-x",
+          "vertical": null,
+          "row_grounds": {
+            "0": 112
+          },
+          "feature_values": [
+            40.59,
+            35.47,
+            52.55,
+            30.56,
+            72.97
+          ]
+        },
+        "threshold": null,
+        "note": "per-frame whole-pixel shifts against the reference frame"
+      },
+      {
+        "id": "turn_slide",
+        "status": "pass",
+        "value": {
+          "design": 62.0,
+          "output": 62.0
+        },
+        "threshold": null,
+        "note": "2 x |stance x - anchor x| in output px, before (design) and after pixel sampling (output); 0 means a mirrored turn keeps the feet in place"
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../fuentes/nahual1.png",
+        "sha256": "f5568e5cdf32ccf57be6cd3e762eed96a9bda0726ae9d914fd7ce026c8835003",
+        "bytes": 12891
+      },
+      {
+        "path": "../fuentes/nahual2.png",
+        "sha256": "e1ea49f9402d7580ea9531c8e59c14cf10300c868b9265efcc7fbee5d75ca8a1",
+        "bytes": 12689
+      },
+      {
+        "path": "../fuentes/nahual3.png",
+        "sha256": "7bac62aec8042eeaa566b8a5764fccbef24092a0bc5f5868910ce5aa9f454841",
+        "bytes": 12529
+      },
+      {
+        "path": "../fuentes/nahual4.png",
+        "sha256": "23d022c735821f6d9890b433748ba769bb665f858b9d22c1cf83bebd0b215685",
+        "bytes": 11470
+      },
+      {
+        "path": "../fuentes/nahual5.png",
+        "sha256": "3450fbd6f6a36921e7d32aff22f81e6dd6150c2ad64bc1a4f4231ce2579e3261",
+        "bytes": 12054
+      }
+    ],
+    "outputs": [
+      {
+        "path": "scale-review.png",
+        "sha256": "620c2a9c013bf4ca100d30bf1ddec90af809cdf46d65fdd70cf918c813bfa07f",
+        "bytes": 50635
+      }
+    ],
+    "tool": {
+      "name": "scale_frames.py",
+      "version": "0.5.0"
+    }
+  },
+  "tool": {
+    "name": "scale_frames.py",
+    "version": "0.5.0"
+  },
+  "clips": "clips.json"
+}

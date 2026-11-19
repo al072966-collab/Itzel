@@ -1,0 +1,28 @@
+{
+  "schema": "generate2dsprite.animation_clips.v2",
+  "frames": [
+    "frames/nahual1.png",
+    "frames/nahual2.png",
+    "frames/nahual3.png",
+    "frames/nahual4.png",
+    "frames/nahual5.png"
+  ],
+  "anchor_px": [
+    56,
+    99
+  ],
+  "clips": {
+    "caminar": {
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "ticks": 8,
+      "tick_hz": 60,
+      "loop_policy": "cycle"
+    }
+  }
+}

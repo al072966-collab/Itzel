@@ -1,0 +1,409 @@
+{
+  "schema": "generate2dsprite.scale_frames.v1",
+  "scale": 1.0,
+  "scale_from": "1",
+  "target_body_px": null,
+  "resampler": "lanczos",
+  "canvas": [
+    256,
+    256
+  ],
+  "anchor_px": [
+    128,
+    240
+  ],
+  "padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "base_canvas": [
+    256,
+    256
+  ],
+  "base_anchor_px": [
+    128,
+    240
+  ],
+  "needed_padding": [
+    0,
+    0,
+    0,
+    0
+  ],
+  "margin": null,
+  "anchor_mode": "stance",
+  "source_anchor": [
+    127.5,
+    199.0
+  ],
+  "reference_frame": 0,
+  "root_lock": "torso-x",
+  "lock": [
+    "feet"
+  ],
+  "row_baseline": false,
+  "shift_quantum": 1,
+  "alpha_threshold": 16,
+  "frames_per_row": 4,
+  "torso": {
+    "colors": [],
+    "band": [
+      0.4,
+      0.6
+    ],
+    "method": "trunk"
+  },
+  "frames": [
+    {
+      "source": {
+        "path": "../../enemigos/arana-caminar-v1/walk-1.png",
+        "sha256": "bf8ba3f074ca3e8adce71ad2997004e5a029790cc3e49bc792de10d3c55515e3",
+        "bytes": 49098
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-1.png",
+        "sha256": "1194e8e0abff1946009dee3b820909a9c61976c92ba81c45d611bd2aa41d2fd4",
+        "bytes": 54360
+      },
+      "shift": [
+        0,
+        0
+      ],
+      "output_bbox": [
+        30,
+        97,
+        228,
+        241
+      ],
+      "turn_slide_px": 0.0,
+      "turn_slide_output_px": 0.0,
+      "measure": {
+        "bbox": [
+          32,
+          56,
+          225,
+          199
+        ],
+        "ground": 199,
+        "body_height": 142,
+        "stance_x": 127.5,
+        "torso_x": 131.37,
+        "centroid_x": 129.28,
+        "hip_x": 132.0
+      }
+    },
+    {
+      "source": {
+        "path": "../../enemigos/arana-caminar-v1/walk-2.png",
+        "sha256": "33278d2b0bdfd78b73a644b87e086dc804c896cefa9755b1add9cc81de9fc2fb",
+        "bytes": 46677
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-2.png",
+        "sha256": "3dbb3b5dbf4735c6bc21e110b0059f75f6bbc133d81efaca9d6e874232dd2769",
+        "bytes": 51514
+      },
+      "shift": [
+        1,
+        0
+      ],
+      "output_bbox": [
+        28,
+        97,
+        230,
+        240
+      ],
+      "turn_slide_px": 32.0,
+      "turn_slide_output_px": 31.0,
+      "measure": {
+        "bbox": [
+          29,
+          56,
+          226,
+          199
+        ],
+        "ground": 199,
+        "body_height": 141,
+        "stance_x": 142.5,
+        "torso_x": 130.45,
+        "centroid_x": 129.9,
+        "hip_x": 132.0
+      }
+    },
+    {
+      "source": {
+        "path": "../../enemigos/arana-caminar-v1/walk-3.png",
+        "sha256": "7bf6fc5b368cd79d8634a2deab523878a7f681f9cfefebc0b033523a3c95adda",
+        "bytes": 49471
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-3.png",
+        "sha256": "3359b54d5350ad5e1ebf1f8ae12521867dc1c492264a91f4bba0254c46dcd4a2",
+        "bytes": 54670
+      },
+      "shift": [
+        -2,
+        -3
+      ],
+      "output_bbox": [
+        26,
+        91,
+        229,
+        240
+      ],
+      "turn_slide_px": 135.0,
+      "turn_slide_output_px": 136.0,
+      "measure": {
+        "bbox": [
+          30,
+          53,
+          228,
+          202
+        ],
+        "ground": 202,
+        "body_height": 149,
+        "stance_x": 197.0,
+        "torso_x": 133.36,
+        "centroid_x": 129.66,
+        "hip_x": 135.0
+      }
+    },
+    {
+      "source": {
+        "path": "../../enemigos/arana-caminar-v1/walk-4.png",
+        "sha256": "8bd7604749443a6071da125b527481e7a07f5ae50c2b3705e8332080616faf56",
+        "bytes": 49499
+      },
+      "cell": null,
+      "output": {
+        "path": "frames/walk-4.png",
+        "sha256": "661f863a88f0bbb5202ddc7f280785817eeb5202dfc86b04d7415d1135b23bc4",
+        "bytes": 54634
+      },
+      "shift": [
+        -1,
+        3
+      ],
+      "output_bbox": [
+        23,
+        97,
+        230,
+        241
+      ],
+      "turn_slide_px": 9.0,
+      "turn_slide_output_px": 8.0,
+      "measure": {
+        "bbox": [
+          26,
+          53,
+          228,
+          196
+        ],
+        "ground": 196,
+        "body_height": 142,
+        "stance_x": 124.0,
+        "torso_x": 132.53,
+        "centroid_x": 127.09,
+        "hip_x": 132.0
+      }
+    }
+  ],
+  "transitions": {
+    "pairs": [
+      [
+        0,
+        1
+      ],
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        3
+      ],
+      [
+        3,
+        0
+      ]
+    ],
+    "before": [
+      23.231,
+      28.081,
+      18.143,
+      32.772
+    ],
+    "after": [
+      21.582,
+      33.617,
+      33.439,
+      26.747
+    ],
+    "metric": "forge_core.transition_mae (premultiplied RGBA) on one shared crop"
+  },
+  "seam": {
+    "before": {
+      "frames": 4,
+      "seam": 32.77229806079821,
+      "adjacent_median": 23.23124128636778,
+      "adjacent_p95": 27.59619562817536,
+      "adjacent_max": 28.08119055504287,
+      "seam_over_median": 1.4106993964213685,
+      "seam_over_p95": 1.1875657971977165,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    },
+    "after": {
+      "frames": 4,
+      "seam": 26.74709873258514,
+      "adjacent_median": 33.43922117493253,
+      "adjacent_p95": 33.599047844973015,
+      "adjacent_max": 33.6168063638664,
+      "seam_over_median": 0.7998720601972605,
+      "seam_over_p95": 0.7960671640457502,
+      "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+    }
+  },
+  "input": {
+    "frames": [
+      {
+        "sha256": "bf8ba3f074ca3e8adce71ad2997004e5a029790cc3e49bc792de10d3c55515e3",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "33278d2b0bdfd78b73a644b87e086dc804c896cefa9755b1add9cc81de9fc2fb",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "7bf6fc5b368cd79d8634a2deab523878a7f681f9cfefebc0b033523a3c95adda",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "8bd7604749443a6071da125b527481e7a07f5ae50c2b3705e8332080616faf56",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      }
+    ]
+  },
+  "profile": null,
+  "qa": {
+    "status": "pass",
+    "method": "one pinned resample per frame (forge_core.resample_rgba) on a work canvas holding every frame, then one crop; the crop is checked to keep every visible pixel",
+    "notProven": [
+      "That the locked feature (torso, stance, hip) is the right root for this action.",
+      "Pose quality and smoothness: review scale-review.png and play the clip."
+    ],
+    "checks": [
+      {
+        "id": "no_clipping",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0,
+        "note": "every visible source pixel is on the canvas"
+      },
+      {
+        "id": "integer_nearest",
+        "status": "skipped",
+        "value": null,
+        "threshold": "N or 1/N"
+      },
+      {
+        "id": "registration",
+        "status": "pass",
+        "value": {
+          "horizontal": "torso-x",
+          "vertical": "feet",
+          "row_grounds": {
+            "0": 202
+          },
+          "feature_values": [
+            131.37,
+            130.45,
+            133.36,
+            132.53
+          ]
+        },
+        "threshold": null,
+        "note": "per-frame whole-pixel shifts against the reference frame"
+      },
+      {
+        "id": "turn_slide",
+        "status": "pass",
+        "value": {
+          "design": 135.0,
+          "output": 136.0
+        },
+        "threshold": null,
+        "note": "2 x |stance x - anchor x| in output px, before (design) and after pixel sampling (output); 0 means a mirrored turn keeps the feet in place"
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../../enemigos/arana-caminar-v1/walk-1.png",
+        "sha256": "bf8ba3f074ca3e8adce71ad2997004e5a029790cc3e49bc792de10d3c55515e3",
+        "bytes": 49098
+      },
+      {
+        "path": "../../enemigos/arana-caminar-v1/walk-2.png",
+        "sha256": "33278d2b0bdfd78b73a644b87e086dc804c896cefa9755b1add9cc81de9fc2fb",
+        "bytes": 46677
+      },
+      {
+        "path": "../../enemigos/arana-caminar-v1/walk-3.png",
+        "sha256": "7bf6fc5b368cd79d8634a2deab523878a7f681f9cfefebc0b033523a3c95adda",
+        "bytes": 49471
+      },
+      {
+        "path": "../../enemigos/arana-caminar-v1/walk-4.png",
+        "sha256": "8bd7604749443a6071da125b527481e7a07f5ae50c2b3705e8332080616faf56",
+        "bytes": 49499
+      }
+    ],
+    "outputs": [
+      {
+        "path": "scale-review.png",
+        "sha256": "d8febebe0d2af0624b593e378311ac7d059b5e81bbeebcd043c797f2c68112f3",
+        "bytes": 163811
+      }
+    ],
+    "tool": {
+      "name": "scale_frames.py",
+      "version": "0.5.0"
+    }
+  },
+  "tool": {
+    "name": "scale_frames.py",
+    "version": "0.5.0"
+  }
+}

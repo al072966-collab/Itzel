@@ -1,0 +1,327 @@
+{
+  "schema": "generate2dsprite.sheet_qc.v1",
+  "check": "frames",
+  "status": "pass",
+  "method": "solid alpha > 127; head ratio by multi-scale template match of the head band against the median frame; best-shift silhouette IoU; phases from ground clearance and stride width; NEAR/FAR lead from the lightness of the two feet (FAR one shade darker); torso x from the trunk columns of the torso band; seams from forge_core.transition_mae (premultiplied RGBA)",
+  "notProven": [
+    "Pose quality, anatomy, appeal and readability at game scale: look at frames-review.png and the game-size frames.",
+    "That the head band holds only the head: arms raised into it change the match.",
+    "NEAR/FAR leads in auto mode rely on the 'FAR limbs one shade darker' convention; declare the colours to be sure.",
+    "Phase labels come from feet clearance and stride width, not from the pose."
+  ],
+  "checks": [
+    {
+      "id": "identity_head_ratio",
+      "status": "pass",
+      "value": {
+        "0": 1.02,
+        "1": 0.98
+      },
+      "threshold": [
+        0.95,
+        1.05
+      ],
+      "frames": [],
+      "note": "head scale against the median frame (frame 0 template)"
+    },
+    {
+      "id": "identity_residual",
+      "status": "pass",
+      "value": {
+        "0": null,
+        "1": 1.0
+      },
+      "threshold": 1.5,
+      "frames": [],
+      "note": "head match residual over the median: face or costume drift"
+    },
+    {
+      "id": "near_duplicates",
+      "status": "pass",
+      "value": [],
+      "threshold": 0.95,
+      "note": "pairs with best-shift silhouette IoU at or above the threshold and similar colours"
+    },
+    {
+      "id": "phase_coverage",
+      "status": "skipped",
+      "value": null,
+      "threshold": null,
+      "note": "needs --cycle run or walk and an even frame count of at least 4"
+    },
+    {
+      "id": "leg_alternation",
+      "status": "skipped",
+      "value": null,
+      "threshold": null,
+      "note": "needs --cycle run or walk and an even frame count of at least 4"
+    },
+    {
+      "id": "torso_drift",
+      "status": "pass",
+      "value": 0.63,
+      "threshold": 2.0,
+      "method": "trunk",
+      "median_x": 124.5,
+      "note": "range of the torso x in game px; scale_frames --root-lock torso-x removes it"
+    },
+    {
+      "id": "row_baseline",
+      "status": "pass",
+      "value": 0.0,
+      "threshold": 0.5,
+      "baselines": {
+        "0": 214
+      },
+      "note": "ground line of each sheet row; scale_frames --row-baseline aligns them"
+    },
+    {
+      "id": "seam",
+      "status": "pass",
+      "value": 1.0,
+      "threshold": 1.5,
+      "transitions": [],
+      "note": "largest frame-to-frame change over the median step; review these joins first"
+    }
+  ],
+  "inputs": [
+    {
+      "path": "../processed/actions-1.png",
+      "sha256": "c99edd955d9bc54052b5849eb63958b2dc9429457d6128116c14f537b0f82c86",
+      "bytes": 20860
+    },
+    {
+      "path": "../processed/actions-2.png",
+      "sha256": "edc9d2bec424b665e8fc5e42b878425e42229cec1a646a451950b20ff57cc3af",
+      "bytes": 23123
+    }
+  ],
+  "outputs": [
+    {
+      "path": "frames-review.png",
+      "sha256": "a4e6900fd643558bdf4fb959aa8f918b432143b55361a7a1506e11d107746919",
+      "bytes": 23279
+    }
+  ],
+  "tool": {
+    "name": "sheet_qc.py",
+    "version": "0.5.0"
+  },
+  "grid": {
+    "rows": 1,
+    "cols": 2
+  },
+  "input": {
+    "frames": [
+      {
+        "sha256": "c99edd955d9bc54052b5849eb63958b2dc9429457d6128116c14f537b0f82c86",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      },
+      {
+        "sha256": "edc9d2bec424b665e8fc5e42b878425e42229cec1a646a451950b20ff57cc3af",
+        "size": [
+          256,
+          256
+        ],
+        "source_mode": "RGBA",
+        "bit_depth": 8,
+        "conversion": "none",
+        "keyed": null
+      }
+    ]
+  },
+  "params": {
+    "cycle": "walk",
+    "facing": "right",
+    "game_pixel": 8.0,
+    "frames_per_row": 2,
+    "loop": true,
+    "alpha_threshold": 127,
+    "reference_frame": 0,
+    "head_frac": 0.35,
+    "torso_band": [
+      0.4,
+      0.6
+    ],
+    "torso_colors": [],
+    "near_colors": [],
+    "far_colors": [],
+    "colour_tolerance": 30.0,
+    "leg_band": 0.3
+  },
+  "cells": [
+    {
+      "frame": 0,
+      "row": 0,
+      "bbox": [
+        92,
+        42,
+        162,
+        214
+      ],
+      "height_px": 172,
+      "width_px": 70,
+      "solid_px": 5256,
+      "ground": 214,
+      "head": {
+        "head_ratio": 1.02,
+        "scale": 1.0,
+        "residual": 0.0,
+        "residual_over_median": null,
+        "template": true,
+        "head_box": [
+          92,
+          42,
+          162,
+          102
+        ]
+      },
+      "colour_l1_to_median": 0.0859,
+      "phase": {
+        "label": "contact",
+        "clearance_game_px": 0.0,
+        "stride_ratio": 1.0
+      },
+      "lead": {
+        "mode": "auto-luminance",
+        "front_minus_back_L": 0.1803,
+        "separation_game_px": 2.52,
+        "lead": "near"
+      },
+      "torso_x": 127.0,
+      "torso_method": "trunk",
+      "cell": null,
+      "source": "actions-1.png"
+    },
+    {
+      "frame": 1,
+      "row": 0,
+      "bbox": [
+        75,
+        45,
+        163,
+        214
+      ],
+      "height_px": 169,
+      "width_px": 88,
+      "solid_px": 5433,
+      "ground": 214,
+      "head": {
+        "head_ratio": 0.98,
+        "scale": 0.96,
+        "residual": 51.48,
+        "residual_over_median": 1.0,
+        "template": false,
+        "head_box": [
+          75,
+          45,
+          163,
+          104
+        ]
+      },
+      "colour_l1_to_median": 0.0859,
+      "phase": {
+        "label": "contact",
+        "clearance_game_px": 0.0,
+        "stride_ratio": 0.952
+      },
+      "lead": {
+        "mode": "auto-luminance",
+        "front_minus_back_L": 0.1913,
+        "separation_game_px": 2.44,
+        "lead": "near"
+      },
+      "torso_x": 122.0,
+      "torso_method": "trunk",
+      "cell": null,
+      "source": "actions-2.png"
+    }
+  ],
+  "identity": {
+    "median_scale": 0.98,
+    "median_residual": 51.48,
+    "reduction": 2,
+    "template": "frame 0",
+    "scales": [
+      0.9,
+      0.92,
+      0.94,
+      0.96,
+      0.98,
+      1.0,
+      1.02,
+      1.04,
+      1.06,
+      1.08,
+      1.1
+    ]
+  },
+  "near_duplicates": {
+    "pairs": [
+      {
+        "pair": [
+          0,
+          1
+        ],
+        "iou_best_shift": 0.4803,
+        "best_shift_src_px": [
+          4,
+          0
+        ],
+        "colour_l1": 0.1719
+      }
+    ],
+    "max_shift_src_px": 24
+  },
+  "half_cycle": null,
+  "alternation": {
+    "verdict": "duplicated half-cycle: the same leg leads in both halves",
+    "pairs": [
+      [
+        0,
+        1,
+        true
+      ]
+    ],
+    "near_leading": 2,
+    "far_leading": 0,
+    "unclear": 0
+  },
+  "torso": {
+    "drift_game_px": 0.63
+  },
+  "row_baselines": {
+    "0": 214
+  },
+  "seam_ranking": [
+    {
+      "from": 0,
+      "to": 1,
+      "mae": 9.96,
+      "over_median": 1.0
+    },
+    {
+      "from": 1,
+      "to": 0,
+      "mae": 9.96,
+      "over_median": 1.0
+    }
+  ],
+  "seam": {
+    "frames": 2,
+    "seam": 9.955346500172334,
+    "adjacent_median": 9.955346500172334,
+    "adjacent_p95": 9.955346500172334,
+    "adjacent_max": 9.955346500172334,
+    "seam_over_median": 1.0,
+    "seam_over_p95": 1.0,
+    "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first"
+  }
+}

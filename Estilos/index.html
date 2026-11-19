@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script src="../webp-shim.js"></script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Enciclopedia de Itzel</title>
+<link href="../Roguelike/assets/fuentes/fuentes.css" rel="stylesheet">
+<style>
+  :root { --hilo:#3a2418; --papel:#f3e7cf; --papel2:#e9d9b8; --tinta:#3a2418; --tenue:#7a5a44; --rojo:#b8203a; --piel:#5a2216; --piel2:#3e160d; }
+  * { box-sizing:border-box; }
+  html, body { margin:0; min-height:100%; overflow-x:hidden; }
+  body { background:#24150e; color:var(--tinta); font-family:'Alegreya Sans', system-ui, sans-serif;
+    background-image: radial-gradient(ellipse at 50% 30%, rgba(255,190,120,.12), transparent 60%), repeating-linear-gradient(90deg, rgba(0,0,0,.08) 0 2px, transparent 2px 7px), repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 1px, transparent 1px 5px); padding:18px 16px 40px; }
+  /* barra de arriba */
+  .arriba { max-width:1680px; width:calc(100% - 58px); margin:0 auto 14px; display:flex; flex-wrap:wrap; align-items:center; gap:10px 22px; justify-content:center; }
+  .arriba img.titulo { height:46px; filter:drop-shadow(0 3px 0 rgba(0,0,0,.35)); }
+  .arriba .opc { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .boton { font:700 14px 'Alegreya Sans'; color:#fff4e0; background:#6a3a22; border:0; border-radius:6px; padding:7px 14px; cursor:pointer; position:relative; box-shadow:0 0 0 2px #3e1e10, 0 3px 0 #2a120a; text-decoration:none; display:inline-block; }
+  .boton::after { content:''; position:absolute; inset:3px; border:1.5px dashed rgba(255,230,200,.55); border-radius:4px; pointer-events:none; }
+  .boton:hover { background:#7e4628; }
+  .boton.on { background:var(--rojo); box-shadow:0 0 0 2px #6a0f1e, 0 3px 0 #4a0a14; }
+  #volverMenu { position:fixed; top:clamp(32px, 10vh, 85px); left:clamp(26px, 3vw, 48px); z-index:20; font:800 19px 'Alegreya Sans', sans-serif; color:#fff6e4; background:#c8203a; border:0; border-radius:10px; padding:13px 34px; box-shadow:0 0 0 3px #8e1428, 0 6px 0 #6a0f1e, 0 10px 24px rgba(0,0,0,.4); }
+  #volverMenu::after { inset:5px; border:2px dashed rgba(255,240,215,.75); border-radius:6px; }
+  #volverMenu:hover { background:#c8203a; transform:translateY(-2px); }
+  .arriba { padding-top:70px; }
+  @media(max-width:600px) { #volverMenu { top:24px; left:24px; } .arriba { padding-top:90px; } }
+  /* el libro */
+  .libro { max-width:1680px; margin:0 auto; width:calc(100% - 58px); position:relative; display:grid; grid-template-columns:1fr 1fr; padding:14px; border-radius:14px;
+    background: linear-gradient(135deg, var(--piel), var(--piel2)); box-shadow: 0 30px 60px rgba(0,0,0,.6), inset 0 0 0 2px rgba(255,210,170,.15); }
+  .libro::before { content:''; position:absolute; inset:6px; border:2px dashed rgba(240,200,150,.4); border-radius:10px; pointer-events:none; }
+  /* el libro ocupa lo alto de la ventana (menos la barra de arriba), sin pasarse ni quedarse chiquito */
+  .pagina { position:relative; background:var(--papel); height:clamp(480px, calc(100vh - 120px), 1100px); padding:clamp(16px, 2vw, 30px) clamp(14px, 2.2vw, 30px) clamp(14px, 1.6vw, 22px); overflow:hidden; display:flex; flex-direction:column; }
+  .pagina::before { content:''; position:absolute; inset:0; pointer-events:none; background-image: radial-gradient(rgba(120,80,40,.07) 1px, transparent 1.2px), radial-gradient(rgba(120,80,40,.05) 1px, transparent 1.2px); background-size: 7px 7px, 11px 11px; background-position: 0 0, 3px 5px; }
+  .izq { border-radius:8px 2px 2px 8px; box-shadow: inset -26px 0 30px -18px rgba(70,40,20,.45), -3px 3px 0 #e2d2b0, -6px 6px 0 #d4c09a; }
+  .der { border-radius:2px 8px 8px 2px; box-shadow: inset 26px 0 30px -18px rgba(70,40,20,.45), 3px 3px 0 #e2d2b0, 6px 6px 0 #d4c09a; }
+  /* listones de las categorías */
+  .listones { position:absolute; right:-40px; top:40px; display:flex; flex-direction:column; gap:6px; z-index:3; }
+  .liston { width:52px; height:58px; border:0; cursor:pointer; position:relative; border-radius:0 8px 8px 0; display:grid; place-items:center; padding:0 0 0 8px; transition:width .18s, transform .18s; box-shadow:2px 3px 0 rgba(0,0,0,.35); }
+  .liston::after { content:''; position:absolute; inset:4px 4px 4px 10px; border:1.5px dashed rgba(255,255,255,.6); border-radius:0 5px 5px 0; pointer-events:none; }
+  .liston img { height:26px; image-rendering:auto; }
+  .liston:hover, .liston.on { width:64px; }
+  .liston span { position:absolute; right:calc(100% + 6px); top:50%; transform:translateY(-50%); background:#2a160c; color:#fff1dc; font:700 12px 'Alegreya Sans'; padding:3px 8px; border-radius:4px; white-space:nowrap; opacity:0; pointer-events:none; transition:opacity .15s; }
+  .liston:hover span { opacity:1; }
+  /* página izquierda: índice */
+  .cabeza { display:flex; align-items:flex-end; justify-content:space-between; gap:10px; position:relative; }
+  .cabeza img { height:34px; max-width:72%; object-fit:contain; object-position:left; }
+  .cuenta { font:italic 500 16px 'Alegreya'; color:var(--tenue); white-space:nowrap; }
+  .barra { height:7px; margin:8px 0 14px; background:var(--papel2); border-radius:4px; position:relative; overflow:hidden; box-shadow: inset 0 1px 2px rgba(0,0,0,.15); }
+  .barra i { position:absolute; inset:0 auto 0 0; background:repeating-linear-gradient(90deg, var(--rojo) 0 6px, #d8405a 6px 12px); }
+  .intro { font:italic 500 15.5px/1.45 'Alegreya'; color:var(--tenue); margin:0 0 12px; position:relative; }
+  .filtros-mundos { display:flex; flex-wrap:wrap; gap:7px; margin:0 2px 12px; position:relative; }
+  .filtros-mundos[hidden], .sello[hidden], .sin-resultados[hidden] { display:none; }
+  .filtros-mundos input, .filtros-mundos select { min-width:0; border:1px solid #b99b72; border-radius:6px; background:#fffaf0; color:#4a2d1c; padding:8px 9px; font:600 14px 'Alegreya Sans',sans-serif; }
+  .filtros-mundos input { flex:1 1 100%; } .filtros-mundos select { flex:1 1 40%; min-width:0; cursor:pointer; }
+  .filtros-mundos input:focus, .filtros-mundos select:focus { outline:2px solid #c8203a; outline-offset:1px; }
+  .sin-resultados { grid-column:1 / -1; color:var(--tenue); font:italic 15px 'Alegreya',serif; padding:12px 4px; }
+  .indice { position:relative; flex:1; overflow-y:auto; display:grid; grid-template-columns:repeat(auto-fill, minmax(118px, 1fr)); gap:12px 12px; padding:4px 6px 10px 2px; align-content:start; scrollbar-width:thin; scrollbar-color:#c9b089 transparent; }
+  .sello { position:relative; cursor:pointer; background:#fffaf0; padding:5px 5px 6px; box-shadow:0 2px 4px rgba(60,30,10,.25); transform:rotate(var(--r)); transition:transform .15s; }
+  .sello:hover { transform:rotate(0) translateY(-3px); }
+  .sello.on { outline:2.5px solid var(--rojo); outline-offset:2px; }
+  .sello canvas { width:100%; aspect-ratio:4/3; display:block; background:#d8c8a8; }
+  .sello b { display:block; font:700 13px/1.15 'Alegreya'; margin-top:4px; color:var(--tinta); min-height:2.3em; }
+  .sello small { position:absolute; top:2px; left:2px; z-index:1; background:var(--rojo); color:#fff; font:800 10.5px 'Alegreya Sans'; padding:1px 6px; border-radius:9px; }
+  .sello.oculto canvas { filter:brightness(0) opacity(.3); }
+  .sello.oculto b { color:#a89070; }
+  .sello .cinta { position:absolute; width:34px; height:12px; background:rgba(230,215,170,.75); top:-5px; left:50%; transform:translateX(-50%) rotate(-3deg); box-shadow:0 1px 1px rgba(0,0,0,.1); }
+  /* página derecha: la entrada */
+  .entrada { position:relative; display:flex; flex-direction:column; height:100%; min-height:0; }
+  .foto { position:relative; background:#fffaf0; padding:8px 8px 10px; box-shadow:0 4px 10px rgba(60,30,10,.3); transform:rotate(-.6deg); margin:4px 6px 14px; }
+  .foto canvas { width:100%; aspect-ratio:16/9; display:block; background:#111; image-rendering:auto; }
+  .foto canvas.tapado { display:none; }
+  .visor { position:relative; }
+  #fotoReal { width:100%; aspect-ratio:16/9; object-fit:contain; display:block; background:#2a1c14; }
+  #fotoReal[hidden], #pieFoto[hidden], .fotoFlecha[hidden], #fotoNum[hidden] { display:none; }
+  .fotoFlecha { position:absolute; top:50%; transform:translateY(-50%); width:34px; height:44px; border:0; border-radius:6px; background:rgba(30,18,10,.68); color:#fff6e4; font:700 26px/1 'Alegreya', serif; cursor:pointer; }
+  .fotoFlecha:hover { background:var(--rojo); }
+  .fotoFlecha.izq { left:6px; } .fotoFlecha.der { right:6px; }
+  #fotoNum { position:absolute; left:50%; bottom:6px; transform:translateX(-50%); padding:2px 9px; border-radius:10px; background:rgba(30,18,10,.68); color:#fff6e4; font:700 12px 'Alegreya Sans'; }
+  #pieFoto { font:500 12.5px/1.3 'Alegreya Sans'; color:#5a4232; padding:6px 2px 0; }
+  #pieFoto b { color:#3a2418; font-weight:700; }
+  #pieFoto a { color:#8a3a1a; }
+  .foto .cinta { position:absolute; width:70px; height:20px; background:rgba(230,215,170,.75); top:-9px; }
+  .foto .c1 { left:18px; transform:rotate(-8deg); } .foto .c2 { right:18px; transform:rotate(7deg); }
+  .foto .lupa { position:absolute; right:18px; bottom:20px; display:none; font:800 14px 'Alegreya Sans'; color:#fff6e4; background:var(--rojo); border:0; border-radius:8px; padding:8px 16px; cursor:pointer; box-shadow:0 0 0 2px #8e1428, 0 4px 0 #6a0f1e, 0 6px 14px rgba(0,0,0,.4); }
+  .foto .lupa::after { content:''; position:absolute; inset:3px; border:1.5px dashed rgba(255,240,215,.75); border-radius:5px; pointer-events:none; }
+  .foto .lupa:hover { transform:translateY(-2px); }
+  .foto .candado { position:absolute; inset:8px 8px 10px; display:none; place-items:center; background:rgba(30,18,10,.88); color:#f3e7cf; text-align:center; font:italic 500 18px 'Alegreya'; padding:20px; }
+  .entrada.bloqueada .candado { display:grid; }
+  h2 { font:800 clamp(22px, 2.2vw, 32px)/1.05 'Alegreya'; margin:2px 0 2px; }
+  /* la foto no se come la página cuando la ventana es baja */
+  .foto canvas, #fotoReal { max-height:min(46vh, 520px); object-fit:contain; }
+  .sub { font:700 14px 'Alegreya Sans'; color:var(--rojo); letter-spacing:.02em; margin-bottom:8px; }
+  .datos { display:grid; grid-template-columns:auto 1fr; gap:3px 12px; font:500 15px/1.35 'Alegreya Sans'; margin:4px 0 10px; }
+  .datos dt { font-weight:800; color:var(--tenue); }
+  .datos dd { margin:0; }
+  .vidaFicha { display:inline-flex; gap:2px; vertical-align:-3px; margin-right:4px; } .vidaFicha img { width:16px; height:16px; image-rendering:pixelated; }
+  .irNivel { color:#8a3a1a; text-decoration:underline; text-underline-offset:2px; cursor:pointer; }
+  .irNivel:hover { color:var(--rojo); }
+  .nota { font:italic 500 16.5px/1.5 'Alegreya'; margin:0 0 10px; white-space:pre-line; }
+  .nota-etiqueta { font-style:normal; font-weight:800; color:#9b2636; }
+  .pie { margin-top:auto; display:flex; justify-content:space-between; align-items:center; gap:10px; padding-top:8px; flex-wrap:wrap; }
+  .pie .flecha { font:700 15px 'Alegreya'; color:var(--tenue); background:none; border:0; cursor:pointer; }
+  .pie .flecha:hover { color:var(--rojo); }
+  .variantes { display:flex; flex-wrap:wrap; gap:5px; margin:2px 0 10px; }
+  .variantes button { font:700 11.5px 'Alegreya Sans'; border:1.5px solid #c9b089; background:#fffaf0; color:var(--tinta); border-radius:12px; padding:2px 9px; cursor:pointer; }
+  .variantes button.on { background:var(--rojo); border-color:var(--rojo); color:#fff; }
+  .variantes button.no { color:#b8a088; border-style:dashed; }
+  .derecha-scroll { overflow-y:auto; min-height:0; flex:1; padding-right:6px; scrollbar-width:thin; scrollbar-color:#c9b089 transparent; }
+  .voltea { animation: voltea .38s ease; transform-origin:left center; }
+  @keyframes voltea { 0% { opacity:0; transform:perspective(900px) rotateY(-14deg) translateX(-10px); } 100% { opacity:1; transform:none; } }
+  /* vista en tarjetas */
+  .catalogo { display:none; max-width:1680px; width:calc(100% - 46px); margin:0 auto; }
+  body.modo-tarjetas .libro { display:none; }
+  body.modo-tarjetas .catalogo { display:block; }
+  #pestanas { display:flex; flex-wrap:wrap; gap:8px; margin:4px 0 10px; }
+  #pestanas button { font:700 14px 'Alegreya Sans'; color:#fff4e0; background:var(--c); border:0; border-radius:6px; padding:7px 14px; cursor:pointer; opacity:.7; box-shadow:0 3px 0 rgba(0,0,0,.35); }
+  #pestanas button.on { opacity:1; outline:2px dashed rgba(255,240,220,.7); outline-offset:-5px; }
+  #tarjetasIntro { color:#e8d4b8; font:italic 500 16px 'Alegreya'; margin:0 0 14px; }
+  .tarjetas { display:grid; grid-template-columns:repeat(auto-fill, minmax(330px, 1fr)); gap:20px; }
+  .tarjeta { background:var(--papel); border-radius:10px; overflow:hidden; box-shadow:0 10px 26px rgba(0,0,0,.45); display:flex; flex-direction:column; }
+  .foto2 { position:relative; cursor:pointer; }
+  .foto2 canvas { width:100%; aspect-ratio:4/3; display:block; background:#2a1a10; }
+  .foto2 span { position:absolute; top:10px; left:10px; background:rgba(30,18,10,.75); color:#fff4e0; font:800 12px 'Alegreya Sans'; padding:3px 9px; border-radius:12px; }
+  .tarjeta.oculta canvas { filter:brightness(0) opacity(.35); }
+  .tarjeta .txt { padding:12px 15px 15px; }
+  .tarjeta h3 { font:800 21px/1.1 'Alegreya'; margin:0 0 3px; }
+  .sub2 { font:700 13px 'Alegreya Sans'; color:var(--rojo); margin-bottom:6px; }
+  .tarjeta dl { display:grid; grid-template-columns:auto 1fr; gap:2px 10px; font:500 14px/1.35 'Alegreya Sans'; margin:4px 0 8px; }
+  .tarjeta dt { font-weight:800; color:var(--tenue); } .tarjeta dd { margin:0; }
+  .tarjeta p { font:italic 500 15px/1.45 'Alegreya'; margin:0 0 8px; }
+  /* ventanas medianas: listones más angostos, índice más apretado */
+  @media (max-width: 1200px) {
+    .listones { right:-34px; } .liston { width:44px; height:50px; } .liston:hover, .liston.on { width:52px; } .liston img { height:22px; }
+    .indice { grid-template-columns:repeat(auto-fill, minmax(104px, 1fr)); gap:10px; }
+    .intro { font-size:14.5px; }
+    .datos { font-size:14px; } .nota { font-size:15.5px; }
+  }
+  /* El libro se ajusta a la ventana; cada página conserva su desplazamiento. */
+  @media (min-width: 901px) {
+    body:not(.modo-tarjetas) { height:100vh; height:100dvh; padding-bottom:16px; display:flex; flex-direction:column; overflow:hidden; }
+    body:not(.modo-tarjetas) .arriba { flex:none; }
+    body:not(.modo-tarjetas) .libro { flex:1; min-height:0; }
+    body:not(.modo-tarjetas) .pagina { height:100%; min-height:0; }
+    .listones { top:clamp(10px, 4vh, 40px); gap:clamp(2px, .6vh, 6px); }
+    .liston { height:clamp(30px, 5.8vh, 58px); }
+  }
+  .indice, .derecha-scroll { scrollbar-width:none; }
+  .indice::-webkit-scrollbar, .derecha-scroll::-webkit-scrollbar { display:none; }
+  /* angosto (tableta vertical, ventana partida, teléfono): una página arriba de otra */
+  @media (max-width: 900px) {
+    body { padding:12px 10px 30px; }
+    .arriba, .libro, .catalogo { width:100%; }
+    .arriba { justify-content:center; } .arriba img.titulo { height:36px; }
+    .libro { grid-template-columns:1fr; padding:10px; }
+    .pagina { height:auto; min-height:0; max-height:none; padding:18px 16px; }
+    .izq { border-radius:8px 8px 2px 2px; } .der { border-radius:2px 2px 8px 8px; }
+    .indice { max-height:46vh; grid-template-columns:repeat(auto-fill, minmax(96px, 1fr)); }
+    .derecha-scroll { overflow:visible; }
+    .listones { position:static; flex-direction:row; flex-wrap:wrap; justify-content:center; gap:6px; grid-column:1; margin:0 0 10px; }
+    .liston { width:46px; height:42px; border-radius:0 0 8px 8px; padding:0; } .liston:hover, .liston.on { width:46px; transform:translateY(4px); }
+    .liston span { display:none; }
+    .liston::after { inset:4px 4px 8px 4px; border-radius:0 0 5px 5px; }
+    .tarjetas { grid-template-columns:repeat(auto-fill, minmax(min(330px, 100%), 1fr)); }
+  }
+  @media (max-width: 520px) {
+    .boton { font-size:12.5px; padding:6px 10px; }
+    .filtros-mundos { flex-direction:column; } .filtros-mundos select { width:100%; }
+    .indice { grid-template-columns:repeat(2, 1fr); }
+    .datos { grid-template-columns:1fr; } .datos dt { margin-top:4px; }
+    .pie { justify-content:center; }
+  }
+</style>
+</head>
+<body>
+<div class="arriba">
+  <img class="titulo" id="titulo" alt="Enciclopedia de Itzel">
+  <div class="opc">
+    <a class="boton" id="volverMenu" href="../Roguelike/index.html">Volver</a>
+  </div>
+</div>
+<div class="libro" id="libro">
+  <div class="listones" id="listones"></div>
+  <section class="pagina izq">
+    <div class="cabeza"><img id="capTitulo" alt=""><span class="cuenta" id="cuenta"></span></div>
+    <div class="barra"><i id="barra"></i></div>
+    <p class="intro" id="intro"></p>
+    <div class="filtros-mundos" id="filtrosMundos" hidden><input id="buscarMundo" type="search" placeholder="Buscar por nombre" aria-label="Buscar mundo por nombre"><select id="generoMundo" aria-label="Filtrar por género"><option value="">Todos los géneros</option></select><select id="direccionMundo" aria-label="Filtrar por versión del nivel"><option value="">Todas las versiones</option><option value="lado">De lado</option><option value="subida">Hacia arriba</option><option value="bajada">Hacia abajo</option><option value="otros">Otros niveles del mundo</option></select></div>
+    <div class="indice" id="indice"></div>
+  </section>
+  <section class="pagina der">
+    <div class="entrada" id="entrada">
+      <div class="foto"><span class="cinta c1"></span><span class="cinta c2"></span><div class="visor"><canvas id="escena"></canvas><img id="fotoReal" alt="" hidden><button class="fotoFlecha izq" id="fotoAnt" title="Imagen anterior" hidden>‹</button><button class="fotoFlecha der" id="fotoSig" title="Imagen siguiente" hidden>›</button><span id="fotoNum" hidden></span></div><div id="pieFoto" hidden></div><button class="lupa" id="deCerca" title="Verla de cerca">De cerca</button><div class="candado" id="candado"></div></div>
+      <div class="derecha-scroll">
+        <h2 id="nombre"></h2>
+        <div class="sub" id="subt"></div>
+        <div class="variantes" id="variantes"></div>
+        <dl class="datos" id="datos"></dl>
+        <p class="nota" id="nota"></p>
+      </div>
+      <div class="pie"><button class="flecha" id="ant">‹ anterior</button><a class="boton" id="irJugar" style="display:none">Jugar este mundo</a><button class="flecha" id="sig">siguiente ›</button></div>
+    </div>
+  </section>
+</div>
+<section class="catalogo">
+  <nav id="pestanas"></nav>
+  <p id="tarjetasIntro"></p>
+  <div class="tarjetas" id="tarjetas"></div>
+</section>
+
+<script>
+  // lo mínimo del juego que necesitan las mecánicas para dibujarse aquí
+  var RUN = { upg: { dbl: 0 }, stomps: 0, naps: 0, coins: 0, hearts: 9, maxHearts: 9, semillas: 0 };
+  var MOUSE = { active: false, x: 0, y: 0, clicks: [] }, STATE = 'libro', KEYS = new Set();
+  const WORLDS = 4;
+  function toast() {}
+  function gameOver() {}
+</script>
+<!-- scripts:inicio (los escribe tools/scripts.mjs desde Roguelike/scripts.txt: no editar a mano) -->
+<script src="engine.js?v=demo-precarga-1"></script>
+<script src="campeche.js?v=fdf9189b"></script>
+<script src="estilos-pixel.js?v=d722baa9"></script>
+<script src="estilos-vector.js?v=3263821e"></script>
+<script src="estilos-luz.js?v=785fd8a0"></script>
+<script src="estilos-pintura.js?v=5093f87b"></script>
+<script src="estilos-mas1.js?v=c5af6c4d"></script>
+<script src="estilos-mas2.js?v=07ee4e71"></script>
+<script src="estilos-mas3.js?v=b14e8228"></script>
+<script src="estilos-vapor.js?v=366f672f"></script>
+<script src="estilos-nuevos.js?v=09739afd"></script>
+<script src="estilos-bits.js?v=jefes-local-2"></script>
+<script src="personajes.js?v=065eeaf0"></script>
+<script src="estilos-bordado.js?v=4defb9e7"></script>
+<script src="enciclopedia-datos.js?v=6aa698f7"></script>
+<script src="variantes.js?v=256560b7"></script>
+<script src="variantes-cinco.js?v=54382623"></script>
+<script src="disenos-borrados.js?v=6c6e0db3"></script>
+<script src="elegidos.js?v=91b1b031"></script>
+<script src="titeres-datos.js?v=f26d2af5"></script>
+<script src="itzel-corto-datos.js?v=f2b1dfaf"></script>
+<script src="titere.js?v=f85a4174"></script>
+<script src="itzel-renovada.js?v=37ac6443"></script>
+<script src="itzel-mundos-datos.js?v=0023804c"></script>
+<script src="itzel-mundos.js?v=1279b4ab"></script>
+<script src="fresita-renovada.js?v=e62e9771"></script>
+<script src="itzel-assets-nuevos.js?v=79b2711e"></script>
+<script src="itzel-forge.js?v=demo-precarga-2"></script>
+<script src="../Roguelike/ui-bordado.js?v=e59a6dff"></script>
+<script src="../Roguelike/mecanicas.js?v=trazo-continuo-1"></script>
+<script src="../Roguelike/mecanicas-nuevas.js?v=75d41642"></script>
+<script src="../Roguelike/niveles.js?v=cuaderno-sin-lineas-1"></script>
+<script src="../Roguelike/niveles-nuevos.js?v=62b1e778"></script>
+<script src="../Roguelike/jefes.js?v=0815dba3"></script>
+<script src="../Roguelike/jefes-nuevos.js?v=7a71a858"></script>
+<script src="../Roguelike/jefes-mas.js?v=bf6e0e39"></script>
+<script src="../Roguelike/ruptura-cuerpo.js?v=9ab3ade7"></script>
+<script src="../Roguelike/jefes-ruptura.js?v=8d5011cb"></script>
+<script src="../Roguelike/vapor.js?v=e0e47d92"></script>
+<script src="../Roguelike/mascara-estilos.js?v=58401384"></script>
+<script src="../Roguelike/jefes-cuerpos.js?v=jefes-local-2"></script>
+<script src="../Roguelike/mascaron-estilos.js?v=b3967418"></script>
+<script src="../Roguelike/mascaron-modelos.js?v=73b9caa6"></script>
+<script src="../Roguelike/balam-ceremonial.js?v=jefes-local-2"></script>
+<script src="../Roguelike/xtabay-ceiba.js?v=jefes-local-2"></script>
+<script src="../Roguelike/cocodrilo-terminos.js?v=jefes-local-2"></script>
+<script src="../Roguelike/lorencillo-barco.js?v=jefes-local-2"></script>
+<script src="../Roguelike/chaac-mascaron.js?v=04ad9053"></script>
+<script src="../Roguelike/camazotz-azul.js?v=jefes-local-2"></script>
+<script src="../Roguelike/xunan-kab.js?v=f830964f"></script>
+<script src="../Roguelike/raspadora-uayamon.js?v=jefes-local-2"></script>
+<script src="../Roguelike/plataformas-finas.js?v=b4c3577e"></script>
+<script src="../Roguelike/poderes-originales.js?v=eb9874e6"></script>
+<script src="../Roguelike/arenas.js?v=bf4379d2"></script>
+<script src="../Roguelike/jefes-arte.js?v=jefes-local-2"></script>
+<script src="../Roguelike/cooperacion.js?v=dee9cd67"></script>
+<script src="../Roguelike/modos.js?v=malecon-unico-1"></script>
+<script src="../Roguelike/modos-torres.js?v=5fc9884c"></script>
+<script src="../Roguelike/modos-vuelo.js?v=e457c0e2"></script>
+<script src="../Roguelike/modos-cocina.js?v=0ea199bc"></script>
+<script src="../Roguelike/niveles-rescatados.js?v=6411e839"></script>
+<script src="../Roguelike/mundos-ampliados.js?v=eccccbea"></script>
+<script src="../Roguelike/mundos-ampliados2.js?v=5668bfa4"></script>
+<script src="../Roguelike/mundos-ampliados3.js?v=ce64705d"></script>
+<script src="../Roguelike/poder-asidero.js?v=anime-arte-1"></script>
+<script src="../Roguelike/asidero-anime-arte.js?v=agarre-orientacion-4"></script>
+<script src="../Roguelike/mundos-ampliados4.js?v=charran-continuo-1"></script>
+<script src="../Roguelike/mundos-ampliados5.js?v=b4869cb6"></script>
+<script src="../Roguelike/mundos-ampliados6.js?v=31fcf23c"></script>
+<script src="../Roguelike/mundos-ampliados7.js?v=d560f504"></script>
+<script src="../Roguelike/fiestas.js?v=62533d99"></script>
+<script src="../Roguelike/modos-jarana.js?v=35e4ea66"></script>
+<script src="../Roguelike/modos-carrera.js?v=8120d2b2"></script>
+<script src="../Roguelike/modos-pesca.js?v=567402ad"></script>
+<script src="../Roguelike/modos-planos.js?v=embestidores-1"></script>
+<script src="../Roguelike/modos-fruncido.js?v=393269d5"></script>
+<script src="../Roguelike/modos-propio.js?v=7ba31712"></script>
+<script src="../Roguelike/niveles-propios.js?v=302f92c6"></script>
+<script src="../Roguelike/modos-golpes.js?v=19240936"></script>
+<script src="primer-plano.js?v=0e79b540"></script>
+<script src="../Roguelike/ruptura-formas.js?v=339ba6a9"></script>
+<script src="../Roguelike/ruptura-duelo.js?v=0ee44c67"></script>
+<script src="../Roguelike/enemigos-arte.js?v=9b76f0a7"></script>
+<script src="../Roguelike/enemigos-dibujos.js?v=b64bf856"></script>
+<script src="../Roguelike/enemigos-mundos.js?v=1f4f98d1"></script>
+<script src="../Roguelike/miniatura.js?v=cd34af08"></script>
+<script src="../Roguelike/enemigos-assets.js?v=charran-continuo-1"></script>
+<script src="../Roguelike/muralla-pixel.js?v=a34bd7a0"></script>
+<script src="../Roguelike/assets/estero/manifiesto-local.js?v=1"></script>
+<script src="../Roguelike/estero-ocaso.js?v=seybaplaya-3"></script>
+<script src="../Roguelike/cenote-acuarela.js?v=libelulas-ambiente-1"></script>
+<script src="../Roguelike/papel-picado.js?v=52e41654"></script>
+<script src="../Roguelike/bosque-brilla.js?v=cce60d75"></script>
+<script src="../Roguelike/piezas-subida.js?v=2165f89e"></script>
+<script src="../Roguelike/lanchas-golfo.js?v=7b3a27c8"></script>
+<script src="../Roguelike/vestir-nivel.js?v=manifiesto-local-1"></script>
+<script src="../Roguelike/fauna.js?v=b586e2d6"></script>
+<script src="../Roguelike/sumie-tinta.js?v=5acf4056"></script>
+<script src="../Roguelike/neon-ritmo.js?v=02c6b784"></script>
+<script src="../Roguelike/assets/aluxes/manifiesto-local.js?v=1"></script>
+<script src="../Roguelike/bruma-aluxes.js?v=contraste-bejuco-4"></script>
+<script src="../Roguelike/lowpoly-cristal.js?v=1a3dba34"></script>
+<script src="../Roguelike/codex-edzna.js?v=33a1dbbd"></script>
+<script src="../Roguelike/oleo-remolinos.js?v=27c917e6"></script>
+<script src="../Roguelike/vitral-catedral.js?v=ac37eab1"></script>
+<script src="../Roguelike/cuaderno-garabatos.js?v=34d42491"></script>
+<script src="../Roguelike/grabado-talla.js?v=c673bcab"></script>
+<script src="../Roguelike/anime-resortes.js?v=malecon-unico-1"></script>
+<script src="../Roguelike/jardin-nouveau.js?v=5c79a0fe"></script>
+<script src="../Roguelike/relojeria-deco.js?v=a0fc0b52"></script>
+<script src="../Roguelike/ciudad-cyber.js?v=51e11864"></script>
+<script src="../Roguelike/portales-cueva.js?v=bf9e9bba"></script>
+<script src="../Roguelike/fabrica-vapor.js?v=a6f4f07c"></script>
+<script src="../Roguelike/alfareria.js?v=4652e54e"></script>
+<script src="../Roguelike/jardin-ecos.js?v=f89cc4ed"></script>
+<script src="../Roguelike/muralla-llamas.js?v=07143678"></script>
+<script src="../Roguelike/fondo-golfo.js?v=1d416822"></script>
+<script src="../Roguelike/nevo-campeche.js?v=326cc495"></script>
+<script src="../Roguelike/cielo-mayas.js?v=8917cda3"></script>
+<script src="../Roguelike/campeche-ceniza.js?v=c6ebb76b"></script>
+<script src="../Roguelike/campeche-1-1.js?v=28225fa4"></script>
+<script src="../Roguelike/noche-baluarte.js?v=d1379318"></script>
+<script src="../Roguelike/selva-calakmul.js?v=3572327e"></script>
+<script src="../Roguelike/macro-detalles.js?v=89f2bc0c"></script>
+<script src="../Roguelike/carnaval-assets.js?v=f57ef919"></script>
+<script src="../Roguelike/feria-san-roman.js?v=42e1ea19"></script>
+<script src="../Roguelike/imprenta-assets.js?v=0c2baaa9"></script>
+<script src="../Roguelike/chicanna-relieves.js?v=f066dea2"></script>
+<script src="../Roguelike/paseo-animas.js?v=7060f98e"></script>
+<script src="../Roguelike/plataforma-cabeza.js?v=ec313749"></script>
+<script src="../Roguelike/pozo-torres-detalles.js?v=a5f72220"></script>
+<script src="../Roguelike/posadas-detalles.js?v=959c4fbe"></script>
+<script src="../Roguelike/astillero-detalles.js?v=1fa897bb"></script>
+<script src="../Roguelike/cocina-pesca-detalles.js?v=4af5452b"></script>
+<script src="../Roguelike/hipil-jarana-detalles.js?v=8b1e4cf5"></script>
+<script src="../Roguelike/ruta-vuelo-detalles.js?v=b19d29bf"></script>
+<script src="../Roguelike/defensa-planos-detalles.js?v=8f699ed9"></script>
+<script src="../Roguelike/campeche-real.js?v=lugar-jarana-1"></script>
+<script src="../Roguelike/campeche-hallazgos.js?v=opal-huracan-2"></script>
+<script src="../Roguelike/campeche-fotos.js?v=2b62b848"></script>
+<script src="../Roguelike/anomalias.js?v=b244b93a"></script>
+<script src="../Roguelike/ventajas.js?v=e87a1f94"></script>
+<script src="../Roguelike/vida-enemigos.js?v=e5fe5e5c"></script>
+<script src="../Roguelike/subjefes-arte.js?v=jefes-local-2"></script>
+<script src="../Roguelike/subjefes.js?v=arena-subjefe-1"></script>
+<script src="../Roguelike/burbujas-cura.js?v=1e947a2f"></script>
+<script src="../Roguelike/piezas.js?v=0fc42dbb"></script>
+<script src="../Roguelike/niveles-verticales.js?v=901d5cd1"></script>
+<script src="../Roguelike/tramoya-vertical.js?v=7e4265c4"></script>
+<script src="../Roguelike/estados-nuevos.js?v=7c8f6e15"></script>
+<script src="enciclopedia.js?v=demo-hojas-1"></script>
+<!-- scripts:fin -->
+</body>
+</html>

@@ -1,0 +1,508 @@
+<!doctype html>
+<html lang="es">
+<head>
+<script src="../webp-shim.js"></script>
+<link rel="manifest" href="../manifest.webmanifest">
+<link rel="icon" href="../icono-192.png">
+<link rel="apple-touch-icon" href="../icono-192.png">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#1a120d">
+<title>Itzel</title>
+<link href="assets/fuentes/fuentes.css" rel="stylesheet">
+<link href="reproductor.css?v=1" rel="stylesheet">
+<style>
+  :root { --hilo:#3a2418; --manta-c:#efe4cc; --rojo:#c8203a; --ocre:#f2b233; }
+  * { box-sizing: border-box; }
+  html, body { margin:0; height:100%; background:#1a120d; color:var(--hilo); font-family:'Alegreya Sans', system-ui, sans-serif; overflow:hidden; user-select:none; }
+  #wrap { position:fixed; inset:0; display:grid; place-items:center; }
+  #game { display:block; cursor:none; }
+  #textos { position:fixed; pointer-events:none; z-index:1; }
+  .layer { position:fixed; inset:0; pointer-events:none; }
+  img { image-rendering:auto; }
+  /* carga directa (desde la enciclopedia): la misma espera de las cinemáticas (fondo café y una hilera de puntadas abajo a la derecha), no el menú */
+  #espera-directa { display:none; position:fixed; inset:0; z-index:99999; background:#0d0806; }
+  .directo #espera-directa { display:block; }
+  #espera-directa .puntadas { position:absolute; right:48px; bottom:44px; display:flex; gap:0; }
+  #espera-directa .puntadas svg { width:11px; height:11px; margin-left:1px; opacity:0; animation:espera-puntada 3.5s infinite; }
+  #espera-directa .puntadas svg:nth-child(1) { animation-delay:0s; } #espera-directa .puntadas svg:nth-child(2) { animation-delay:.5s; } #espera-directa .puntadas svg:nth-child(3) { animation-delay:1s; } #espera-directa .puntadas svg:nth-child(4) { animation-delay:1.5s; } #espera-directa .puntadas svg:nth-child(5) { animation-delay:2s; } #espera-directa .puntadas svg:nth-child(6) { animation-delay:2.5s; } #espera-directa .puntadas svg:nth-child(7) { animation-delay:3s; }
+  @keyframes espera-puntada { 0%, 8% { opacity:0; } 20%, 70% { opacity:1; } 90%, 100% { opacity:0; } }
+  /* tela bordada */
+  .panel { background:var(--manta) repeat; background-size:8px 8px; border:24px solid transparent; border-image:var(--marco) 24 round; box-shadow:0 10px 30px rgba(0,0,0,.45); }
+  .patch { font:800 19px 'Alegreya Sans', sans-serif; color:#fff6e4; background:var(--rojo); border:0; border-radius:10px; padding:13px 34px; cursor:pointer; position:relative; box-shadow:0 0 0 3px #8e1428, 0 6px 0 #6a0f1e, 0 10px 24px rgba(0,0,0,.4); letter-spacing:.02em; margin:6px; }
+  .patch::after { content:''; position:absolute; inset:5px; border:2px dashed rgba(255,240,215,.75); border-radius:6px; pointer-events:none; }
+  .patch:hover { transform:translateY(-2px); }
+  .patch:active { transform:translateY(3px); box-shadow:0 0 0 3px #8e1428, 0 2px 0 #6a0f1e; }
+  .patch.verde { background:#3f8a4a; box-shadow:0 0 0 3px #245a2c, 0 6px 0 #1a4220, 0 10px 24px rgba(0,0,0,.4); }
+  /* HUD */
+  #hud { display:none; padding:12px 16px; }
+  #hud.on { display:block; }
+  .hrow { display:flex; align-items:center; gap:18px; flex-wrap:wrap; filter:drop-shadow(0 2px 3px rgba(0,0,0,.55)); }
+  .hrow span { display:flex; align-items:center; gap:3px; color:#fff3dc; font:800 18px 'Alegreya Sans'; }
+  .hrow img { height:22px; }
+  #doblones { gap:4px; padding:3px 6px; border-radius:9px; background:rgba(51,31,20,.8); box-shadow:0 1px 3px #0006, inset 0 0 0 1px rgba(255,230,185,.35); }
+  #doblones:empty { display:none; }
+  #doblones .doblon-hud { width:23px; height:23px; display:grid; place-items:center; border-radius:50%; border:1px dashed #c6a880; background:rgba(255,245,220,.12); }
+  #doblones .doblon-hud.conseguido { border:1px solid #ffe39a; background:#a25c19; box-shadow:0 0 5px #ffd57080; }
+  #doblones canvas { width:21px; height:21px; display:block; }
+  #hearts img.off { opacity:.28; filter:grayscale(1); }
+  #bubbles img { height:18px; } #bubbles img.off { opacity:.3; }
+  #perks img { height:20px; }
+  #where { position:fixed; top:12px; right:16px; background:var(--manta) repeat; background-size:8px; padding:5px 14px 6px; border-radius:4px; font:700 15px 'Alegreya', serif; outline:2px dashed rgba(120,60,30,.45); outline-offset:-5px; box-shadow:0 3px 10px rgba(0,0,0,.4); }
+  #where b { color:var(--rojo); }
+  /* menú y enciclopedia dentro del juego */
+  #where { right:70px; }
+  #menuBtn { position:fixed; top:8px; right:14px; width:44px; height:40px; padding:0; font:800 22px 'Alegreya Sans'; pointer-events:auto; margin:0; }
+  #menuBtn::after { inset:4px; }
+  #enci { position:fixed; inset:0; z-index:50; display:none; background:#1a120d; }
+  #enci.on { display:block; }
+  #enci iframe { width:100%; height:100%; border:0; display:block; }
+  #enci .patch { display:none; }   /* el libro ya trae su «Volver al juego» arriba; este flotante tapaba el contenido */
+  /* Acceso constante al menú desde los submenús principales. */
+  #screen .volver-esquina { position:fixed; top:clamp(32px, 10vh, 85px); left:clamp(26px, 3vw, 48px); z-index:20; margin:0; }
+  #screen.on > div:has(.volver-esquina) { animation:none; padding-top:70px; }
+  @media(max-width:600px) { #screen .volver-esquina { top:24px; left:24px; } }
+  /* letrero de mundo */
+  #banner { position:fixed; left:50%; top:14%; width:min(520px,88vw); transform:translateX(-50%); text-align:center; opacity:0; pointer-events:none; }
+  #banner.on { animation: ban 3.4s ease forwards; }
+  #banner .panel { position:relative; box-sizing:border-box; display:block; padding:16px 28px 19px 46px; overflow:hidden; border:3px solid #774331; border-image:none; border-radius:12px; color:#48271e; background:repeating-linear-gradient(0deg,transparent 0 5px,rgba(153,110,67,.045) 5px 6px),#f7e9cd; box-shadow:0 5px 0 #542a20,0 12px 26px #26120d66,inset 0 0 0 3px #dfc197,inset 0 0 0 5px #fff4de; }
+  #banner .panel:before { content:''; position:absolute; top:8px; bottom:8px; left:10px; width:19px; border-left:2px solid #8c2b3a; border-right:2px solid #8c2b3a; background:repeating-linear-gradient(45deg,#2c8080 0 3px,#f4d58e 3px 6px,#b93247 6px 9px,#f8e8c6 9px 12px); }
+  #banner .panel:after { content:'✿'; position:absolute; right:12px; bottom:8px; color:#b33748; font:700 17px 'Alegreya Sans'; opacity:.85; }
+  #banner small { display:flex; align-items:center; justify-content:center; gap:9px; font:800 11px 'Alegreya Sans'; letter-spacing:.18em; text-transform:uppercase; color:#a0273d; }
+  #banner small:before, #banner small:after { content:'✦'; color:#bf8b50; font-size:10px; }
+  #banner b { display:block; margin:5px 0; font:700 clamp(24px, 3vw, 34px) 'Alegreya', serif; line-height:1.08; text-wrap:balance; }
+  #banner i { display:block; max-width:390px; margin:auto; font:italic 500 clamp(13px,1.4vw,15px)/1.25 'Alegreya', serif; color:#805548; text-wrap:balance; }
+  @media(max-width:600px){#banner{top:12%;width:min(440px,90vw)}#banner .panel{padding:13px 22px 15px 38px}#banner .panel:before{left:8px;width:14px}#banner b{font-size:clamp(22px,6vw,30px)}}
+  @keyframes ban { 0% { opacity:0; transform:translate(-50%, -10px); } 14%,78% { opacity:1; transform:translate(-50%, 0); } 100% { opacity:0; transform:translate(-50%, -8px); } }
+  #toasts { position:fixed; left:50%; bottom:36px; transform:translateX(-50%); display:flex; flex-direction:column; gap:8px; align-items:center; }
+  .toast { background:var(--manta) repeat; background-size:8px; padding:7px 16px; border-radius:4px; font:700 15px 'Alegreya Sans'; outline:2px dashed rgba(120,60,30,.45); outline-offset:-5px; box-shadow:0 4px 12px rgba(0,0,0,.45); animation: tst 2.2s ease forwards; }
+  @keyframes tst { 0% { opacity:0; transform:translateY(8px); } 12%,82% { opacity:1; transform:none; } 100% { opacity:0; } }
+  /* pantallas */
+  #screen { display:none; pointer-events:auto; background:radial-gradient(ellipse at center, rgba(30,18,12,.25), rgba(30,18,12,.78)); place-items:safe center; padding:20px; overflow:auto; }
+  /* pantallas con letras sobre el mundo (pausa, ofrenda, final, logros…): el velo oscurece el centro, donde va el texto, y deja ver el mundo en las orillas */
+  #screen.velo { background:radial-gradient(ellipse 78% 70% at center, rgba(22,13,9,.82), rgba(22,13,9,.66) 62%, rgba(22,13,9,.44)); }
+  /* entrada suave de cada pantalla y de sus cartas (no se repite cuando la misma pantalla se vuelve a pintar) */
+  @keyframes pantallaEntra { from { opacity:0; transform:translateY(12px) scale(.985); } }
+  @keyframes cartaEntra { from { opacity:0; transform:translateY(30px) rotate(var(--r, 0deg)) scale(.94); } }
+  #screen.on > div { animation:pantallaEntra .34s cubic-bezier(.2,.8,.2,1) backwards; }
+  #screen .cards .card, #screen .skin-carta, #screen .est, #screen .logro { animation:cartaEntra .46s cubic-bezier(.2,.9,.25,1.12) backwards; animation-delay:calc(min(var(--i, 0), 14) * 45ms + 90ms); }
+  #screen.quieta > div, #screen.quieta .card, #screen.quieta .skin-carta, #screen.quieta .est, #screen.quieta .logro { animation:none; }
+  @media (prefers-reduced-motion: reduce) { #screen.on > div, #screen .card, #screen .skin-carta, #screen .est, #screen .logro { animation:none !important; } }
+  #screen .stats, #screen .hint { text-wrap:balance; }
+  #screen.on { display:grid; }
+  body:has(#screen.on) #textos { visibility:hidden; }
+  .title, .end, .ofrenda { text-align:center; max-width:900px; }
+  :root { --logo:min(560px, 72vw); }
+  .logo { width:var(--logo); filter:drop-shadow(0 6px 0 rgba(60,20,10,.35)) drop-shadow(0 12px 30px rgba(0,0,0,.5)); }
+  .hstitch { max-width:min(760px, 88vw); height:auto; filter:drop-shadow(0 4px 0 rgba(60,20,10,.3)); }
+  .sub { color:#fff1d8; font:italic 500 21px 'Alegreya', serif; margin:4px 0 22px; text-shadow:0 2px 8px rgba(0,0,0,.6); }
+  .ctrl { display:flex; gap:26px; justify-content:center; margin:26px auto 4px; text-align:left; max-width:720px; flex-wrap:wrap; padding:6px 10px; }
+  .ctrl div { font:500 16px 'Alegreya Sans'; line-height:1.45; display:grid; grid-template-columns:auto 1fr; column-gap:10px; align-items:center; }
+  .ctrl img { height:30px; grid-row:span 2; }
+  .ctrl span { color:#6a4a3a; }
+  .hint { color:#f6e6c8; font:500 15px 'Alegreya Sans'; margin-top:16px; text-shadow:0 1px 6px rgba(0,0,0,.7); }
+  .hint b { color:var(--ocre); }
+  .dato-camp { max-width:620px; margin:14px auto 0; padding:9px 14px; background:rgba(44,24,14,.72); border-radius:6px; color:#f6e6c8; font:500 15px/1.32 'Alegreya Sans'; text-align:left; }
+  .dato-camp b { color:var(--ocre); } .dato-camp a { color:#ffdf97; text-decoration:underline; white-space:nowrap; }
+  /* Derrota: puntadas y parches sobre el último cuadro del mundo. */
+  #screen.velo:has(.pantalla-derrota){background:rgba(18,20,19,.72)}
+  #screen:has(.pantalla-derrota):not(:has(.pantalla-pausa)){z-index:3}
+  .pantalla-derrota{width:min(1040px,94vw);display:flex;flex-direction:column;align-items:center;gap:18px;padding:12px 4px 22px}
+  .pantalla-derrota .derrota-titulo{width:min(580px,80vw);max-height:75px;object-fit:contain;filter:drop-shadow(0 4px 2px #180509aa)}
+  .pantalla-derrota .corazones-vacios{display:flex;justify-content:center;gap:20px;color:#ffd1d2;filter:drop-shadow(0 2px 2px #3c1318aa)}
+  .pantalla-derrota .corazones-vacios svg{width:58px;height:54px}
+  .pantalla-derrota .worlds{margin:0;justify-content:center}
+  .pantalla-derrota .worlds span{font:800 clamp(15px,1.5vw,18px) 'Alegreya Sans',sans-serif}
+  .pantalla-derrota .worlds .here{position:relative;color:#9e1d3b;background:#ffdcda;border:2px solid #efabb0;border-radius:6px;padding:8px 18px;box-shadow:0 3px 0 #712b32,0 6px 16px #0005}
+  .pantalla-derrota .worlds .here:after{content:'';position:absolute;inset:3px;border:1px dashed #db8190;border-radius:3px;pointer-events:none}
+  .pantalla-derrota .sub{margin:0;font-size:18px}
+  .acciones-derrota{display:flex;gap:16px;justify-content:center;align-items:stretch;flex-wrap:wrap;width:100%}
+  .pantalla-derrota .boton-derrota{display:inline-flex;align-items:center;justify-content:center;gap:12px;min-height:68px;margin:0;padding:14px 26px;border:3px solid #8f0d29;background:linear-gradient(180deg,#ea3150,#c51032 65%,#a70e2b);font:800 clamp(18px,2.3vw,27px) 'Alegreya Sans';text-transform:none;letter-spacing:0;box-shadow:inset 0 3px #ffffff3d,0 5px 0 #711125,0 9px 18px #0007}
+  .pantalla-derrota .boton-derrota.verde{border-color:#296b37;background:linear-gradient(180deg,#5cb96a,#348b47 65%,#28733b);box-shadow:inset 0 3px #ffffff3d,0 5px 0 #20582e,0 9px 18px #0007}
+  .pantalla-derrota .boton-derrota:after{inset:5px;border:2px dashed #fff5dfd9;border-radius:6px}
+  .pantalla-derrota .boton-derrota:hover{filter:brightness(1.12)}
+  .pantalla-derrota .boton-derrota:focus-visible{outline:3px solid #ffe18e;outline-offset:5px}
+  .pantalla-derrota .boton-simbolo{display:grid;place-items:center;flex:none;width:34px;height:34px;border:1px solid #fff8d68a;border-radius:50%;background:#ffffff24;color:#fff4dd;font:700 24px/1 'Alegreya Sans';text-shadow:0 1px 2px #47251c}
+  .pantalla-derrota .dato-camp{max-width:680px;margin:4px auto 0;padding:14px 26px;border:1px solid #b9895c66;border-radius:14px;background:rgba(60,31,17,.88);color:#fff5e8;text-align:center;font:500 clamp(16px,1.5vw,20px)/1.35 'Alegreya Sans';box-shadow:inset 0 0 0 3px #ffffff0d,0 5px 18px #0003}
+  .pantalla-derrota .dato-camp b{display:block;margin-bottom:3px;font:800 clamp(20px,2vw,26px) 'Alegreya Sans';color:#ffc048}
+  .acciones-pausa{display:flex;gap:16px;justify-content:center;align-items:stretch;flex-wrap:wrap;width:100%}
+  .acciones-pausa .patch,.acciones-derrota .patch{margin:0}
+  .pantalla-pausa .pausa-sonido{background:#317eaf;box-shadow:0 0 0 3px #235c88,0 6px 0 #174666,0 10px 24px rgba(0,0,0,.4)}
+  .pantalla-pausa .pausa-opciones{background:#86519a;box-shadow:0 0 0 3px #704181,0 6px 0 #532c60,0 10px 24px rgba(0,0,0,.4)}
+  .patch.amarillo{background:#e4a927;color:#fff6e4;box-shadow:0 0 0 3px #aa7311,0 6px 0 #805009,0 10px 24px rgba(0,0,0,.4)}
+  .patch.amarillo::after{border-color:rgba(255,248,215,.8)}
+  @media(max-width:600px){.acciones-pausa{gap:10px}.acciones-pausa .patch{min-height:54px;flex:1 1 40%;padding:10px 16px}}
+  @media(max-width:600px){.pantalla-derrota{gap:12px}.pantalla-derrota .corazones-vacios svg{width:42px;height:39px}.acciones-derrota{gap:10px}.pantalla-derrota .boton-derrota{width:100%;min-height:54px;padding:10px 18px}.pantalla-derrota .dato-camp{padding:10px 14px}}
+  .cards { display:flex; gap:18px; justify-content:center; flex-wrap:wrap; margin-top:6px; }
+  .card { width:232px; cursor:pointer; display:flex; flex-direction:column; gap:6px; align-items:center; font-family:'Alegreya Sans'; color:var(--hilo); padding:4px 6px 8px; transition:transform .15s; transform:rotate(var(--r, 0deg)); }
+  .card:hover { transform:translateY(-6px) rotate(0); }
+  .card img { height:52px; margin:2px 0; }
+  .card b { font:700 21px 'Alegreya', serif; }
+  .card span:last-child { font-size:15.5px; line-height:1.35; color:#5a3c2c; }
+  /* ---- elegir camino ---- */
+  .camino .cards { gap:26px; margin-top:10px; }
+  .camino .card { width:min(340px, 86vw); gap:3px; padding:0 2px 8px; }
+  .camino .card canvas { width:100%; aspect-ratio:427/240; display:block; border-radius:3px; margin-bottom:6px; background:rgba(60,30,20,.18); }
+  .camino .card small { font:700 12px 'Alegreya Sans'; letter-spacing:.14em; text-transform:uppercase; color:#8a5a3a; }
+  .camino .card b { font-size:24px; line-height:1.1; }
+  .camino .card i { font:800 14px 'Alegreya Sans'; font-style:normal; color:#fff6e4; background:var(--rojo); border-radius:4px; padding:2px 10px; margin:3px 0 4px; }
+  .worlds { display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:14px 0 8px; }
+  .worlds span { font:700 14px 'Alegreya Sans'; padding:4px 12px; border-radius:3px; background:#efe4cc; color:#7a6050; outline:2px dashed rgba(120,60,30,.35); outline-offset:-4px; }
+  .worlds .done { background:#cfe6c6; color:#2a5a2a; }
+  .worlds .here { background:#f6c8c0; color:#8a1a2a; }
+  .stats { color:#fff1d8; font:500 17px 'Alegreya', serif; margin:6px 0 20px; text-shadow:0 1px 6px rgba(0,0,0,.7); }
+  #loading { display:none; place-items:center; background:#1a120d; }
+  #loading.on { display:grid; }
+  #loading div { text-align:center; color:#d8c4a8; font:italic 500 18px 'Alegreya', serif; }
+  #loading b { display:block; font:700 30px 'Alegreya', serif; color:#fff1d8; margin-top:6px; font-style:normal; }
+  /* ---- menú principal ---- */
+  .menu-lista { display:grid; width:min(440px, 90vw); margin:6px auto 0; padding:2px 10px; }
+  .opcion { display:grid; grid-template-columns:48px 1fr; column-gap:12px; align-items:center; text-align:left; background:none; border:0; border-bottom:2px dashed rgba(120,60,30,.28); padding:11px 10px; cursor:pointer; color:var(--hilo); font-family:'Alegreya Sans'; transition:background .15s, transform .15s; }
+  .opcion:last-child { border-bottom:0; }
+  .opcion:hover { background:rgba(200,32,58,.09); transform:translateX(4px); }
+  .opcion img { grid-row:span 2; height:36px; justify-self:center; }
+  .opcion b { font:700 26px 'Alegreya', serif; line-height:1.05; }
+  .opcion span { color:#7a5a44; font-size:15px; }
+  kbd { display:inline-block; min-width:22px; padding:1px 7px; margin:0 2px; border-radius:5px; background:#fff8e8; border:1px solid #b8946a; box-shadow:0 2px 0 #b8946a; font:700 14px 'Alegreya Sans'; color:#4a2a1a; }
+  /* ---- controles ---- */
+  .ctrl2 { display:flex; gap:22px; justify-content:center; flex-wrap:wrap; margin:14px auto 6px; max-width:860px; }
+  .ctrl2 .panel { width:min(400px, 90vw); text-align:left; padding:4px 12px; font:500 16px 'Alegreya Sans'; color:#5a3c2c; }
+  .ctrl2 .panel img { height:34px; float:left; margin:2px 12px 0 0; }
+  .ctrl2 .panel b { display:block; font:700 22px 'Alegreya', serif; color:var(--hilo); margin-bottom:6px; }
+  .ctrl2 .panel p { margin:7px 0; line-height:1.5; }
+  .hint kbd { box-shadow:none; }
+  /* ---- skins ---- */
+  .chips { display:flex; flex-wrap:wrap; gap:7px; justify-content:center; max-width:960px; margin:8px auto 14px; }
+  .chip { background:#efe4cc; color:#6a4a3a; border:0; border-radius:4px; outline:2px dashed rgba(120,60,30,.35); outline-offset:-4px; padding:6px 12px; font:700 14px 'Alegreya Sans'; cursor:pointer; }
+  .chip small { margin-left:6px; color:#a07a5a; } .chip.on { background:#f6c8c0; color:#8a1a2a; } .chip.nada { opacity:.55; }
+  .skin-sel h3 { color:#fff1d8; font:700 28px 'Alegreya', serif; margin:4px 0 0; text-shadow:0 2px 8px rgba(0,0,0,.6); }
+  .skin-cartas { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; margin:10px 0; }
+  .skin-carta { width:250px; display:flex; flex-direction:column; align-items:center; gap:6px; padding:0 0 4px; color:var(--hilo); font:700 17px 'Alegreya', serif; }
+  .skin-carta canvas { width:100%; aspect-ratio:427/240; display:block; border-radius:3px; }
+  .skin-carta.fav { box-shadow:0 0 0 4px #ffd23f, 0 10px 30px rgba(0,0,0,.45); }
+  .skin-carta .patch { padding:7px 20px; font-size:15px; margin:2px; }
+  .skin-carta canvas { cursor:zoom-in; }
+  .skin-carta .cerca { background:none; border:0; color:#8a5a3a; font:700 14px 'Alegreya Sans'; cursor:pointer; text-decoration:underline dotted; }
+  .skin-carta .hueco { width:100%; aspect-ratio:427/240; display:grid; place-items:center; background:rgba(60,30,20,.18); font:700 60px 'Alegreya', serif; color:rgba(90,50,30,.4); border-radius:3px; }
+  .skin-carta.bloqueada b { color:#9a7a5a; }
+  /* ---- logros ---- */
+  .logro-lista { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr)); gap:12px; max-width:1000px; margin:10px auto; text-align:left; }
+  .logro { display:flex; gap:10px; align-items:flex-start; padding:0 6px; color:#5a3c2c; font:500 14.5px 'Alegreya Sans'; filter:grayscale(.8) sepia(.28) brightness(.84) contrast(.94); }   /* sin bordar todavía: tela apagada, pero entera (antes era transparente y se ensuciaba con el fondo) */
+  .logro.ok { filter:none; opacity:1; }
+  .logro img { height:30px; margin-top:2px; }
+  .logro b { display:block; font:700 18px 'Alegreya', serif; color:var(--hilo); }
+  .logro span { display:block; line-height:1.35; }
+  .logro small { display:block; color:#8a6a4a; margin-top:3px; }
+  .logro i { display:block; height:6px; margin-top:6px; border-radius:3px; background:linear-gradient(90deg, #c8203a calc(var(--p) * 100%), rgba(120,60,30,.18) 0); }
+  /* ---- avisos de logros y skins ---- */
+  #avisos { position:fixed; top:62px; right:16px; display:flex; flex-direction:column; gap:8px; align-items:flex-end; z-index:60; pointer-events:none; max-width:min(420px, 80vw); }
+  .aviso { display:flex; gap:12px; align-items:center; background:var(--manta) repeat; background-size:8px; padding:9px 18px 10px 12px; border-radius:6px; outline:2px dashed rgba(120,60,30,.5); outline-offset:-6px; box-shadow:0 0 0 3px #ffd23f, 0 8px 24px rgba(0,0,0,.5); animation:avisoEntra .5s cubic-bezier(.2,1.4,.4,1); }
+  .aviso.sale { animation:avisoSale .6s ease forwards; }
+  #tarjetas { position:fixed; right:16px; bottom:16px; z-index:59; pointer-events:none; width:min(380px, calc(100vw - 32px)); }
+  .tarjeta { display:flex; gap:12px; align-items:center; background:var(--manta) repeat; background-size:8px; padding:10px 14px 10px 10px; border-radius:6px; outline:2px dashed rgba(120,60,30,.5); outline-offset:-5px; box-shadow:0 5px 16px rgba(0,0,0,.45); animation:tarjetaEntra .4s ease-out; }
+  .tarjeta.sale { animation:avisoSale .6s ease forwards; }
+  .t-foto { flex:none; width:64px; height:52px; display:grid; place-items:center; background:rgba(120,90,50,.13); border-radius:4px; }
+  .t-foto canvas { width:64px; height:50px; }
+  .t-foto img { height:40px; }
+  .t-foto img.real { width:64px; height:52px; object-fit:cover; border-radius:3px; }
+  .t-txt { min-width:0; }
+  .t-txt small { display:block; font:700 11px 'Alegreya Sans'; letter-spacing:.1em; text-transform:uppercase; color:#c8203a; }
+  .t-txt b { display:block; font:700 18px/1.15 'Alegreya', serif; color:var(--hilo); }
+  .t-txt span { display:block; font:500 14px/1.25 'Alegreya Sans'; color:#4a3226; margin-top:2px; }
+  .t-txt em { display:block; font:italic 500 12px 'Alegreya'; color:#7a5a44; margin-top:3px; }
+  @keyframes tarjetaEntra { from { transform:translateY(18px); opacity:0; } to { transform:none; opacity:1; } }
+  .aviso img { height:34px; }
+  .aviso small { display:block; font:700 12px 'Alegreya Sans'; letter-spacing:.14em; text-transform:uppercase; color:#c8203a; }
+  .aviso b { display:block; font:700 19px 'Alegreya', serif; color:var(--hilo); }
+  @keyframes avisoEntra { from { transform:translateX(40px) scale(.9); opacity:0; } to { transform:none; opacity:1; } }
+  @keyframes avisoSale { to { transform:translateX(40px); opacity:0; } }
+  /* ---- foco del control en los menús ---- */
+  /* el menú principal en dos columnas (son ocho opciones) */
+  .menu .menu-lista { grid-template-columns:1fr 1fr; column-gap:18px; width:min(780px, 94vw); }
+  .menu .opcion:nth-last-child(2):nth-child(odd) { border-bottom:0; }
+  .menu .opcion { padding:9px 10px; }
+  .menu #mMulti img { height:25px; }
+  .menu .menu-lista:not(:has(#mSigue)) #mJugar { grid-column:1 / -1; width:100%; grid-template-columns:48px max-content; justify-content:center; }
+  @media (max-width:700px) { .menu .menu-lista { grid-template-columns:1fr; } .menu .menu-lista:not(:has(#mSigue)) #mJugar { grid-column:auto; grid-template-columns:48px 1fr; justify-content:normal; } .menu .opcion:nth-last-child(2):nth-child(odd) { border-bottom:2px dashed rgba(120,60,30,.28); } }
+  .gp-foco { outline:3px solid #ffd23f !important; outline-offset:4px; transform:translateY(-2px); }
+  .opcion.gp-foco { outline-offset:-3px; background:rgba(200,32,58,.12); transform:translateX(4px); }
+  .chip.gp-foco { outline:3px solid #ffd23f !important; outline-offset:2px; }
+  #reticula { position:fixed; width:22px; height:22px; margin:-11px 0 0 -11px; border-radius:50%; border:2px dashed #ffd1ea; box-shadow:0 0 0 2px rgba(120,30,60,.55), inset 0 0 0 2px rgba(120,30,60,.35); pointer-events:none; z-index:40; display:none; animation:gira 3s linear infinite; }
+  #reticula::after { content:''; position:absolute; left:50%; top:50%; width:4px; height:4px; margin:-2px; border-radius:50%; background:#ffd1ea; }
+  #reticula.on { display:block; }
+  @keyframes gira { to { transform:rotate(360deg); } }
+  /* ---- opciones ---- */
+  .op-lista { width:min(760px, 94vw); margin:8px auto 12px; padding:0 8px; text-align:left; }
+  .op-fila { display:grid; grid-template-columns:40px 1fr auto; gap:12px; align-items:center; padding:10px 4px; border-bottom:2px dashed rgba(120,60,30,.25); }
+  .op-fila:last-child { border-bottom:0; }
+  .op-fila > img { height:30px; justify-self:center; }
+  .op-txt b { display:block; font:700 21px 'Alegreya', serif; color:var(--hilo); }
+  .op-txt span { display:block; font:500 14.5px 'Alegreya Sans'; color:#7a5a44; line-height:1.35; }
+  .op-txt i { color:var(--rojo); font-style:normal; font-weight:700; }
+  .op-elige { display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end; }
+  .op-elige .chip { font-size:15px; padding:7px 14px; }
+  .op-control { width:min(760px, 94vw); margin:0 auto 6px; padding:0 8px; text-align:left; display:flex; gap:14px; align-items:flex-start; font:500 14.5px 'Alegreya Sans'; color:#5a3c2c; }
+  .op-control > img { height:34px; margin-top:4px; }
+  .op-control b { font:700 19px 'Alegreya', serif; color:var(--hilo); }
+  .op-control p { margin:5px 0; line-height:1.55; } .op-control i { font-style:normal; font-weight:800; color:var(--rojo); }
+  .op-control kbd { font-size:12.5px; } .op-nota { color:#8a6a4a; font-style:italic; }
+  .op-vol { display:flex; align-items:center; gap:10px; min-width:190px; color:var(--hilo); font-weight:700; }
+  .op-vol input { width:150px; accent-color:#c8203a; } .op-vol output { min-width:3em; }
+  .musica-lista { width:min(700px,94vw); max-height:48vh; overflow:auto; margin:12px auto; padding:12px; text-align:left; }
+  .musica-lista button { display:block; width:100%; text-align:left; border:0; border-bottom:1px dashed #b78b69; background:transparent; color:#543525; padding:8px; font:700 18px 'Alegreya Sans'; cursor:pointer; }
+  .musica-lista button.on { color:#c8203a; background:#f8e2cb; } .musica-controles { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; }
+  @media(max-width:760px) { .op-vol { grid-column:1 / -1; } }
+  /* ---- estadísticas ---- */
+  .est-grid { display:grid; grid-template-columns:repeat(4, minmax(150px, 1fr)); gap:14px; max-width:920px; margin:6px auto 12px; }
+  .est { display:flex; flex-direction:column; align-items:center; padding:9px 6px 8px; color:#7a5a44; font:600 14px 'Alegreya Sans'; background:var(--manta) repeat; background-size:8px; border-radius:6px; outline:2px dashed rgba(120,60,30,.4); outline-offset:-6px; box-shadow:0 0 0 3px #c8203a, 0 6px 16px rgba(0,0,0,.4); }
+  .est:nth-child(4n+2) { box-shadow:0 0 0 3px #2f7fc8, 0 6px 16px rgba(0,0,0,.4); } .est:nth-child(4n+3) { box-shadow:0 0 0 3px #3f9a5c, 0 6px 16px rgba(0,0,0,.4); } .est:nth-child(4n) { box-shadow:0 0 0 3px #f2b233, 0 6px 16px rgba(0,0,0,.4); }
+  .est img { height:22px; } .est b { font:700 30px 'Alegreya', serif; color:var(--hilo); line-height:1.1; }
+  .est-dos { display:grid; grid-template-columns:1fr 1fr; gap:12px; max-width:920px; margin:0 auto 8px; text-align:left; }
+  .est-lista { padding:0 10px; color:#5a3c2c; font:500 14.5px 'Alegreya Sans'; }
+  .est-lista h4 { margin:2px 0 6px; font:700 19px 'Alegreya', serif; color:var(--rojo); }
+  .est-lista p { display:flex; justify-content:space-between; gap:10px; margin:0; padding:3px 0; border-bottom:1px dashed rgba(120,60,30,.2); opacity:.55; }
+  .est-lista p.ok { opacity:1; } .est-lista p b { font-weight:700; color:var(--hilo); } .est-lista p span { color:#8a6a4a; text-align:right; }
+  @media (max-width:760px) { .est-grid { grid-template-columns:repeat(2, 1fr); } .est-dos { grid-template-columns:1fr; } .op-fila { grid-template-columns:34px 1fr; } .op-elige { grid-column:1 / -1; justify-content:flex-start; } }
+  /* ---- créditos: pasan solos, como al final de una película ---- */
+  .creditos { text-align:center; width:min(720px, 94vw); }
+  .cr-marco { height:min(72vh, 620px); overflow:hidden; position:relative; background:radial-gradient(ellipse at center, rgba(22,12,8,.88), rgba(22,12,8,.7) 70%, rgba(22,12,8,.45)); border-radius:14px; -webkit-mask-image:linear-gradient(transparent, #000 12%, #000 88%, transparent); mask-image:linear-gradient(transparent, #000 12%, #000 88%, transparent); }
+  .cr-rollo { position:absolute; left:0; right:0; top:62%; animation:rollo 62s linear forwards; color:#f6e6c8; font:500 17px 'Alegreya', serif; text-shadow:0 2px 8px rgba(0,0,0,.75); padding-bottom:20px; }
+  .cr-marco:hover .cr-rollo { animation-play-state:paused; }
+  @keyframes rollo { to { transform:translateY(calc(-100% - min(72vh, 620px) * .55)); } }
+  .cr-logo { width:min(300px, 60vw); filter:drop-shadow(0 6px 14px rgba(0,0,0,.5)); }
+  .cr-rollo h2 { font:700 34px 'Alegreya', serif; color:#fff1d8; margin:4px 0 10px; }
+  .cr-rollo h3 { font:700 14px 'Alegreya Sans'; letter-spacing:.18em; text-transform:uppercase; color:var(--ocre); margin:26px 0 6px; }
+  .cr-rollo p { margin:4px 0; line-height:1.5; } .cr-rollo small { color:#d8c4a8; font-size:14px; }
+  .cr-chico { font:italic 500 17px 'Alegreya', serif; color:#d8c4a8; margin-top:18px !important; }
+  .cr-flor { height:26px; margin:26px auto 0; display:block; opacity:.9; }
+  .cr-rollo ul { list-style:none; padding:0; margin:10px auto; max-width:560px; }
+  .cr-rollo li { display:flex; flex-direction:column; padding:5px 0; border-bottom:1px dashed rgba(246,230,200,.18); }
+  .cr-rollo li b { font:700 16px 'Alegreya', serif; color:#fff1d8; } .cr-rollo li span { font:500 14px 'Alegreya Sans'; color:#d8c4a8; }
+  .cr-fin { margin-top:60px !important; font-size:42px !important; }
+</style>
+</head>
+<body>
+<script>if (/[?&]mundo=/.test(location.search) && !/[?&](fotos|propuesta|jugar)=/.test(location.search)) document.documentElement.classList.add("directo");</script>
+<div id="espera-directa" role="status" aria-label="Cargando"><div class="puntadas"><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#c8203a" stroke-width="2.6" stroke-linecap="round"/></svg><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#f2b233" stroke-width="2.6" stroke-linecap="round"/></svg><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#3f9a5c" stroke-width="2.6" stroke-linecap="round"/></svg><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#2f7fc8" stroke-width="2.6" stroke-linecap="round"/></svg><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#e85a8a" stroke-width="2.6" stroke-linecap="round"/></svg><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#c8203a" stroke-width="2.6" stroke-linecap="round"/></svg><svg viewBox="0 0 10 10" aria-hidden="true"><path d="M1.5 1.5L8.5 8.5M8.5 1.5L1.5 8.5" stroke="#f2b233" stroke-width="2.6" stroke-linecap="round"/></svg></div></div>
+
+<div id="wrap"><canvas id="game"></canvas></div>
+<canvas id="textos"></canvas>
+<div id="hud" class="layer">
+  <div class="hrow"><span id="hearts"></span><span id="coins" title="Canisteles totales"></span><span id="semillasHUD" title="Semillas recogidas por Fresita"></span><span id="bubbles" title="Aire de Itzel"></span><span id="perks"></span></div>
+  <span id="where"></span>
+  <button class="patch" id="menuBtn" title="Menú (Esc)">☰</button>
+</div>
+<div id="enci"><button class="patch verde" id="enciCerrar">← Volver al juego</button></div>
+<div id="banner"></div>
+<div id="toasts"></div>
+<div id="loading" class="layer"><div>Bordando el mundo…<b id="loadName"></b></div></div>
+<div id="screen" class="layer"></div>
+
+<!-- scripts:inicio (los escribe tools/scripts.mjs desde Roguelike/scripts.txt: no editar a mano) -->
+<script src="../Estilos/engine.js?v=4c2a1909"></script>
+<script src="../Estilos/campeche.js?v=fdf9189b"></script>
+<script src="../Estilos/estilos-pixel.js?v=d722baa9"></script>
+<script src="../Estilos/estilos-vector.js?v=3263821e"></script>
+<script src="../Estilos/estilos-luz.js?v=785fd8a0"></script>
+<script src="../Estilos/estilos-pintura.js?v=5093f87b"></script>
+<script src="../Estilos/estilos-mas1.js?v=c5af6c4d"></script>
+<script src="../Estilos/estilos-mas2.js?v=07ee4e71"></script>
+<script src="../Estilos/estilos-mas3.js?v=b14e8228"></script>
+<script src="../Estilos/estilos-vapor.js?v=366f672f"></script>
+<script src="../Estilos/estilos-nuevos.js?v=09739afd"></script>
+<script src="../Estilos/estilos-bits.js?v=jefes-local-2"></script>
+<script src="../Estilos/personajes.js?v=065eeaf0"></script>
+<script src="../Estilos/estilos-bordado.js?v=4defb9e7"></script>
+<script src="../Estilos/enciclopedia-datos.js?v=6aa698f7"></script>
+<script src="../Estilos/variantes.js?v=256560b7"></script>
+<script src="../Estilos/variantes-cinco.js?v=54382623"></script>
+<script src="../Estilos/disenos-borrados.js?v=6c6e0db3"></script>
+<script src="../Estilos/elegidos.js?v=91b1b031"></script>
+<script src="../Estilos/titeres-datos.js?v=f26d2af5"></script>
+<script src="../Estilos/itzel-corto-datos.js?v=f2b1dfaf"></script>
+<script src="../Estilos/titere.js?v=f85a4174"></script>
+<script src="../Estilos/itzel-renovada.js?v=37ac6443"></script>
+<script src="../Estilos/itzel-mundos-datos.js?v=0023804c"></script>
+<script src="../Estilos/itzel-mundos.js?v=1279b4ab"></script>
+<script src="../Estilos/fresita-renovada.js?v=e62e9771"></script>
+<script src="../Estilos/itzel-assets-nuevos.js?v=79b2711e"></script>
+<script src="../Estilos/itzel-forge.js?v=victoria-anime-1"></script>
+<script>const ORDERED = STYLES.slice().sort((a, b) => a.order - b.order);</script>
+<script src="ui-bordado.js?v=libro-menu-1"></script>
+<script src="mecanicas.js?v=trazo-continuo-1"></script>
+<script src="mecanicas-nuevas.js?v=75d41642"></script>
+<script src="niveles.js?v=cuaderno-sin-lineas-1"></script>
+<script src="niveles-nuevos.js?v=62b1e778"></script>
+<script src="multijugador.js?v=6a7f6e53"></script>
+<script src="presentacion.js?v=34d8031b"></script>
+<script src="jefes.js?v=0815dba3"></script>
+<script src="jefes-nuevos.js?v=7a71a858"></script>
+<script src="jefes-mas.js?v=bf6e0e39"></script>
+<script src="ruptura-cuerpo.js?v=9ab3ade7"></script>
+<script src="jefes-ruptura.js?v=8d5011cb"></script>
+<script src="vapor.js?v=e0e47d92"></script>
+<script src="mascara-estilos.js?v=58401384"></script>
+<script src="jefes-cuerpos.js?v=jefes-local-2"></script>
+<script src="mascaron-estilos.js?v=b3967418"></script>
+<script src="mascaron-modelos.js?v=73b9caa6"></script>
+<script src="balam-ceremonial.js?v=jefes-local-2"></script>
+<script src="xtabay-ceiba.js?v=jefes-local-2"></script>
+<script src="cocodrilo-terminos.js?v=jefes-local-2"></script>
+<script src="lorencillo-barco.js?v=jefes-local-2"></script>
+<script src="chaac-mascaron.js?v=04ad9053"></script>
+<script src="camazotz-azul.js?v=jefes-local-2"></script>
+<script src="xunan-kab.js?v=f830964f"></script>
+<script src="raspadora-uayamon.js?v=jefes-local-2"></script>
+<script src="plataformas-finas.js?v=b4c3577e"></script>
+<script src="poderes-originales.js?v=fresita-bruma-1"></script>
+<script src="arenas.js?v=bf4379d2"></script>
+<script src="jefes-arte.js?v=jefes-local-2"></script>
+<script src="cooperacion.js?v=dee9cd67"></script>
+<script src="modos.js?v=ruptura-derrota-1"></script>
+<script src="modos-torres.js?v=5fc9884c"></script>
+<script src="modos-vuelo.js?v=e457c0e2"></script>
+<script src="modos-cocina.js?v=0ea199bc"></script>
+<script src="niveles-rescatados.js?v=6411e839"></script>
+<script src="mundos-ampliados.js?v=eccccbea"></script>
+<script src="mundos-ampliados2.js?v=5668bfa4"></script>
+<script src="mundos-ampliados3.js?v=ce64705d"></script>
+<script src="poder-asidero.js?v=anime-arte-1"></script>
+<script src="asidero-anime-arte.js?v=agarre-orientacion-4"></script>
+<script src="mundos-ampliados4.js?v=charran-continuo-1"></script>
+<script src="mundos-ampliados5.js?v=b4869cb6"></script>
+<script src="mundos-ampliados6.js?v=31fcf23c"></script>
+<script src="mundos-ampliados7.js?v=d560f504"></script>
+<script src="fiestas.js?v=62533d99"></script>
+<script src="modos-jarana.js?v=campechanidad-primer-paso-1"></script>
+<script src="modos-equilibrio-jarana.js?v=1"></script>
+<script src="modos-carrera.js?v=8120d2b2"></script>
+<script src="modos-pesca.js?v=567402ad"></script>
+<script src="modos-planos.js?v=embestidores-1"></script>
+<script src="modos-fruncido.js?v=393269d5"></script>
+<script src="modos-propio.js?v=7ba31712"></script>
+<script src="niveles-propios.js?v=302f92c6"></script>
+<script src="modos-golpes.js?v=19240936"></script>
+<script src="rutas-altas.js?v=3f60374d"></script>
+<script src="datos-curiosos.js?v=57b807a9"></script>
+<script src="intro-nivel.js?v=demo-hojas-1"></script>
+<script src="juego.js?v=planos-sin-consejos-1"></script>
+<script src="../Estilos/primer-plano.js?v=0e79b540"></script>
+<script src="menu.js?v=tienda-unica-1"></script>
+<script src="jefes-fases.js?v=5aa5bede"></script>
+<script src="jefes-fases2.js?v=68cdef1f"></script>
+<script src="ruptura-formas.js?v=339ba6a9"></script>
+<script src="ruptura-duelo.js?v=0ee44c67"></script>
+<script src="especiales-datos.js?v=8d37d2de"></script>
+<script src="especiales.js?v=doblon-contacto-1"></script>
+<script src="enemigos-arte.js?v=9b76f0a7"></script>
+<script src="enemigos-dibujos.js?v=b64bf856"></script>
+<script src="enemigos-mundos.js?v=1f4f98d1"></script>
+<script src="miniatura.js?v=cd34af08"></script>
+<script src="enemigos-assets.js?v=charran-continuo-1"></script>
+<script src="muralla-pixel.js?v=a34bd7a0"></script>
+<script src="assets/estero/manifiesto-local.js?v=1"></script>
+<script src="estero-ocaso.js?v=seybaplaya-3"></script>
+<script src="cenote-acuarela.js?v=libelulas-ambiente-1"></script>
+<script src="papel-picado.js?v=52e41654"></script>
+<script src="bosque-brilla.js?v=cce60d75"></script>
+<script src="piezas-subida.js?v=2165f89e"></script>
+<script src="lanchas-golfo.js?v=7b3a27c8"></script>
+<script src="vestir-nivel.js?v=manifiesto-local-1"></script>
+<script src="fauna.js?v=b586e2d6"></script>
+<script src="sumie-tinta.js?v=5acf4056"></script>
+<script src="neon-ritmo.js?v=02c6b784"></script>
+<script src="assets/aluxes/manifiesto-local.js?v=1"></script>
+<script src="bruma-aluxes.js?v=contraste-bejuco-4"></script>
+<script src="lowpoly-cristal.js?v=1a3dba34"></script>
+<script src="codex-edzna.js?v=33a1dbbd"></script>
+<script src="oleo-remolinos.js?v=27c917e6"></script>
+<script src="vitral-catedral.js?v=ac37eab1"></script>
+<script src="cuaderno-garabatos.js?v=34d42491"></script>
+<script src="grabado-talla.js?v=c673bcab"></script>
+<script src="anime-resortes.js?v=malecon-unico-1"></script>
+<script src="jardin-nouveau.js?v=5c79a0fe"></script>
+<script src="relojeria-deco.js?v=a0fc0b52"></script>
+<script src="ciudad-cyber.js?v=51e11864"></script>
+<script src="portales-cueva.js?v=bf9e9bba"></script>
+<script src="fabrica-vapor.js?v=a6f4f07c"></script>
+<script src="alfareria.js?v=4652e54e"></script>
+<script src="jardin-ecos.js?v=f89cc4ed"></script>
+<script src="muralla-llamas.js?v=07143678"></script>
+<script src="fondo-golfo.js?v=1d416822"></script>
+<script src="nevo-campeche.js?v=326cc495"></script>
+<script src="cielo-mayas.js?v=8917cda3"></script>
+<script src="campeche-ceniza.js?v=c6ebb76b"></script>
+<script src="campeche-1-1.js?v=28225fa4"></script>
+<script src="noche-baluarte.js?v=d1379318"></script>
+<script src="selva-calakmul.js?v=3572327e"></script>
+<script src="macro-detalles.js?v=89f2bc0c"></script>
+<script src="carnaval-assets.js?v=f57ef919"></script>
+<script src="feria-san-roman.js?v=42e1ea19"></script>
+<script src="imprenta-assets.js?v=0c2baaa9"></script>
+<script src="chicanna-relieves.js?v=f066dea2"></script>
+<script src="paseo-animas.js?v=7060f98e"></script>
+<script src="plataforma-cabeza.js?v=ec313749"></script>
+<script src="pozo-torres-detalles.js?v=a5f72220"></script>
+<script src="posadas-detalles.js?v=959c4fbe"></script>
+<script src="paisajes-campeche.js?v=malecon-ilustrado-1"></script>
+<script src="astillero-detalles.js?v=1fa897bb"></script>
+<script src="cocina-pesca-detalles.js?v=4af5452b"></script>
+<script src="hipil-jarana-detalles.js?v=8b1e4cf5"></script>
+<script src="ruta-vuelo-detalles.js?v=b19d29bf"></script>
+<script src="defensa-planos-detalles.js?v=8f699ed9"></script>
+<script src="campeche-real.js?v=campechanidad-1"></script>
+<script src="campeche-hallazgos.js?v=opal-huracan-2"></script>
+<script src="campeche-fotos.js?v=2b62b848"></script>
+<script src="tarjetas.js?v=32d35d79"></script>
+<script src="anomalias.js?v=b244b93a"></script>
+<script src="ventajas.js?v=e87a1f94"></script>
+<script src="vida-enemigos.js?v=e5fe5e5c"></script>
+<script src="subjefes-arte.js?v=jefes-local-2"></script>
+<script src="subjefes.js?v=arena-subjefe-1"></script>
+<script src="burbujas-cura.js?v=1e947a2f"></script>
+<script src="piezas.js?v=0fc42dbb"></script>
+<script src="niveles-verticales.js?v=901d5cd1"></script>
+<script src="tramoya-vertical.js?v=7e4265c4"></script>
+<script src="sensacion-mundos.js?v=d81c5521"></script>
+<script src="ambiente-mundos.js?v=8b4beb95"></script>
+<script src="ritmo-mundos.js?v=ed5421de"></script>
+<script src="estructura-mundos.js?v=841c4f77"></script>
+<script src="cine-motor.js?v=cine-audio-1"></script>
+<script src="cine-actores.js?v=32a85f2c"></script>
+<script src="cine-titeres.js?v=34c1ffb5"></script>
+<script src="cine-grieta.js?v=a54181a7"></script>
+<script src="cine-campeche.js?v=078f676e"></script>
+<script src="cine-entrada.js?v=cine-audio-1"></script>
+<script src="fotogramas.js?v=a34468bf"></script>
+<script src="cine-viaje.js?v=tarjeta-antes-portal-1"></script>
+<script src="cine-jefes.js?v=11f8580b"></script>
+<script src="opciones.js?v=pausa-sin-opciones-1"></script>
+<script src="control.js?v=audio-1"></script>
+<script src="uayamon-propuestas.js?v=e7f8b566"></script>
+<script src="uayamon-assets.js?v=3980fcb2"></script>
+<script src="pulido-arte.js?v=86e01669"></script>
+<script src="mercado.js?v=tienda-unica-1"></script>
+<script src="partida.js?v=continuar-llegada-1"></script>
+<script src="sonido.js?v=cine-entrada-1"></script>
+<script src="audio-archivos.js?v=campechanidad-intro-1"></script>
+<script src="consejos.js?v=fca37395"></script>
+<script src="estados-nuevos.js?v=7c8f6e15"></script>
+<script src="inicio-gdevelop.js?v=sentidos-1"></script>
+<script src="inicio.js?v=42ef8dd6"></script>
+<script src="tactil.js?v=1c700a6f"></script>
+<script src="puente-gd.js?v=6c38aae6"></script>
+<!-- scripts:fin -->
+<script>if ("serviceWorker" in navigator && /^https?:/.test(location.protocol)) navigator.serviceWorker.register("../sw.js").catch(function () {});</script>
+</body>
+</html>
+
+
+
+
+
+
+
+
+

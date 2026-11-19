@@ -1,0 +1,173 @@
+{
+  "schema": "generate2dsprite.master.v1",
+  "tool": {
+    "name": "master_still",
+    "version": "0.5.0"
+  },
+  "created": "2026-11-10T17:08:44.868Z",
+  "name": "itzel-grabado",
+  "subject": "young Campeche girl Itzel, full body",
+  "identity_recap": "young Campeche girl Itzel, full body (Dark hair with red flowers, white embroidered huipil with red details, dark shoes, ink-engraving style)",
+  "facing": "right",
+  "view": "side view (profile to three-quarter)",
+  "finish": "hd",
+  "class": "hero",
+  "framing": {
+    "canvas": [
+      1024,
+      1024
+    ],
+    "subject_height_px": 788,
+    "top_margin_px": 138,
+    "lead_px": 0,
+    "preset": "hero",
+    "subject_bbox": [
+      286,
+      136,
+      739,
+      928
+    ],
+    "anchor": [
+      517.0,
+      928.0
+    ],
+    "opaque_area_px": 237944,
+    "width_limited": false
+  },
+  "key": "#FF00FF",
+  "files": {
+    "master": {
+      "path": "master.png",
+      "sha256": "0d1fe0b75dc95d8f992e9cbbf423bcb5347c7da40e80080967190eade1d8c939",
+      "bytes": 434496,
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    "cutout": {
+      "path": "master_rgba.png",
+      "sha256": "2ecf9ed82bbc5d6f5cd6750426266b7077db09fd40fee879f781e3a1bb3f5a16",
+      "bytes": 508352,
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    "source": {
+      "path": "source.png",
+      "sha256": "4c4248a6d56575ffbfc650a92b271528ac7f0a1ca46d5da72c51250b776cf88c",
+      "bytes": 36049,
+      "size": [
+        192,
+        192
+      ]
+    },
+    "spec": {
+      "path": "spec.json",
+      "sha256": "8b9034c67a97a598a5b51a38981cce1e3bd799aeb26ded2d0860ac44822da674",
+      "bytes": 708
+    },
+    "prompt": null
+  },
+  "references": [],
+  "transform": {
+    "mapping": "master = scale * source + offset (continuous pixel coordinates: pixel i spans [i, i + 1))",
+    "source_size": [
+      192,
+      192
+    ],
+    "source_subject_bbox": [
+      50,
+      15,
+      143,
+      178
+    ],
+    "crop_box": [
+      44,
+      9,
+      149,
+      184
+    ],
+    "crop_margin_px": 6,
+    "scale": 4.8343558282208585,
+    "offset": [
+      45.48466257668713,
+      65.48466257668713
+    ],
+    "canvas": [
+      1024,
+      1024
+    ],
+    "resampler": "lanczos",
+    "premultiplied": true,
+    "alpha_floor_px": 10536,
+    "subject_parts": 1,
+    "ignored_parts": 0,
+    "ignored_px": 0,
+    "source_touches": [],
+    "key_rgb": [
+      255,
+      0,
+      255
+    ]
+  },
+  "route": "existing-project-art",
+  "provenance": {
+    "command": "external",
+    "run": null,
+    "take": null,
+    "source_name": "walk-1.png",
+    "source_sha256": "4c4248a6d56575ffbfc650a92b271528ac7f0a1ca46d5da72c51250b776cf88c",
+    "media": null,
+    "media_cli_source": null,
+    "edit": null
+  },
+  "matte": {
+    "requested": "soft",
+    "key_estimate": {
+      "key": [
+        255.0,
+        0.0,
+        255.0
+      ],
+      "source": "native_alpha",
+      "valid": false,
+      "ring_share": 0.0,
+      "coverage": 0.0,
+      "distance_from_declared": 0.0
+    },
+    "quality": "native_alpha",
+    "qa": {
+      "key": [
+        255.0,
+        0.0,
+        255.0
+      ],
+      "opaque_key_px": 0,
+      "outer_ring_spill_fraction": 0.0,
+      "semitransparent_fraction": 0.9710185971868215,
+      "enclosed_key_pockets": 0,
+      "key_hued_px": 0,
+      "visible_px": 10593,
+      "outer_ring_px": 531,
+      "thresholds": {
+        "key_tolerance": 48.0,
+        "spill_threshold": 20.0,
+        "min_pocket_area": 16,
+        "opaque_alpha": 128,
+        "spill_hue_balance": 0.5
+      },
+      "method": "forge_matte.matte_qa v1: straight-colour key distance and dominance on the keyed image; two-channel keys count spill only where the key channels are balanced"
+    },
+    "key_choice": {
+      "status": "ok",
+      "overlap_share": 0.0,
+      "rule": "reject a key when more than 0.5% of subject pixels have key dominance >= 40; first acceptable candidate wins"
+    }
+  },
+  "warnings": [
+    "the subject is upscaled x4.83 (163 px source height): detail will be soft; ask the route for a larger figure",
+    "the placed subject measures 792 px tall at top 136 px (target 788 px at 138 px)"
+  ]
+}

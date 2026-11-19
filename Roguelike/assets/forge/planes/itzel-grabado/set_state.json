@@ -1,0 +1,263 @@
+{
+  "schema": "video2dsprite.sprite_set_state.v1",
+  "tool": {
+    "name": "sprite_set",
+    "version": "0.5.0"
+  },
+  "plan": {
+    "path": "set_plan.json",
+    "sha256": "67343a2db310a320470df058185ac5d138af4fe147012aa49508a98538a6270e"
+  },
+  "createdAt": "2026-11-10T17:09:16.162Z",
+  "runs": 1,
+  "actions": {
+    "idle": {
+      "status": "no-route",
+      "round": 1,
+      "fixes": [],
+      "job": {
+        "dir": "actions/idle/job",
+        "job": "actions/idle/job/registration_job.json",
+        "sha256": "edec56ef73812f4757bd3f84053606f112aba04f9cc38598eb3644c695032a38",
+        "input": "actions/idle/job/input.png",
+        "referenceScale": 1.0,
+        "keyColor": "magenta",
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "warnings": 3
+      },
+      "takes": [
+        {
+          "take": 1,
+          "round": 1,
+          "dir": "actions/idle/takes/t01",
+          "status": "no-route",
+          "createdAt": "2026-11-10T17:09:21.737Z",
+          "prompt": {
+            "path": "actions/idle/takes/t01/prompt.txt",
+            "sha256": "c3c4b24a6f72aa5a168415e5da582930101ec106c382055a2dcb0ba282e6a10e"
+          },
+          "fixes": [],
+          "lint": [],
+          "stages": {},
+          "message": "no output"
+        }
+      ],
+      "chosen": null,
+      "accepted": null,
+      "output": null,
+      "message": "no generation route (no output); generate the clip with the host tool from actions/idle/job/input.png and actions/idle/takes/t01/prompt.txt, save it as actions/idle/takes/t01/media/clip.mp4 and run again"
+    },
+    "walk": {
+      "status": "no-route",
+      "round": 1,
+      "fixes": [],
+      "job": {
+        "dir": "actions/walk/job",
+        "job": "actions/walk/job/registration_job.json",
+        "sha256": "463a63a8362ab9652b3e8b18c91c47f697ec34482fc1c4a589b5e4edd5fb2dd9",
+        "input": "actions/walk/job/input.png",
+        "referenceScale": 1.0,
+        "keyColor": "magenta",
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "warnings": 3
+      },
+      "takes": [
+        {
+          "take": 1,
+          "round": 1,
+          "dir": "actions/walk/takes/t01",
+          "status": "no-route",
+          "createdAt": "2026-11-10T17:09:21.746Z",
+          "prompt": {
+            "path": "actions/walk/takes/t01/prompt.txt",
+            "sha256": "49e2c64ac76366980f422679a09cd55fae6b7d7546d8fc588edbd525e99c77ba"
+          },
+          "fixes": [],
+          "lint": [],
+          "stages": {},
+          "message": "no output"
+        }
+      ],
+      "chosen": null,
+      "accepted": null,
+      "output": null,
+      "message": "no generation route (no output); generate the clip with the host tool from actions/walk/job/input.png and actions/walk/takes/t01/prompt.txt, save it as actions/walk/takes/t01/media/clip.mp4 and run again"
+    },
+    "run": {
+      "status": "no-route",
+      "round": 1,
+      "fixes": [],
+      "job": {
+        "dir": "actions/run/job",
+        "job": "actions/run/job/registration_job.json",
+        "sha256": "4423c766b62e4ca0f955576071c4975ac2bc1f9ecd2e5e22dfb93329ef62031a",
+        "input": "actions/run/job/input.png",
+        "referenceScale": 1.0,
+        "keyColor": "magenta",
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "warnings": 3
+      },
+      "takes": [
+        {
+          "take": 1,
+          "round": 1,
+          "dir": "actions/run/takes/t01",
+          "status": "no-route",
+          "createdAt": "2026-11-10T17:09:21.746Z",
+          "prompt": {
+            "path": "actions/run/takes/t01/prompt.txt",
+            "sha256": "592a33df9d38f7ee2bc26ae4d5739cc14f8e62b1f59521cd0223bf02f293c9b8"
+          },
+          "fixes": [],
+          "lint": [],
+          "stages": {},
+          "message": "no output"
+        }
+      ],
+      "chosen": null,
+      "accepted": null,
+      "output": null,
+      "message": "no generation route (no output); generate the clip with the host tool from actions/run/job/input.png and actions/run/takes/t01/prompt.txt, save it as actions/run/takes/t01/media/clip.mp4 and run again"
+    },
+    "jump": {
+      "status": "no-route",
+      "round": 1,
+      "fixes": [],
+      "job": {
+        "dir": "actions/jump/job",
+        "job": "actions/jump/job/registration_job.json",
+        "sha256": "b1846dc2e9d03455d9e206689a8a50cc6fd7c68d8c07fd33854212e411929690",
+        "input": "actions/jump/job/input.png",
+        "referenceScale": 0.73237,
+        "keyColor": "magenta",
+        "padding": [
+          8,
+          339,
+          18,
+          36
+        ],
+        "warnings": 3
+      },
+      "takes": [
+        {
+          "take": 1,
+          "round": 1,
+          "dir": "actions/jump/takes/t01",
+          "status": "no-route",
+          "createdAt": "2026-11-10T17:09:21.754Z",
+          "prompt": {
+            "path": "actions/jump/takes/t01/prompt.txt",
+            "sha256": "d82163fce68bee5913df0183399b7cc7aeb03f40ba190f9944ce102a263fced1"
+          },
+          "fixes": [],
+          "lint": [],
+          "stages": {},
+          "message": "no output"
+        }
+      ],
+      "chosen": null,
+      "accepted": null,
+      "output": null,
+      "message": "no generation route (no output); generate the clip with the host tool from actions/jump/job/input.png and actions/jump/takes/t01/prompt.txt, save it as actions/jump/takes/t01/media/clip.mp4 and run again"
+    },
+    "hurt": {
+      "status": "no-route",
+      "round": 1,
+      "fixes": [],
+      "job": {
+        "dir": "actions/hurt/job",
+        "job": "actions/hurt/job/registration_job.json",
+        "sha256": "8fa70b58cce2ee7a6e695b09f775d98cb25c9cce21a480b9b6c2b41175e6b104",
+        "input": "actions/hurt/job/input.png",
+        "referenceScale": 1.0,
+        "keyColor": "magenta",
+        "padding": [
+          0,
+          0,
+          0,
+          0
+        ],
+        "warnings": 3
+      },
+      "takes": [
+        {
+          "take": 1,
+          "round": 1,
+          "dir": "actions/hurt/takes/t01",
+          "status": "no-route",
+          "createdAt": "2026-11-10T17:09:21.754Z",
+          "prompt": {
+            "path": "actions/hurt/takes/t01/prompt.txt",
+            "sha256": "f6d7d87a33c742ebe3ad262489a98e9b6bb107b638c2df1bfd780a42992b0c90"
+          },
+          "fixes": [],
+          "lint": [],
+          "stages": {},
+          "message": "no output"
+        }
+      ],
+      "chosen": null,
+      "accepted": null,
+      "output": null,
+      "message": "no generation route (no output); generate the clip with the host tool from actions/hurt/job/input.png and actions/hurt/takes/t01/prompt.txt, save it as actions/hurt/takes/t01/media/clip.mp4 and run again"
+    },
+    "attack": {
+      "status": "no-route",
+      "round": 1,
+      "fixes": [],
+      "job": {
+        "dir": "actions/attack/job",
+        "job": "actions/attack/job/registration_job.json",
+        "sha256": "e068d64456890e644541bbfb99f6e9f186805976eec629b3a5f5adfc8f8d6846",
+        "input": "actions/attack/job/input.png",
+        "referenceScale": 1.0,
+        "keyColor": "magenta",
+        "padding": [
+          284,
+          0,
+          513,
+          0
+        ],
+        "warnings": 3
+      },
+      "takes": [
+        {
+          "take": 1,
+          "round": 1,
+          "dir": "actions/attack/takes/t01",
+          "status": "no-route",
+          "createdAt": "2026-11-10T17:09:21.754Z",
+          "prompt": {
+            "path": "actions/attack/takes/t01/prompt.txt",
+            "sha256": "3836aaaddd481d681e96be05f82ae0863764c100706de6c22e47842484d0cf84"
+          },
+          "fixes": [],
+          "lint": [],
+          "stages": {},
+          "message": "no output"
+        }
+      ],
+      "chosen": null,
+      "accepted": null,
+      "output": null,
+      "message": "no generation route (no output); generate the clip with the host tool from actions/attack/job/input.png and actions/attack/takes/t01/prompt.txt, save it as actions/attack/takes/t01/media/clip.mp4 and run again"
+    }
+  },
+  "review": null,
+  "updatedAt": "2026-11-10T17:09:23.204Z"
+}

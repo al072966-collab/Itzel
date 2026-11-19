@@ -1,0 +1,22 @@
+{
+  "schema": "generate2dsprite.master_spec.v1",
+  "name": "itzel-grabado",
+  "subject": "young Campeche girl Itzel, full body",
+  "identity": "Dark hair with red flowers, white embroidered huipil with red details, dark shoes, ink-engraving style",
+  "pose": null,
+  "recap": "young Campeche girl Itzel, full body (Dark hair with red flowers, white embroidered huipil with red details, dark shoes, ink-engraving style)",
+  "facing": "right",
+  "facing_parts": null,
+  "view": null,
+  "class": "hero",
+  "finish": "hd",
+  "key": "#FF00FF",
+  "genre": null,
+  "pronoun": "they",
+  "identity_ref": null,
+  "style_ref": null,
+  "allowed_text": null,
+  "extra_bans": [],
+  "opaque_parts": null,
+  "extra": null
+}

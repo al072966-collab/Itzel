@@ -1,0 +1,175 @@
+{
+  "schema": "generate2dsprite.master.v1",
+  "tool": {
+    "name": "master_still",
+    "version": "0.5.0"
+  },
+  "created": "2026-11-10T17:08:34.383Z",
+  "name": "capitan-astillero",
+  "subject": "pirate captain with curved cutlass",
+  "identity_recap": "pirate captain with curved cutlass (Dark tricorn with gold trim, dark blue coat with gold trim, red sash, black beard, curved cutlass, engraved illustration)",
+  "facing": "right",
+  "view": "side view (profile to three-quarter)",
+  "finish": "hd",
+  "class": "boss",
+  "framing": {
+    "canvas": [
+      1024,
+      1024
+    ],
+    "subject_height_px": 728,
+    "top_margin_px": 221,
+    "lead_px": 0,
+    "preset": "boss",
+    "subject_bbox": [
+      172,
+      221,
+      852,
+      949
+    ],
+    "anchor": [
+      442.0,
+      949.0
+    ],
+    "opaque_area_px": 226828,
+    "width_limited": false
+  },
+  "key": "#FF00FF",
+  "files": {
+    "master": {
+      "path": "master.png",
+      "sha256": "ec931fe771f137b6c508be373f739843d0848600ee06977ab16a6d9dea0dd02a",
+      "bytes": 623042,
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    "cutout": {
+      "path": "master_rgba.png",
+      "sha256": "d3fd7b2d07da1d2e73e5ed1fc0e353fef65d6200db6376f9db08cbd4d270200e",
+      "bytes": 731741,
+      "size": [
+        1024,
+        1024
+      ]
+    },
+    "source": {
+      "path": "source.png",
+      "sha256": "75fe919760e1afe7989425344fd492bf0ba99aa0343769c359d0ee3ae9c11194",
+      "bytes": 2235626,
+      "size": [
+        1230,
+        1278
+      ]
+    },
+    "spec": {
+      "path": "spec.json",
+      "sha256": "014892c23b1fef1c8554a7bd15945779fe91f1762fbe2ef5e965781e17d1b229",
+      "bytes": 744
+    },
+    "prompt": null
+  },
+  "references": [],
+  "transform": {
+    "mapping": "master = scale * source + offset (continuous pixel coordinates: pixel i spans [i, i + 1))",
+    "source_size": [
+      1230,
+      1278
+    ],
+    "source_subject_bbox": [
+      32,
+      0,
+      1226,
+      1278
+    ],
+    "crop_box": [
+      26,
+      0,
+      1230,
+      1278
+    ],
+    "crop_margin_px": 6,
+    "scale": 0.5696400625978091,
+    "offset": [
+      153.69640062597807,
+      221.0
+    ],
+    "canvas": [
+      1024,
+      1024
+    ],
+    "resampler": "lanczos",
+    "premultiplied": true,
+    "alpha_floor_px": 6360,
+    "subject_parts": 1,
+    "ignored_parts": 0,
+    "ignored_px": 0,
+    "source_touches": [
+      "top",
+      "bottom"
+    ],
+    "key_rgb": [
+      255,
+      0,
+      255
+    ]
+  },
+  "route": "host-image_gen",
+  "provenance": {
+    "command": "external",
+    "run": null,
+    "take": null,
+    "source_name": "jefe-capitan.png",
+    "source_sha256": "75fe919760e1afe7989425344fd492bf0ba99aa0343769c359d0ee3ae9c11194",
+    "media": null,
+    "media_cli_source": null,
+    "edit": null
+  },
+  "matte": {
+    "requested": "soft",
+    "key_estimate": {
+      "key": [
+        255.0,
+        0.0,
+        255.0
+      ],
+      "source": "native_alpha",
+      "valid": false,
+      "ring_share": 0.0,
+      "coverage": 0.0,
+      "distance_from_declared": 0.0
+    },
+    "quality": "native_alpha",
+    "qa": {
+      "key": [
+        255.0,
+        0.0,
+        255.0
+      ],
+      "opaque_key_px": 0,
+      "outer_ring_spill_fraction": 0.002895287115972334,
+      "semitransparent_fraction": 0.9987053970982284,
+      "enclosed_key_pockets": 0,
+      "key_hued_px": 0,
+      "visible_px": 730726,
+      "outer_ring_px": 18651,
+      "thresholds": {
+        "key_tolerance": 48.0,
+        "spill_threshold": 20.0,
+        "min_pocket_area": 16,
+        "opaque_alpha": 128,
+        "spill_hue_balance": 0.5
+      },
+      "method": "forge_matte.matte_qa v1: straight-colour key distance and dominance on the keyed image; two-channel keys count spill only where the key channels are balanced"
+    },
+    "key_choice": {
+      "status": "ok",
+      "overlap_share": 0.0,
+      "rule": "reject a key when more than 0.5% of subject pixels have key dominance >= 40; first acceptable candidate wins"
+    }
+  },
+  "warnings": [
+    "the subject touches the top, bottom edge of the still and may be cut off: regenerate or edit it with more margin"
+  ]
+}

@@ -1,0 +1,965 @@
+{
+  "abeja": {
+    "file": "abejamelipona.png",
+    "box": [
+      253,
+      67,
+      1285,
+      865
+    ]
+  },
+  "abordador": {
+    "file": "abordado.png",
+    "box": [
+      174,
+      12,
+      911,
+      1370
+    ]
+  },
+  "escorpion": {
+    "file": "alacran.png",
+    "box": [
+      151,
+      15,
+      1624,
+      853
+    ]
+  },
+  "alacranMini": {
+    "file": "alacranrealista.png",
+    "box": [
+      52,
+      16,
+      1699,
+      883
+    ]
+  },
+  "alux": {
+    "file": "alux.png",
+    "box": [
+      42,
+      17,
+      1055,
+      1425
+    ]
+  },
+  "aplastador": {
+    "file": "aplastador.png",
+    "box": [
+      127,
+      60,
+      1136,
+      1161
+    ]
+  },
+  "arana": {
+    "file": "araña.png",
+    "box": [
+      153,
+      22,
+      1383,
+      984
+    ]
+  },
+  "aranaCeniza": {
+    "file": "arañadeceniza.png",
+    "box": [
+      208,
+      74,
+      1321,
+      873
+    ]
+  },
+  "saltarina": {
+    "file": "arañasaltarina.png",
+    "box": [
+      50,
+      59,
+      1482,
+      939
+    ]
+  },
+  "automata": {
+    "file": "automata.png",
+    "box": [
+      228,
+      32,
+      920,
+      1337
+    ]
+  },
+  "avispa": {
+    "file": "avispa de papel.png",
+    "box": [
+      67,
+      33,
+      1582,
+      867
+    ]
+  },
+  "avispaMini": {
+    "file": "avispa.png",
+    "box": [
+      178,
+      5,
+      1595,
+      820
+    ]
+  },
+  "babosa": {
+    "file": "babosa.png",
+    "box": [
+      371,
+      11,
+      1730,
+      690
+    ]
+  },
+  "bailarin": {
+    "file": "bailarin de neon.png",
+    "box": [
+      211,
+      68,
+      940,
+      1293
+    ]
+  },
+  "bailarina": {
+    "file": "bailarina.png",
+    "box": [
+      82,
+      22,
+      934,
+      1511
+    ]
+  },
+  "bejuco": {
+    "file": "bejuco.png",
+    "box": [
+      258,
+      45,
+      636,
+      1738
+    ]
+  },
+  "bocina": {
+    "file": "bocina.png",
+    "box": [
+      244,
+      116,
+      1033,
+      1117
+    ]
+  },
+  "botete": {
+    "file": "botete.png",
+    "box": [
+      196,
+      97,
+      1355,
+      898
+    ]
+  },
+  "bucanero": {
+    "file": "bucanero.png",
+    "box": [
+      205,
+      42,
+      1001,
+      1254
+    ]
+  },
+  "buho": {
+    "file": "buho de la noche.png",
+    "box": [
+      0,
+      104,
+      1536,
+      901
+    ]
+  },
+  "calavera": {
+    "file": "calaverita.png",
+    "box": [
+      180,
+      79,
+      1098,
+      1140
+    ]
+  },
+  "calderita": {
+    "file": "calderita.png",
+    "box": [
+      221,
+      0,
+      953,
+      1171
+    ]
+  },
+  "campana": {
+    "file": "campana de bronce.png",
+    "box": [
+      181,
+      27,
+      1097,
+      1197
+    ]
+  },
+  "cangrejo": {
+    "file": "cangrejodelmalecon.png",
+    "box": [
+      106,
+      53,
+      1668,
+      834
+    ]
+  },
+  "carambano": {
+    "file": "carambano.png",
+    "box": [
+      199,
+      64,
+      1109,
+      1086
+    ]
+  },
+  "carcoma": {
+    "file": "carcoma.png",
+    "box": [
+      161,
+      137,
+      1335,
+      879
+    ]
+  },
+  "carpintero": {
+    "file": "carpientero decrital.png",
+    "box": [
+      199,
+      73,
+      1254,
+      862
+    ]
+  },
+  "rover": {
+    "file": "carritodeplataforma.png",
+    "box": [
+      187,
+      43,
+      1345,
+      932
+    ]
+  },
+  "catrin": {
+    "file": "catrindelastillero.png",
+    "box": [
+      228,
+      21,
+      772,
+      1530
+    ]
+  },
+  "centinela": {
+    "file": "centineleda.png",
+    "box": [
+      259,
+      66,
+      1171,
+      977
+    ]
+  },
+  "chapulin": {
+    "file": "chapulin.png",
+    "box": [
+      131,
+      14,
+      1598,
+      785
+    ]
+  },
+  "charran": {
+    "file": "charran.png",
+    "box": [
+      388,
+      40,
+      1368,
+      758
+    ]
+  },
+  "cocuyo": {
+    "file": "cocuyo.png",
+    "box": [
+      164,
+      150,
+      1540,
+      738
+    ]
+  },
+  "cometa": {
+    "file": "cometa.png",
+    "box": [
+      380,
+      109,
+      1143,
+      869
+    ]
+  },
+  "conejo": {
+    "file": "conejo.png",
+    "box": [
+      174,
+      0,
+      1021,
+      1271
+    ]
+  },
+  "contramaestre": {
+    "file": "contramastre.png",
+    "box": [
+      275,
+      26,
+      1083,
+      1182
+    ]
+  },
+  "culebra": {
+    "file": "coralillo.png",
+    "box": [
+      234,
+      111,
+      1932,
+      610
+    ]
+  },
+  "cuadrito": {
+    "file": "cuadradito.png",
+    "box": [
+      162,
+      82,
+      1375,
+      971
+    ]
+  },
+  "cucu": {
+    "file": "cucu.png",
+    "box": [
+      211,
+      173,
+      1326,
+      843
+    ]
+  },
+  "diablito": {
+    "file": "diablito.png",
+    "box": [
+      68,
+      27,
+      1123,
+      1285
+    ]
+  },
+  "dron": {
+    "file": "drondelasonda.png",
+    "box": [
+      77,
+      163,
+      1697,
+      719
+    ]
+  },
+  "zancudo": {
+    "file": "enjambredezancudos.png",
+    "box": [
+      336,
+      181,
+      1218,
+      838
+    ]
+  },
+  "escarabajo": {
+    "file": "escarabajo de vitral.png",
+    "box": [
+      134,
+      64,
+      1178,
+      1086
+    ]
+  },
+  "rinoceronte": {
+    "file": "escarabajorinoceronte.png",
+    "box": [
+      177,
+      4,
+      1704,
+      866
+    ]
+  },
+  "fantasma": {
+    "file": "fantasma.png",
+    "box": [
+      300,
+      226,
+      1011,
+      978
+    ]
+  },
+  "girasol": {
+    "file": "flor de tajonal.png",
+    "box": [
+      159,
+      5,
+      864,
+      1522
+    ]
+  },
+  "fragata": {
+    "file": "fragata.png",
+    "box": [
+      48,
+      122,
+      2124,
+      620
+    ]
+  },
+  "garabato": {
+    "file": "garabato.png",
+    "box": [
+      167,
+      70,
+      1142,
+      1087
+    ]
+  },
+  "garza": {
+    "file": "garzadel estero.png",
+    "box": [
+      175,
+      56,
+      959,
+      1350
+    ]
+  },
+  "grulla": {
+    "file": "garzadepapel.png",
+    "box": [
+      117,
+      6,
+      1359,
+      961
+    ]
+  },
+  "gaviota": {
+    "file": "gaviotadelmalecon.png",
+    "box": [
+      313,
+      150,
+      1462,
+      737
+    ]
+  },
+  "geoda": {
+    "file": "geoda saltarina.png",
+    "box": [
+      59,
+      61,
+      1194,
+      1196
+    ]
+  },
+  "magma": {
+    "file": "golemdemagma.png",
+    "box": [
+      132,
+      95,
+      1177,
+      1117
+    ]
+  },
+  "goma": {
+    "file": "goma.png",
+    "box": [
+      210,
+      158,
+      1314,
+      881
+    ]
+  },
+  "grumo": {
+    "file": "grumodeplastilina.png",
+    "box": [
+      257,
+      172,
+      1285,
+      847
+    ]
+  },
+  "guardia": {
+    "file": "guardian.png",
+    "box": [
+      33,
+      70,
+      995,
+      1425
+    ]
+  },
+  "guerrero": {
+    "file": "guerrero de pieda.png",
+    "box": [
+      279,
+      2,
+      936,
+      1291
+    ]
+  },
+  "halcon": {
+    "file": "halcon.png",
+    "box": [
+      293,
+      107,
+      1462,
+      797
+    ]
+  },
+  "esporin": {
+    "file": "hongodeesporas.png",
+    "box": [
+      353,
+      164,
+      1176,
+      873
+    ]
+  },
+  "hormiga": {
+    "file": "hormiga.png",
+    "box": [
+      53,
+      137,
+      1718,
+      799
+    ]
+  },
+  "iguana": {
+    "file": "iguanadeneon.png",
+    "box": [
+      87,
+      80,
+      2088,
+      651
+    ]
+  },
+  "jaguar": {
+    "file": "jaguar.png",
+    "box": [
+      107,
+      0,
+      1674,
+      874
+    ]
+  },
+  "bestia": {
+    "file": "la bestia.png",
+    "box": [
+      37,
+      1,
+      1738,
+      867
+    ]
+  },
+  "libelula": {
+    "file": "libelula.png",
+    "box": [
+      419,
+      26,
+      1436,
+      867
+    ]
+  },
+  "foca": {
+    "file": "manati.png",
+    "box": [
+      85,
+      141,
+      1446,
+      825
+    ]
+  },
+  "mancha": {
+    "file": "manchatrepadora.png",
+    "box": [
+      199,
+      47,
+      1134,
+      1037
+    ]
+  },
+  "mecha": {
+    "file": "mecha.png",
+    "box": [
+      267,
+      59,
+      1012,
+      1160
+    ]
+  },
+  "medusa": {
+    "file": "medusa.png",
+    "box": [
+      303,
+      103,
+      987,
+      1088
+    ]
+  },
+  "mojarra": {
+    "file": "mojarra del cenote.png",
+    "box": [
+      13,
+      0,
+      1773,
+      887
+    ]
+  },
+  "gargola": {
+    "file": "mono de cantera.png",
+    "box": [
+      107,
+      32,
+      1444,
+      1001
+    ]
+  },
+  "escribano": {
+    "file": "mono escribano.png",
+    "box": [
+      188,
+      7,
+      1139,
+      1189
+    ]
+  },
+  "morena": {
+    "file": "morena.png",
+    "box": [
+      62,
+      151,
+      2117,
+      575
+    ]
+  },
+  "muneco": {
+    "file": "muñecodenieve.png",
+    "box": [
+      69,
+      68,
+      957,
+      1481
+    ]
+  },
+  "murcielago": {
+    "file": "murcielago del ocsao.png",
+    "box": [
+      144,
+      79,
+      1630,
+      788
+    ]
+  },
+  "nauyaca": {
+    "file": "nauyaca.png",
+    "box": [
+      240,
+      66,
+      1254,
+      920
+    ]
+  },
+  "ollita": {
+    "file": "olitabrincona.png",
+    "box": [
+      85,
+      88,
+      1240,
+      1084
+    ]
+  },
+  "oruga": {
+    "file": "orguamonarca.png",
+    "box": [
+      224,
+      48,
+      1712,
+      677
+    ]
+  },
+  "pajaro": {
+    "file": "pajaro de cuerda.png",
+    "box": [
+      191,
+      55,
+      1351,
+      832
+    ]
+  },
+  "pavo": {
+    "file": "pavo.png",
+    "box": [
+      186,
+      65,
+      1344,
+      932
+    ]
+  },
+  "pelicano": {
+    "file": "pelicano.png",
+    "box": [
+      67,
+      16,
+      1898,
+      783
+    ]
+  },
+  "jabali": {
+    "file": "percari de crista.png",
+    "box": [
+      191,
+      12,
+      1568,
+      869
+    ]
+  },
+  "perro": {
+    "file": "perrodeceniza.png",
+    "box": [
+      214,
+      81,
+      1544,
+      822
+    ]
+  },
+  "pezloro": {
+    "file": "pezloro.png",
+    "box": [
+      89,
+      0,
+      1710,
+      887
+    ]
+  },
+  "pintador": {
+    "file": "pintador.png",
+    "box": [
+      179,
+      63,
+      948,
+      1199
+    ]
+  },
+  "pirata": {
+    "file": "pirata.png",
+    "box": [
+      140,
+      169,
+      900,
+      1394
+    ]
+  },
+  "incendiario": {
+    "file": "pirataincendiario.png",
+    "box": [
+      45,
+      56,
+      951,
+      1417
+    ]
+  },
+  "polilla": {
+    "file": "polilla.png",
+    "box": [
+      323,
+      48,
+      1210,
+      849
+    ]
+  },
+  "erizo": {
+    "file": "puerscoespin.png",
+    "box": [
+      351,
+      81,
+      1435,
+      779
+    ]
+  },
+  "erizoTinta": {
+    "file": "puescopindelineoleo.png",
+    "box": [
+      107,
+      17,
+      1655,
+      870
+    ]
+  },
+  "rana": {
+    "file": "ranadelcenote.png",
+    "box": [
+      288,
+      124,
+      1241,
+      849
+    ]
+  },
+  "koi": {
+    "file": "robalo de tinta.png",
+    "box": [
+      66,
+      86,
+      2142,
+      657
+    ]
+  },
+  "sacapuntas": {
+    "file": "sacapuntos.png",
+    "box": [
+      253,
+      102,
+      1247,
+      892
+    ]
+  },
+  "salamandra": {
+    "file": "salamandra.png",
+    "box": [
+      97,
+      2,
+      2069,
+      722
+    ]
+  },
+  "mono": {
+    "file": "saraguato.png",
+    "box": [
+      198,
+      119,
+      1141,
+      1102
+    ]
+  },
+  "silbato": {
+    "file": "silbato.png",
+    "box": [
+      180,
+      81,
+      1593,
+      807
+    ]
+  },
+  "soplo": {
+    "file": "soplo.png",
+    "box": [
+      164,
+      98,
+      1120,
+      1103
+    ]
+  },
+  "tijeras": {
+    "file": "tijeras de papel picado.png",
+    "box": [
+      127,
+      0,
+      1618,
+      887
+    ]
+  },
+  "topon": {
+    "file": "topon.png",
+    "box": [
+      231,
+      174,
+      1081,
+      1050
+    ]
+  },
+  "torito": {
+    "file": "torito.png",
+    "box": [
+      168,
+      26,
+      1295,
+      993
+    ]
+  },
+  "torreta": {
+    "file": "torreta.png",
+    "box": [
+      319,
+      165,
+      1536,
+      747
+    ]
+  },
+  "tortuga": {
+    "file": "tortuga.png",
+    "box": [
+      155,
+      124,
+      1564,
+      803
+    ]
+  },
+  "tucan": {
+    "file": "tucan.png",
+    "box": [
+      412,
+      8,
+      1715,
+      695
+    ]
+  },
+  "nahual": {
+    "file": "uay de niebla.png",
+    "box": [
+      286,
+      36,
+      1477,
+      850
+    ]
+  },
+  "cuervo": {
+    "file": "zanate.png",
+    "box": [
+      124,
+      80,
+      1713,
+      828
+    ]
+  },
+  "cuervoCeniza": {
+    "file": "zanatedeceniza.png",
+    "box": [
+      201,
+      144,
+      1316,
+      855
+    ]
+  },
+  "zangano": {
+    "file": "zangano.png",
+    "box": [
+      111,
+      127,
+      1425,
+      767
+    ]
+  },
+  "zopilote": {
+    "file": "zopilote.png",
+    "box": [
+      45,
+      95,
+      2128,
+      673
+    ]
+  }
+}

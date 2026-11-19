@@ -1,0 +1,614 @@
+{
+ "flamenco0": {
+  "w": 13.0,
+  "h": 9.5
+ },
+ "flamenco1": {
+  "w": 13.33,
+  "h": 6.33
+ },
+ "flamenco2": {
+  "w": 13.33,
+  "h": 6.83
+ },
+ "flamenco3": {
+  "w": 14.17,
+  "h": 3.67
+ },
+ "pelicano0": {
+  "w": 15.0,
+  "h": 5.0
+ },
+ "pelicano1": {
+  "w": 8.83,
+  "h": 4.83
+ },
+ "pelicano2": {
+  "w": 9.33,
+  "h": 7.17
+ },
+ "pelicanoAgua": {
+  "w": 5.0,
+  "h": 2.17
+ },
+ "fragata0": {
+  "w": 13.0,
+  "h": 9.83
+ },
+ "fragata1": {
+  "w": 13.33,
+  "h": 7.33
+ },
+ "fragata2": {
+  "w": 14.17,
+  "h": 7.17
+ },
+ "fragata3": {
+  "w": 17.5,
+  "h": 3.83
+ },
+ "pez0": {
+  "w": 8.0,
+  "h": 4.17
+ },
+ "pez1": {
+  "w": 7.17,
+  "h": 3.83
+ },
+ "pez2": {
+  "w": 7.0,
+  "h": 3.33
+ },
+ "pezAgua": {
+  "w": 7.0,
+  "h": 2.33
+ },
+ "gaviotaPixel0": {
+  "w": 11.5,
+  "h": 11.0
+ },
+ "gaviotaPixel1": {
+  "w": 14.0,
+  "h": 8.0
+ },
+ "gaviotaPixel2": {
+  "w": 11.5,
+  "h": 8.5
+ },
+ "gaviotaPixel3": {
+  "w": 15.5,
+  "h": 5.5
+ },
+ "gaviotaGrabado0": {
+  "w": 10.0,
+  "h": 11.67
+ },
+ "gaviotaGrabado1": {
+  "w": 13.0,
+  "h": 6.5
+ },
+ "gaviotaGrabado2": {
+  "w": 10.33,
+  "h": 8.33
+ },
+ "gaviotaGrabado3": {
+  "w": 17.0,
+  "h": 5.0
+ },
+ "gaviotaCiano0": {
+  "w": 10.0,
+  "h": 11.5
+ },
+ "gaviotaCiano1": {
+  "w": 11.83,
+  "h": 6.83
+ },
+ "gaviotaCiano2": {
+  "w": 10.33,
+  "h": 7.83
+ },
+ "gaviotaCiano3": {
+  "w": 14.67,
+  "h": 5.33
+ },
+ "mariposaNouveau0": {
+  "w": 6.0,
+  "h": 7.33
+ },
+ "mariposaNouveau1": {
+  "w": 6.67,
+  "h": 5.0
+ },
+ "mariposaNouveau2": {
+  "w": 6.67,
+  "h": 4.83
+ },
+ "mariposaSelva0": {
+  "w": 6.0,
+  "h": 6.83
+ },
+ "mariposaSelva1": {
+  "w": 6.83,
+  "h": 4.0
+ },
+ "mariposaSelva2": {
+  "w": 6.33,
+  "h": 5.0
+ },
+ "murcielagoCristal0": {
+  "w": 9.0,
+  "h": 9.5
+ },
+ "murcielagoCristal1": {
+  "w": 13.5,
+  "h": 5.0
+ },
+ "murcielagoCristal2": {
+  "w": 9.17,
+  "h": 8.0
+ },
+ "murcielagoNoche0": {
+  "w": 9.0,
+  "h": 7.67
+ },
+ "murcielagoNoche1": {
+  "w": 12.5,
+  "h": 4.0
+ },
+ "murcielagoNoche2": {
+  "w": 8.67,
+  "h": 7.5
+ },
+ "palomaVitral0": {
+  "w": 10.0,
+  "h": 11.67
+ },
+ "palomaVitral1": {
+  "w": 11.33,
+  "h": 7.0
+ },
+ "palomaVitral2": {
+  "w": 11.0,
+  "h": 7.83
+ },
+ "aveSumi0": {
+  "w": 10.0,
+  "h": 10.67
+ },
+ "aveSumi1": {
+  "w": 10.17,
+  "h": 7.5
+ },
+ "aveSumi2": {
+  "w": 10.83,
+  "h": 7.83
+ },
+ "aveSumi3": {
+  "w": 13.0,
+  "h": 4.67
+ },
+ "aveAmate0": {
+  "w": 10.0,
+  "h": 9.83
+ },
+ "aveAmate1": {
+  "w": 10.0,
+  "h": 6.67
+ },
+ "aveAmate2": {
+  "w": 10.0,
+  "h": 8.33
+ },
+ "aveAmate3": {
+  "w": 10.33,
+  "h": 5.33
+ },
+ "fragataBordada0": {
+  "w": 12.0,
+  "h": 11.33
+ },
+ "fragataBordada1": {
+  "w": 12.67,
+  "h": 7.17
+ },
+ "fragataBordada2": {
+  "w": 12.17,
+  "h": 7.83
+ },
+ "fragataBordada3": {
+  "w": 15.5,
+  "h": 4.83
+ },
+ "fragataCenital0": {
+  "w": 14.0,
+  "h": 10.17
+ },
+ "fragataCenital1": {
+  "w": 15.0,
+  "h": 8.33
+ },
+ "fragataCenital2": {
+  "w": 12.0,
+  "h": 9.0
+ },
+ "fragataCenital3": {
+  "w": 15.33,
+  "h": 8.33
+ },
+ "fragataSombra0": {
+  "w": 10.0,
+  "h": 6.0
+ },
+ "fragataSombra1": {
+  "w": 10.17,
+  "h": 4.83
+ },
+ "fragataSombra2": {
+  "w": 8.5,
+  "h": 4.83
+ },
+ "fragataSombra3": {
+  "w": 12.67,
+  "h": 4.83
+ },
+ "mosca0": {
+  "w": 11.0,
+  "h": 11.67
+ },
+ "mosca1": {
+  "w": 11.83,
+  "h": 7.33
+ },
+ "mosca2": {
+  "w": 12.17,
+  "h": 7.17
+ },
+ "mosca3": {
+  "w": 13.5,
+  "h": 7.33
+ },
+ "mosca4": {
+  "w": 11.0,
+  "h": 6.83
+ },
+ "mosca5": {
+  "w": 12.67,
+  "h": 8.0
+ },
+ "gomaB0": {
+  "w": 16.0,
+  "h": 19.0
+ },
+ "gomaB1": {
+  "w": 25.5,
+  "h": 13.33
+ },
+ "gomaB2": {
+  "w": 15.5,
+  "h": 17.17
+ },
+ "charranP0": {
+  "w": 17.0,
+  "h": 8.0
+ },
+ "charranP1": {
+  "w": 14.33,
+  "h": 9.83
+ },
+ "charranP2": {
+  "w": 10.67,
+  "h": 13.83
+ },
+ "rinoE0": {
+  "w": 28.0,
+  "h": 16.67
+ },
+ "rinoE1": {
+  "w": 36.17,
+  "h": 14.83
+ },
+ "rinoE2": {
+  "w": 32.0,
+  "h": 15.83
+ },
+ "roverD0": {
+  "w": 22.0,
+  "h": 19.17
+ },
+ "roverD1": {
+  "w": 21.83,
+  "h": 19.17
+ },
+ "roverD2": {
+  "w": 32.0,
+  "h": 19.17
+ },
+ "cocuyoL0": {
+  "w": 15.0,
+  "h": 10.17
+ },
+ "cocuyoL1": {
+  "w": 15.0,
+  "h": 10.33
+ },
+ "cocuyoL2": {
+  "w": 15.17,
+  "h": 10.33
+ },
+ "tortugaC0": {
+  "w": 19.0,
+  "h": 11.5
+ },
+ "tortugaC1": {
+  "w": 15.33,
+  "h": 11.0
+ },
+ "tortugaC2": {
+  "w": 15.67,
+  "h": 10.83
+ },
+ "mechaF0": {
+  "w": 20.0,
+  "h": 26.0
+ },
+ "mechaF1": {
+  "w": 20.0,
+  "h": 25.67
+ },
+ "mechaF2": {
+  "w": 20.17,
+  "h": 26.0
+ },
+ "mechaF3": {
+  "w": 20.33,
+  "h": 26.0
+ },
+ "mechaF4": {
+  "w": 25.0,
+  "h": 25.67
+ },
+ "mechaF5": {
+  "w": 28.83,
+  "h": 25.83
+ },
+ "mechaP0": {
+  "w": 20.0,
+  "h": 26.17
+ },
+ "mechaP1": {
+  "w": 20.17,
+  "h": 26.0
+ },
+ "mechaP2": {
+  "w": 20.67,
+  "h": 26.83
+ },
+ "mechaP3": {
+  "w": 19.67,
+  "h": 27.17
+ },
+ "mechaP4": {
+  "w": 20.5,
+  "h": 25.83
+ },
+ "mechaP5": {
+  "w": 25.0,
+  "h": 25.67
+ },
+ "alacranA0": {
+  "w": 30.0,
+  "h": 25.83
+ },
+ "alacranA1": {
+  "w": 33.67,
+  "h": 19.83
+ },
+ "alacranA2": {
+  "w": 30.83,
+  "h": 21.33
+ },
+ "pezSardina0": {
+  "w": 11.0,
+  "h": 2.67
+ },
+ "pezSardina1": {
+  "w": 11.83,
+  "h": 3.67
+ },
+ "pezSardinaAnzuelo": {
+  "w": 12.33,
+  "h": 3.17
+ },
+ "pezPampano0": {
+  "w": 15.0,
+  "h": 8.67
+ },
+ "pezPampano1": {
+  "w": 15.17,
+  "h": 9.17
+ },
+ "pezPampanoAnzuelo": {
+  "w": 16.83,
+  "h": 8.5
+ },
+ "pezRobalo0": {
+  "w": 20.0,
+  "h": 6.67
+ },
+ "pezRobalo1": {
+  "w": 19.17,
+  "h": 6.83
+ },
+ "pezRobaloAnzuelo": {
+  "w": 22.33,
+  "h": 7.33
+ },
+ "pezCazon0": {
+  "w": 22.0,
+  "h": 7.17
+ },
+ "pezCazon1": {
+  "w": 21.67,
+  "h": 7.17
+ },
+ "pezCazonAnzuelo": {
+  "w": 24.67,
+  "h": 8.17
+ },
+ "pezPulpo0": {
+  "w": 15.0,
+  "h": 5.83
+ },
+ "pezPulpo1": {
+  "w": 13.5,
+  "h": 7.67
+ },
+ "pezPulpoAnzuelo": {
+  "w": 16.83,
+  "h": 8.5
+ },
+ "vueloEsc0": {
+  "w": 18.0,
+  "h": 15.0
+ },
+ "vueloEsc1": {
+  "w": 21.5,
+  "h": 17.0
+ },
+ "vueloCometa0": {
+  "w": 26.0,
+  "h": 7.67
+ },
+ "vueloCometa1": {
+  "w": 28.17,
+  "h": 14.17
+ },
+ "vueloMeteoro0": {
+  "w": 28.0,
+  "h": 24.53
+ },
+ "vueloMeteoro1": {
+  "w": 48.03,
+  "h": 29.64
+ },
+ "vueloTorreta0": {
+  "w": 34.0,
+  "h": 30.0
+ },
+ "vueloTorreta1": {
+  "w": 45.83,
+  "h": 30.0
+ },
+ "vueloJefe0": {
+  "w": 70.0,
+  "h": 70.91
+ },
+ "vueloJefe1": {
+  "w": 83.34,
+  "h": 65.43
+ },
+ "vueloJefe2": {
+  "w": 75.48,
+  "h": 75.12
+ },
+ "vueloBala": {
+  "w": 5.0,
+  "h": 2.33
+ },
+ "cangrejoPlanta0": {
+  "w": 19.0,
+  "h": 17.0
+ },
+ "cangrejoPlanta1": {
+  "w": 18.33,
+  "h": 17.5
+ },
+ "cangrejoAlzado0": {
+  "w": 20.0,
+  "h": 9.0
+ },
+ "cangrejoAlzado1": {
+  "w": 20.17,
+  "h": 9.17
+ },
+ "delfin0": {
+  "w": 8.33,
+  "h": 20.0
+ },
+ "delfin1": {
+  "w": 10.0,
+  "h": 17.33
+ },
+ "delfin2": {
+  "w": 9.83,
+  "h": 18.83
+ },
+ "delfinAgua": {
+  "w": 14.0,
+  "h": 5.33
+ },
+ "pirataT0": {
+  "w": 13.83,
+  "h": 19.0
+ },
+ "pirataT1": {
+  "w": 12.33,
+  "h": 18.83
+ },
+ "capitanT0": {
+  "w": 20.17,
+  "h": 28.0
+ },
+ "capitanT1": {
+  "w": 19.33,
+  "h": 28.0
+ },
+ "pirataG0": {
+  "w": 16.17,
+  "h": 40.0
+ },
+ "pirataG1": {
+  "w": 32.83,
+  "h": 36.33
+ },
+ "pirataG2": {
+  "w": 27.0,
+  "h": 37.0
+ },
+ "pirataG3": {
+  "w": 40.5,
+  "h": 13.5
+ },
+ "cliente0": {
+  "w": 33.33,
+  "h": 36.0
+ },
+ "cliente1": {
+  "w": 33.33,
+  "h": 35.83
+ },
+ "cliente2": {
+  "w": 34.67,
+  "h": 36.33
+ },
+ "cliente3": {
+  "w": 34.67,
+  "h": 36.33
+ },
+ "cliente4": {
+  "w": 31.33,
+  "h": 35.83
+ },
+ "cliente5": {
+  "w": 31.33,
+  "h": 35.83
+ },
+ "cliente6": {
+  "w": 33.0,
+  "h": 36.67
+ },
+ "cliente7": {
+  "w": 33.0,
+  "h": 36.67
+ }
+}

@@ -1,0 +1,34 @@
+{
+  "schema": "generate2dsprite.animation_clips.v2",
+  "frames": [
+    "frames/avispa0.png",
+    "frames/avispa1.png",
+    "frames/avispa2.png",
+    "frames/avispa3.png",
+    "frames/avispa4.png",
+    "frames/avispa5.png",
+    "frames/avispa6.png",
+    "frames/avispa7.png"
+  ],
+  "anchor_px": [
+    57,
+    86
+  ],
+  "clips": {
+    "vuelo": {
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "ticks": 4,
+      "tick_hz": 60,
+      "loop_policy": "cycle"
+    }
+  }
+}

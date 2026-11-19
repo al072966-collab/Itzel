@@ -1,0 +1,648 @@
+{
+  "schema": "generate2dsprite.animation_clips.v2",
+  "source_manifest": {
+    "path": "../grulla-poses-v1/clips.json",
+    "file_sha256": "3b43bc60f945bba59619a0ee5d20b3bb019afd6fdd64ae9f028ff7ebdca5c864",
+    "copy": "source-manifest.json"
+  },
+  "frame_size": [
+    134,
+    105
+  ],
+  "anchor_px": [
+    65,
+    104
+  ],
+  "anchor_semantics": "shared canvas/root origin, often a ground reference; not per-frame visible bottom",
+  "frames": [
+    {
+      "index": 0,
+      "name": "grulla0",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla0.png",
+        "file_sha256": "4354e4ec467178327a6392c9ca9b748f0fd9e76a1e730ec06b09143bfab87532",
+        "bytes": 11484,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "6905f1060f6377c1d727c3e439d2df519a2ec0531c6d22fad9c114905831db2a",
+      "transparent_pixel_count": 9892,
+      "visible_pixel_count": 4178,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-00.png"
+    },
+    {
+      "index": 1,
+      "name": "grulla1",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla1.png",
+        "file_sha256": "329b26468310edb1216c0877386371a2437cc762dd59ae309c358310c58da6bb",
+        "bytes": 10354,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "d917bf314d5e377ab868565d4ffa1d31f02f9cdeff4c906de4abfd60e6c0c841",
+      "transparent_pixel_count": 10414,
+      "visible_pixel_count": 3656,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-01.png"
+    },
+    {
+      "index": 2,
+      "name": "grulla2",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla2.png",
+        "file_sha256": "76e18bb70c19ac5e9c664aa014c820176a29db33fab7b45b4db396e6c3c97d92",
+        "bytes": 8967,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "b8168674d47c32a19efeb428e18d0dc6db9f27bece0928d9f2d5cd1d7109611b",
+      "transparent_pixel_count": 11092,
+      "visible_pixel_count": 2978,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-02.png"
+    },
+    {
+      "index": 3,
+      "name": "grulla3",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla3.png",
+        "file_sha256": "0ac00e517a9ec4eed8099dbd8552d1eca4cf058c846794ee449303d3a3e51ef6",
+        "bytes": 10363,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "d85283a59c6d842b338990d4f9be9f81f2a7747f51535bc53a3165b8a3fa1e06",
+      "transparent_pixel_count": 10390,
+      "visible_pixel_count": 3680,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-03.png"
+    },
+    {
+      "index": 4,
+      "name": "grulla4",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla4.png",
+        "file_sha256": "880e5cc71516063870dd762d21fd84aac6b57b9d35324eb55cb9ee5c4c151f47",
+        "bytes": 10607,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "53cb8026ace0b37de57610198440e24bcf24e89ab41233282ffe3ec52620f1dc",
+      "transparent_pixel_count": 10276,
+      "visible_pixel_count": 3794,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-04.png"
+    },
+    {
+      "index": 5,
+      "name": "grulla5",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla5.png",
+        "file_sha256": "95d528447c9394c02eb53511b2c37ed28f3436828af42dc154a07ac3d7129155",
+        "bytes": 9512,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "2a01864c03a72e897dae6eecef72199e0f707164a112bbd05bffa4f68e869d4f",
+      "transparent_pixel_count": 10864,
+      "visible_pixel_count": 3206,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-05.png"
+    },
+    {
+      "index": 6,
+      "name": "grulla6",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla6.png",
+        "file_sha256": "52558eff69e3c61c4e16a78f2443d10d763a8a81165cccc242741c12ddc65812",
+        "bytes": 10676,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "3ac14bbb17ba49e76cc59188f89515ae257f0adc01816a66a1e4e892e3aa01d3",
+      "transparent_pixel_count": 10540,
+      "visible_pixel_count": 3530,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-06.png"
+    },
+    {
+      "index": 7,
+      "name": "grulla7",
+      "source": {
+        "path": "../grulla-poses-v1/frames/grulla7.png",
+        "file_sha256": "2daae3511ca31e7c36ebc388f711554e2f8ae40491d62ceb02d937c7aa8df912",
+        "bytes": 11222,
+        "size": [
+          134,
+          105
+        ],
+        "mode": "RGBA"
+      },
+      "rgba_pixel_sha256": "79f2e918c857d3528ed81ca355dfe26c7eb3b8d5a2b252caab649c56afc8cc3e",
+      "transparent_pixel_count": 10238,
+      "visible_pixel_count": 3832,
+      "near_duplicates": [],
+      "holds": [],
+      "file": "frames/frame-07.png"
+    }
+  ],
+  "clips": {
+    "vuelo": {
+      "frames": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7
+      ],
+      "duration_ms": [
+        117,
+        116,
+        117,
+        117,
+        116,
+        117,
+        117,
+        116
+      ],
+      "loop": true,
+      "total_duration_ms": 933,
+      "nominal_fps": 8.571428571428571,
+      "average_fps": 8.57449088960343,
+      "loop_policy": "cycle",
+      "timing_source": "ticks",
+      "ticks": [
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7,
+        7
+      ],
+      "tick_hz": 60,
+      "fps_rational": "60/7",
+      "events_ms": [],
+      "tick_grid": {
+        "hz": 60,
+        "max_drift_ms": 0.333,
+        "frame_ticks": [
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7,
+          7
+        ],
+        "zero_tick_positions": [],
+        "even": true,
+        "cycle_ticks": 55.98,
+        "cycle_aligned": false,
+        "method": "cumulative integer-ms frame boundaries rounded half-up to the nearest tick"
+      },
+      "holds": [],
+      "seam": {
+        "frames": 8,
+        "seam": 44.771734,
+        "adjacent_median": 24.045786,
+        "adjacent_p95": 37.224252,
+        "adjacent_max": 41.758555,
+        "seam_over_median": 1.861937,
+        "seam_over_p95": 1.202757,
+        "method": "premultiplied RGBA mean absolute difference (0-255); seam = last -> first",
+        "adjacent_mean": 25.512885,
+        "wrap_ratio": 1.754868
+      },
+      "preview": {
+        "file": "clips/clip-00.webp",
+        "decoded_frames": [
+          {
+            "index": 0,
+            "start_ms": 0,
+            "duration_ms": 117,
+            "clip_positions": [
+              0
+            ]
+          },
+          {
+            "index": 1,
+            "start_ms": 117,
+            "duration_ms": 116,
+            "clip_positions": [
+              1
+            ]
+          },
+          {
+            "index": 2,
+            "start_ms": 233,
+            "duration_ms": 117,
+            "clip_positions": [
+              2
+            ]
+          },
+          {
+            "index": 3,
+            "start_ms": 350,
+            "duration_ms": 117,
+            "clip_positions": [
+              3
+            ]
+          },
+          {
+            "index": 4,
+            "start_ms": 467,
+            "duration_ms": 116,
+            "clip_positions": [
+              4
+            ]
+          },
+          {
+            "index": 5,
+            "start_ms": 583,
+            "duration_ms": 117,
+            "clip_positions": [
+              5
+            ]
+          },
+          {
+            "index": 6,
+            "start_ms": 700,
+            "duration_ms": 117,
+            "clip_positions": [
+              6
+            ]
+          },
+          {
+            "index": 7,
+            "start_ms": 817,
+            "duration_ms": 116,
+            "clip_positions": [
+              7
+            ]
+          }
+        ],
+        "decoded_frame_count": 8,
+        "total_duration_ms": 933,
+        "native_loop_count": 0,
+        "timeline_verified": true,
+        "alpha_and_visible_rgb_exact": true,
+        "hidden_rgb_guaranteed": false,
+        "lossless": true,
+        "file_sha256": "e0dd337a20a4d99d95e4daef244023f98d3195fac17829e97c8d7e638e8ec845",
+        "scale": 2
+      },
+      "transitions": [
+        {
+          "from_position": 0,
+          "to_position": 1,
+          "premultiplied_rgb_mae": 21.242601,
+          "alpha_mae": 24.7285,
+          "changed_visible_pixels": 4671
+        },
+        {
+          "from_position": 1,
+          "to_position": 2,
+          "premultiplied_rgb_mae": 25.518908,
+          "alpha_mae": 30.020114,
+          "changed_visible_pixels": 4241
+        },
+        {
+          "from_position": 2,
+          "to_position": 3,
+          "premultiplied_rgb_mae": 22.727596,
+          "alpha_mae": 28.000355,
+          "changed_visible_pixels": 4191
+        },
+        {
+          "from_position": 3,
+          "to_position": 4,
+          "premultiplied_rgb_mae": 17.833315,
+          "alpha_mae": 18.299787,
+          "changed_visible_pixels": 4311
+        },
+        {
+          "from_position": 4,
+          "to_position": 5,
+          "premultiplied_rgb_mae": 19.505306,
+          "alpha_mae": 20.708102,
+          "changed_visible_pixels": 4143
+        },
+        {
+          "from_position": 5,
+          "to_position": 6,
+          "premultiplied_rgb_mae": 25.288279,
+          "alpha_mae": 29.221677,
+          "changed_visible_pixels": 4312
+        },
+        {
+          "from_position": 6,
+          "to_position": 7,
+          "premultiplied_rgb_mae": 40.006786,
+          "alpha_mae": 47.013859,
+          "changed_visible_pixels": 5215
+        }
+      ],
+      "last_to_first": {
+        "applies_to_playback": true,
+        "premultiplied_rgb_mae": 43.373283,
+        "alpha_mae": 48.967093,
+        "changed_visible_pixels": 5603
+      }
+    }
+  },
+  "states": {},
+  "diagnostics": {
+    "visible_pixel_duplicate_groups": [],
+    "visual_approval": false,
+    "note": "Pixel differences and duplicates do not establish animation quality or physical root stability.",
+    "near_duplicate_mae": 1.5,
+    "near_duplicate_pairs": [],
+    "tick_hz": 60,
+    "lint": []
+  },
+  "contact_sheet": {
+    "file": "contact-sheet.png",
+    "native_scale": false,
+    "scale": 2,
+    "requested_scale": 2,
+    "annotated_with_shared_root": true,
+    "not_a_runtime_atlas": true,
+    "file_sha256": "8f595e27fc038b0b741ddc4dcd787581c5c6fe167c4e0ba363b3f465e9dce0bd"
+  },
+  "review": {
+    "scale": 2,
+    "requested_scale": 2,
+    "backgrounds": [
+      "light",
+      "dark",
+      "checker"
+    ],
+    "filmstrips": {
+      "vuelo": {
+        "file": "review/filmstrip-00.png",
+        "backgrounds": [
+          "light",
+          "dark",
+          "checker"
+        ],
+        "positions_shown": 8,
+        "truncated": false
+      }
+    },
+    "onion": {
+      "vuelo": {
+        "file": "review/onion-00.png",
+        "background": "checker",
+        "positions_shown": 8,
+        "truncated": false
+      }
+    },
+    "transitions": [],
+    "turn_test": {
+      "file": "review/turn-test.png",
+      "background": "dark",
+      "anchor_mark_rgb": [
+        255,
+        220,
+        80
+      ],
+      "cells": [
+        {
+          "clip": "vuelo",
+          "frame": 0,
+          "anchor_screen_x": 146,
+          "rows": [
+            [
+              32,
+              242
+            ],
+            [
+              258,
+              468
+            ]
+          ],
+          "mirrored_offset_px": -8,
+          "turn_slide_px": 0.0
+        }
+      ],
+      "clips_shown": 1,
+      "truncated": false
+    }
+  },
+  "processing": {
+    "source_pngs_byte_identical": true,
+    "resized": false,
+    "cropped": false,
+    "per_frame_alignment": false,
+    "chroma_keyed": false
+  },
+  "alpha_validation": "Every input has fully transparent and visible pixels; edge quality still requires visual review.",
+  "qa": {
+    "status": "needs-visual-review",
+    "method": "Frame PNGs are byte copies (sha256 checked); each WebP preview is decoded and its timing, alpha and visible RGB compared with the source frames; tick grid = cumulative integer-ms boundaries rounded to the nearest tick; holds = repeated indices or premultiplied union-visible MAE <= 1.5; seams = forge_core.seam_report with wrap_ratio = seam / mean adjacent step; telegraph = tell -> hit in 60 Hz ticks.",
+    "notProven": [
+      "animation quality, gait, anatomy or identity",
+      "physical root stability or foot contact (anchor_px is declared, not measured)",
+      "runtime playback on a device (previews are verified files, not a game loop)",
+      "that near-duplicate thresholds suit every art style (heuristic)"
+    ],
+    "checks": [
+      {
+        "id": "png_byte_copy",
+        "status": "pass",
+        "value": 8,
+        "threshold": null
+      },
+      {
+        "id": "webp_timeline",
+        "status": "pass",
+        "value": 1,
+        "threshold": null
+      },
+      {
+        "id": "tick_grid",
+        "status": "pass",
+        "value": 0.333,
+        "threshold": null
+      },
+      {
+        "id": "telegraph",
+        "threshold": 28,
+        "status": "skipped",
+        "value": null
+      },
+      {
+        "id": "near_duplicate_holds",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      },
+      {
+        "id": "loop_seam",
+        "status": "needs-visual-review",
+        "value": 1.754868,
+        "threshold": null
+      },
+      {
+        "id": "manifest_lint",
+        "status": "pass",
+        "value": 0,
+        "threshold": 0
+      }
+    ],
+    "inputs": [
+      {
+        "path": "../grulla-poses-v1/clips.json",
+        "sha256": "3b43bc60f945bba59619a0ee5d20b3bb019afd6fdd64ae9f028ff7ebdca5c864",
+        "bytes": 539
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla0.png",
+        "sha256": "4354e4ec467178327a6392c9ca9b748f0fd9e76a1e730ec06b09143bfab87532",
+        "bytes": 11484
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla1.png",
+        "sha256": "329b26468310edb1216c0877386371a2437cc762dd59ae309c358310c58da6bb",
+        "bytes": 10354
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla2.png",
+        "sha256": "76e18bb70c19ac5e9c664aa014c820176a29db33fab7b45b4db396e6c3c97d92",
+        "bytes": 8967
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla3.png",
+        "sha256": "0ac00e517a9ec4eed8099dbd8552d1eca4cf058c846794ee449303d3a3e51ef6",
+        "bytes": 10363
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla4.png",
+        "sha256": "880e5cc71516063870dd762d21fd84aac6b57b9d35324eb55cb9ee5c4c151f47",
+        "bytes": 10607
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla5.png",
+        "sha256": "95d528447c9394c02eb53511b2c37ed28f3436828af42dc154a07ac3d7129155",
+        "bytes": 9512
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla6.png",
+        "sha256": "52558eff69e3c61c4e16a78f2443d10d763a8a81165cccc242741c12ddc65812",
+        "bytes": 10676
+      },
+      {
+        "path": "../grulla-poses-v1/frames/grulla7.png",
+        "sha256": "2daae3511ca31e7c36ebc388f711554e2f8ae40491d62ceb02d937c7aa8df912",
+        "bytes": 11222
+      }
+    ],
+    "outputs": [
+      {
+        "path": "frames/frame-00.png",
+        "sha256": "4354e4ec467178327a6392c9ca9b748f0fd9e76a1e730ec06b09143bfab87532",
+        "bytes": 11484
+      },
+      {
+        "path": "frames/frame-01.png",
+        "sha256": "329b26468310edb1216c0877386371a2437cc762dd59ae309c358310c58da6bb",
+        "bytes": 10354
+      },
+      {
+        "path": "frames/frame-02.png",
+        "sha256": "76e18bb70c19ac5e9c664aa014c820176a29db33fab7b45b4db396e6c3c97d92",
+        "bytes": 8967
+      },
+      {
+        "path": "frames/frame-03.png",
+        "sha256": "0ac00e517a9ec4eed8099dbd8552d1eca4cf058c846794ee449303d3a3e51ef6",
+        "bytes": 10363
+      },
+      {
+        "path": "frames/frame-04.png",
+        "sha256": "880e5cc71516063870dd762d21fd84aac6b57b9d35324eb55cb9ee5c4c151f47",
+        "bytes": 10607
+      },
+      {
+        "path": "frames/frame-05.png",
+        "sha256": "95d528447c9394c02eb53511b2c37ed28f3436828af42dc154a07ac3d7129155",
+        "bytes": 9512
+      },
+      {
+        "path": "frames/frame-06.png",
+        "sha256": "52558eff69e3c61c4e16a78f2443d10d763a8a81165cccc242741c12ddc65812",
+        "bytes": 10676
+      },
+      {
+        "path": "frames/frame-07.png",
+        "sha256": "2daae3511ca31e7c36ebc388f711554e2f8ae40491d62ceb02d937c7aa8df912",
+        "bytes": 11222
+      },
+      {
+        "path": "clips/clip-00.webp",
+        "sha256": "e0dd337a20a4d99d95e4daef244023f98d3195fac17829e97c8d7e638e8ec845",
+        "bytes": 77316
+      },
+      {
+        "path": "contact-sheet.png",
+        "sha256": "8f595e27fc038b0b741ddc4dcd787581c5c6fe167c4e0ba363b3f465e9dce0bd",
+        "bytes": 108343
+      },
+      {
+        "path": "review/filmstrip-00.png",
+        "sha256": "85704391dea75f4645088ec558fdb0dc1a46bdfd4f92c18ef7f31e56e090d49a",
+        "bytes": 309774
+      },
+      {
+        "path": "review/onion-00.png",
+        "sha256": "4c901d58ead66d36a2c13d3ce25a7462f713a7c5b17a2a47307752f1b51af643",
+        "bytes": 131214
+      },
+      {
+        "path": "review/turn-test.png",
+        "sha256": "52fcc3bcc712b1368d9732246222ca0da582b272d86a81b817cc15d661a80be5",
+        "bytes": 35674
+      }
+    ],
+    "tool": {
+      "name": "build_animation_clips",
+      "version": "0.5.0"
+    }
+  }
+}
