@@ -67,6 +67,30 @@
     .opcion b{font-size:24px} .menu .opcion b{letter-spacing:.01em}
   }`;
   document.head.appendChild(cf);
+  // ---------- «modo oscuro» forzado del navegador (Samsung Internet, Chrome con «oscurecer páginas»…) ----------
+  // Ese modo aclara el texto oscuro (los títulos en negrita sobre el marco crema quedaban casi blancos) aunque la página diga
+  // «solo claro». Un texto pintado con un degradado recortado a las letras no lo toca: se hace igual de oscuro, pero a prueba de eso.
+  const lum = c => { const m = /rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?/.exec(c); if (!m) return null; if (m[4] !== undefined && +m[4] < .3) return null; return (.299 * m[1] + .587 * m[2] + .114 * m[3]) / 255; };
+  const SEL = 'b, strong, h1, h2, h3, h4, .opcion b';
+  function blinda(raiz) {
+    try {
+      const lista = raiz.matches && raiz.matches(SEL) ? [raiz] : []; lista.push(...(raiz.querySelectorAll ? raiz.querySelectorAll(SEL) : []));
+      for (const el of lista) {
+        if (el.dataset.oscuro || el.closest('#tactil, #giraTelefono, #hud')) continue;
+        const cs = getComputedStyle(el), l = lum(cs.color);
+        el.dataset.oscuro = '1';
+        if (l === null || l > .4 || (cs.textShadow && cs.textShadow !== 'none') || cs.backgroundImage !== 'none' || cs.webkitTextStrokeWidth !== '0px') continue;
+        const col = cs.color;
+        el.style.color = 'transparent'; el.style.webkitTextFillColor = 'transparent';
+        el.style.backgroundImage = `linear-gradient(${col},${col})`; el.style.webkitBackgroundClip = 'text'; el.style.backgroundClip = 'text';
+      }
+    } catch (e) {}
+  }
+  let pendientes = new Set(), programado = false;
+  function procesa() { programado = false; const l = [...pendientes]; pendientes.clear(); for (const n of l) if (n.isConnected) blinda(n); }
+  new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) if (n.nodeType === 1) pendientes.add(n); if (!programado && pendientes.size) { programado = true; requestAnimationFrame(procesa); } })
+    .observe(document.body, { childList: true, subtree: true });
+  blinda(document.body);
   // ---------- pantalla completa ----------
   const css = document.createElement('style');
   css.textContent = '#btnCompleta{position:fixed;right:8px;top:64px;z-index:9998;width:40px;height:40px;border-radius:9px;border:0;padding:0;cursor:pointer;background:rgba(26,18,13,.62);color:#f3e7cf;font:700 22px/40px Georgia,serif;box-shadow:0 0 0 2px rgba(243,231,207,.55);display:none}'

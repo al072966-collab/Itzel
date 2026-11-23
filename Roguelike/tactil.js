@@ -31,6 +31,9 @@ const TACTIL = (() => {
     #tactil .arr, #tactil .aba { display:none; left:calc(env(safe-area-inset-left) + 14px + var(--bt) * .62); }
     #tactil .arr { bottom:calc(env(safe-area-inset-bottom) + 28px + var(--bt) * 1.15); } #tactil .aba { bottom:calc(env(safe-area-inset-bottom) + 16px); display:none; }
     #tactil.vert .arr, #tactil.vert .aba { display:grid; } #tactil.vert .izq, #tactil.vert .der { display:none; }
+    /* niveles con escaleras (Escalando Calakmul): ▲ y ▼ junto a ◀ ▶ para trepar y bajar */
+    #tactil.esc .arr, #tactil.esc .aba { display:grid; left:calc(env(safe-area-inset-left) + 14px + var(--bt) * 2.7); }
+    #tactil.esc .arr { bottom:calc(env(safe-area-inset-bottom) + 24px + var(--bt)); } #tactil.esc .aba { bottom:calc(env(safe-area-inset-bottom) + 16px); }
     #tactil .salto { right:calc(env(safe-area-inset-right) + 14px); bottom:calc(env(safe-area-inset-bottom) + 16px); width:calc(var(--bt) * 1.15); height:calc(var(--bt) * 1.15); background:rgba(63,138,74,.5); }
     #tactil .impulso { right:calc(env(safe-area-inset-right) + 24px + var(--bt) * 1.15); bottom:calc(env(safe-area-inset-bottom) + 16px); background:rgba(242,178,51,.45); }
     #tactil .cuna { right:calc(env(safe-area-inset-right) + 14px); bottom:calc(env(safe-area-inset-bottom) + 28px + var(--bt) * 1.15); width:calc(var(--bt) * .8); height:calc(var(--bt) * .8); background:rgba(232,90,138,.5); }
@@ -96,7 +99,16 @@ const TACTIL = (() => {
   // ---------- cuándo se ven los botones ----------
   setInterval(() => {
     const jugando = typeof STATE !== 'undefined' && STATE === 'play' && !document.getElementById('enci')?.classList.contains('on');
-    capa.classList.toggle('on', jugando); capa.classList.toggle('vert', !!(typeof CUR !== 'undefined' && CUR && CUR.modo && CUR.modo.vertical));   // carreras: ▲ ▼ cambian de carril
+    capa.classList.toggle('on', jugando); capa.classList.toggle('vert', !!(typeof CUR !== 'undefined' && CUR && CUR.modo && CUR.modo.vertical));
+    // ¿este nivel tiene escaleras («H» en su mapa)? se mira una sola vez por nivel
+    let esc = false;
+    try {
+      if (jugando && typeof CUR !== 'undefined' && CUR && typeof CUR.at === 'function' && CUR.W && CUR.H) {
+        if (CUR._tieneEscaleras === undefined) { let n = false; for (let r = 0; r < CUR.H && !n; r++) for (let c = 0; c < CUR.W; c++) if (CUR.at(c, r) === 'H') { n = true; break; } CUR._tieneEscaleras = n; }
+        esc = CUR._tieneEscaleras && !(CUR.modo && CUR.modo.vertical);
+      }
+    } catch (e) {}
+    capa.classList.toggle('esc', !!esc);   // carreras: ▲ ▼ cambian de carril
     if (!jugando) for (const k of [...teclas]) tecla(k, false);
   }, 120);
 
