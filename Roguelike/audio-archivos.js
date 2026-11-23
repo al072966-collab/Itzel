@@ -19,6 +19,11 @@ window.AUDIO_ARCHIVOS = (() => {
     ...[['bossfight.mp3','Combate contra jefe 1'],['boss fight2.mp3','Combate contra jefe 2'],['boss fight3.mp3','Combate contra jefe 3'],['boss fight 4.mp3','Combate contra jefe 4'],['la ruptura.mp3','La Ruptura'],[temaSubjefe,'Combate contra subjefe']].map(([archivo,nombre]) => ({archivo,nombre,categoria:'Jefes'})),
     ...[['menu theme.mp3','Tema del menú'],['bullicio.mp3','Bullicio'],['cueva.mp3','Cueva'],['cinematica 1 se abre la grieta.mp3','Se abre la grieta'],['win.mp3','Victoria'],['loss.mp3','Derrota'],['loss by boss.mp3','Derrota ante un jefe']].map(([archivo,nombre]) => ({archivo,nombre,categoria:'Historia y ambiente'}))
   ];
+  // ---- el cancionero se va desbloqueando: cada canción se puede escuchar ahí hasta que te sale por primera vez en el juego ----
+  // (en la versión publicada; en local todo está abierto para trabajar)
+  const desbloqueadas = () => (PROG.d.canciones || (PROG.d.canciones = {}));
+  const abierta = archivo => !window.MODO_PUBLICO || !!desbloqueadas()[archivo];
+  function marca(archivo) { if (!archivo || !window.MODO_PUBLICO || typeof PROG === 'undefined') return; const d = desbloqueadas(); if (d[archivo]) return; d[archivo] = 1; try { PROG.save(); } catch (e) {} }
   const url = nombre => 'assets/audio/' + nombre.split('/').map(encodeURIComponent).join('/');
   const musica = new Audio(); musica.loop = true; musica.preload = 'none';
   const muestra = new Audio(); muestra.preload = 'none';
@@ -47,6 +52,7 @@ window.AUDIO_ARCHIVOS = (() => {
   const volumenCine = categoria => categoria === 'musica' ? Math.max(valor(opciones().musica, 0), valor(opciones().efectos)) : valor(opciones().efectos) * (categoria === 'ambiente' ? valor(opciones().ambiente) : 1);
   function sonidoCine(nombre, categoria = 'efectos') {
     if (mudo) return null; // (no espera al primer clic: en la apertura la cinemática arranca sola, sin que nadie haya tocado nada; si el navegador lo frena, no pasa nada)
+    marca(nombre);
     const audio = new Audio(url(nombre)), item = { audio, categoria }; audio.volume = volumenCine(categoria); sonidosCine.add(item);
     audio.addEventListener('ended', () => { sonidosCine.delete(item); if (bullicioCine === item) bullicioCine = null; }, { once: true });
     if (!cinePausado && !document.hidden) audio.play().catch(() => { sonidosCine.delete(item); });
@@ -184,6 +190,7 @@ window.AUDIO_ARCHIVOS = (() => {
     actualiza();
     if (manual || document.hidden) { musica.pause(); musicaSub.pause(); return; }
     const nombre = pista(), enSub = nombre === temaSubjefe;
+    if (nombre && iniciado) marca(nombre);   // sonó por primera vez: ya se puede escuchar en el cancionero
     // se recuerda siempre dónde va la canción del nivel: al vencer a un subjefe continúa de ahí, no desde el principio
     if (nombre && nombre !== temaSubjefe && nombre === actual && CUR && STATE === 'play' && !musica.paused && musica.currentTime > 0) memoriaNivel = { juego: CUR, archivo: actual, tiempo: musica.currentTime };
     if (enSub) {
@@ -251,9 +258,9 @@ window.AUDIO_ARCHIVOS = (() => {
           <div class="rep-volumen"><span aria-hidden="true">♪</span><label for="musVolumen">Volumen</label><input id="musVolumen" type="range" min="0" max="100" value="${Math.round(valor(opciones().musica, 0) * 100)}"><output id="musVolValor">${Math.round(valor(opciones().musica, 0) * 100)}%</output></div>
           <p id="musEstado" class="rep-estado" aria-live="polite">Selecciona una pista para comenzar</p>
         </section>
-        <section class="rep-biblioteca" aria-label="Biblioteca de canciones"><div class="rep-lista-titulo"><div><span class="rep-kicker">PARA ESCUCHAR</span><h2>Biblioteca</h2></div><span class="rep-conteo">${canciones.length} canciones</span></div>
+        <section class="rep-biblioteca" aria-label="Biblioteca de canciones"><div class="rep-lista-titulo"><div><span class="rep-kicker">PARA ESCUCHAR</span><h2>Biblioteca</h2></div><span class="rep-conteo">${canciones.filter(c => abierta(c.archivo)).length} de ${canciones.length} canciones</span></div>
           <div class="rep-filtros" aria-label="Filtrar canciones"><button class="activo" data-filtro="todas">Todas</button><button data-filtro="Niveles">Niveles</button><button data-filtro="Jefes">Jefes</button><button data-filtro="Historia y ambiente">Historia</button></div>
-          <div class="rep-lista" id="musLista">${canciones.map((c,i) => `<button class="rep-pista" data-pista="${i}"><span class="rep-num">${String(i + 1).padStart(2, '0')}</span><span class="rep-pista-texto"><b>${c.nombre}</b><small>${categoria(i)}</small></span><span class="rep-pista-play" aria-hidden="true">▶</span></button>`).join('')}</div>
+          <div class="rep-lista" id="musLista">${canciones.map((c,i) => `<button class="rep-pista${abierta(c.archivo) ? '' : ' bloqueada'}" data-pista="${i}"${abierta(c.archivo) ? '' : ' disabled'}><span class="rep-num">${String(i + 1).padStart(2, '0')}</span><span class="rep-pista-texto"><b>${abierta(c.archivo) ? c.nombre : '¿?'}</b><small>${abierta(c.archivo) ? categoria(i) : 'Sin descubrir: te saldrá jugando'}</small></span><span class="rep-pista-play" aria-hidden="true">${abierta(c.archivo) ? '▶' : '🔒'}</span></button>`).join('')}</div>
         </section>
       </div><p class="rep-pie">✦ &nbsp; Una aventura que suena a Campeche &nbsp; ✦</p></div>`);
     const estado = () => {
@@ -261,15 +268,16 @@ window.AUDIO_ARCHIVOS = (() => {
       $('musPausa').textContent = activa && !pausada ? '❚❚' : '▶';
       $('musPausa').setAttribute('aria-label', activa && !pausada ? 'Pausar' : 'Reproducir');
       $('musPausa').title = activa && !pausada ? 'Pausar' : 'Reproducir';
-      document.querySelectorAll('[data-pista]').forEach(b => { const on = Number(b.dataset.pista) === seleccion; b.classList.toggle('activa', on); b.setAttribute('aria-current', on ? 'true' : 'false'); b.querySelector('.rep-pista-play').textContent = on && !pausada ? '❚❚' : '▶'; });
+      document.querySelectorAll('[data-pista]').forEach(b => { const on = Number(b.dataset.pista) === seleccion; b.classList.toggle('activa', on); b.setAttribute('aria-current', on ? 'true' : 'false'); b.querySelector('.rep-pista-play').textContent = b.disabled ? '🔒' : on && !pausada ? '❚❚' : '▶'; });
       $('musEstado').textContent = !activa ? 'Selecciona una pista para comenzar' : muestra.volume === 0 ? 'El volumen está en silencio' : pausada ? 'En pausa' : 'Reproduciendo';
     };
     const actualizarTiempo = () => { $('musTiempo').textContent = tiempo(muestra.currentTime); $('musDuracion').textContent = tiempo(muestra.duration); $('musProgreso').value = Number.isFinite(muestra.duration) && muestra.duration > 0 ? Math.round(muestra.currentTime / muestra.duration * 1000) : 0; };
-    const elegir = i => { seleccion = (i + canciones.length) % canciones.length; const c = canciones[seleccion]; muestra.src = url(c.archivo); muestra.loop = false; actualiza(); $('musTitulo').textContent = c.nombre; $('musCategoria').textContent = categoria(seleccion); actualizarTiempo(); reproducir(muestra); estado(); };
+    const elegir = (i, paso = 1) => { let n = 0; i = (i + canciones.length) % canciones.length; while (!abierta(canciones[i].archivo) && n++ < canciones.length) i = (i + paso + canciones.length) % canciones.length; if (!abierta(canciones[i].archivo)) return;   // (se salta lo que aún no te ha salido)
+      seleccion = i; const c = canciones[seleccion]; muestra.src = url(c.archivo); muestra.loop = false; actualiza(); $('musTitulo').textContent = c.nombre; $('musCategoria').textContent = categoria(seleccion); actualizarTiempo(); reproducir(muestra); estado(); };
     document.querySelectorAll('[data-pista]').forEach(b => b.onclick = () => elegir(Number(b.dataset.pista)));
     document.querySelectorAll('[data-filtro]').forEach(b => b.onclick = () => { filtro = b.dataset.filtro; document.querySelectorAll('[data-filtro]').forEach(x => x.classList.toggle('activo', x === b)); document.querySelectorAll('[data-pista]').forEach(x => { x.hidden = filtro !== 'todas' && categoria(Number(x.dataset.pista)) !== filtro; }); $('musLista').scrollTop = 0; });
     $('musPausa').onclick = () => { if (seleccion < 0) elegir(0); else if (muestra.paused) reproducir(muestra); else muestra.pause(); estado(); };
-    $('musAnterior').onclick = () => elegir(seleccion < 0 ? 0 : seleccion - 1);
+    $('musAnterior').onclick = () => elegir(seleccion < 0 ? 0 : seleccion - 1, -1);
     $('musSiguiente').onclick = () => elegir(seleccion < 0 ? 0 : seleccion + 1);
     $('musProgreso').oninput = e => { if (Number.isFinite(muestra.duration) && muestra.duration > 0) muestra.currentTime = Number(e.target.value) / 1000 * muestra.duration; };
     $('musVolumen').oninput = e => { opciones().musica = Number(e.target.value); PROG.save(); actualiza(); $('musVolValor').textContent = e.target.value + '%'; estado(); };

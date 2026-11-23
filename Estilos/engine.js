@@ -3,6 +3,13 @@
 // En un sitio publicado (cualquier dirección que no sea la de esta computadora) el juego se ve como lo vería quien lo juega por primera vez:
 // apertura con logos y cinemática 1, enciclopedia y cinemáticas solo con lo que ya se descubrió. En local (localhost, archivos) queda todo abierto
 // para trabajar. Se puede forzar con ?dev=1 (queda guardado) o quitar con ?dev=0.
+// ?reset=1 borra la partida guardada en este navegador (progreso, logros, enciclopedia, opciones) y recarga sin el parámetro: se entra como la primera vez
+try {
+  if (/[?&]reset=1/.test(location.search)) {
+    const dev = localStorage.getItem('itzel-dev'); localStorage.clear(); sessionStorage.clear(); if (dev) localStorage.setItem('itzel-dev', dev);
+    const u = new URL(location.href); u.searchParams.delete('reset'); location.replace(u.toString());
+  }
+} catch (e) {}
 window.MODO_PUBLICO = (() => {
   try {
     const q = new URLSearchParams(location.search);

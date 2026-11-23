@@ -25,3 +25,5 @@
 .rep-pie { text-align:center; color:#e1c6a0; font:italic 14px 'Alegreya',serif; margin:13px 0 0; }
 .reproductor button:focus-visible,.reproductor input:focus-visible { outline:3px solid #e9b440; outline-offset:2px; }
 @media(max-width:700px) { .reproductor { width:min(520px,94vw); }.rep-cabecera { margin-bottom:13px; }.rep-cabecera p { font-size:15px; }.rep-volver { padding:9px; }.rep-volver span { display:none; }.rep-marco { grid-template-columns:1fr; }.rep-ahora { border-right:0; border-bottom:4px solid #d7b78a; padding:18px 23px; }.rep-arte { width:112px; height:112px; margin-bottom:10px; }.rep-disco { width:88px; height:88px; }.rep-disco-centro { width:38px; height:38px; font-size:21px; }.rep-info h2 { font-size:24px; }.rep-progreso { margin-top:12px; }.rep-transporte { margin:5px 0 8px; }.rep-transporte .rep-play { width:45px; height:45px; }.rep-biblioteca { padding:20px; }.rep-lista { height:260px; }.rep-filtros { margin:12px 0 8px; } }
+
+.rep-pista.bloqueada{opacity:.55;filter:grayscale(.7);cursor:not-allowed}.rep-pista.bloqueada b{letter-spacing:.2em}
