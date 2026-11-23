@@ -1,4 +1,20 @@
 'use strict';
+// ---- versión publicada vs. versión de trabajo ----
+// En un sitio publicado (cualquier dirección que no sea la de esta computadora) el juego se ve como lo vería quien lo juega por primera vez:
+// apertura con logos y cinemática 1, enciclopedia y cinemáticas solo con lo que ya se descubrió. En local (localhost, archivos) queda todo abierto
+// para trabajar. Se puede forzar con ?dev=1 (queda guardado) o quitar con ?dev=0.
+window.MODO_PUBLICO = (() => {
+  try {
+    const q = new URLSearchParams(location.search);
+    if (q.get('publico') === '1') sessionStorage.setItem('itzel-publico', '1');   // para ver en esta computadora cómo se ve la versión publicada (dura lo que la pestaña)
+    if (q.get('publico') === '0') sessionStorage.removeItem('itzel-publico');
+    if (sessionStorage.getItem('itzel-publico')) return true;
+    if (q.has('dev')) { if (q.get('dev') === '0') localStorage.removeItem('itzel-dev'); else localStorage.setItem('itzel-dev', '1'); }
+    if (localStorage.getItem('itzel-dev')) return false;
+  } catch (e) {}
+  return !/^(localhost|127\.0\.0\.1|\[::1\]|)$/.test(location.hostname) && !/\.local$/.test(location.hostname);
+})();
+
 // =====================================================================
 //  GANCHOS: para agregarle algo a una función del juego sin reasignarla a mano.
 //    GANCHOS.en('startLevel', sig => function (...a) { /* antes */ const r = sig.apply(this, a); /* después */ return r; });

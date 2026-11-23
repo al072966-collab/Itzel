@@ -8,7 +8,7 @@
   if (q.has('propuesta')) window.presentacionPropuesta = true;
   // Mientras se depura la apertura (logos, cinemática 1 y portada) está escondida: se entra directo al menú del juego.
   // Para volver a verla: poner APERTURA_VISIBLE en true, o abrir el juego con ?intro=1.
-  const APERTURA_VISIBLE = false;
+  const APERTURA_VISIBLE = !!window.MODO_PUBLICO;   // visible en el sitio publicado; en local, con ?intro=1
   if (!APERTURA_VISIBLE && !q.has('intro')) return;
   if (['propuesta', 'jugar', 'gd', 'mundo', 'nivel', 'jefe', 'fotos', 'mudo', 'fijo', 'sinintro'].some(k => q.has(k))) return;
   window.enApertura = true;

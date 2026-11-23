@@ -58,7 +58,7 @@ const CINE = (() => {
   // MIENTRAS SE PRUEBA EL JUEGO: el menú enseña todas las cinemáticas aunque no hayan salido.
   // (Solo cambia el menú; la entrada sigue saliendo solo la primera vez y los jefes en versión corta si ya se vieron.)
   // Para el juego final, poner en false y vuelven a desbloquearse al ir saliendo.
-  const MENU_TODAS = true;
+  const MENU_TODAS = !window.MODO_PUBLICO;   // en el sitio publicado solo las que ya se vieron
   const enMenu = id => MENU_TODAS || (!(REG[id] && REG[id].bloqueada && REG[id].bloqueada()) && vista(id));
   function marcar(id) { if (!vista(id)) { prog().vistas[id] = Date.now(); PROG.save(); } }
 

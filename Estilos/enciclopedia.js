@@ -383,6 +383,7 @@ const skinsDe = m => (ELEGIDOS[m] || []).slice();
 const skinsVistas = m => { try { return ((JSON.parse(localStorage.getItem('itzel-progreso') || '{}').skins || {})[m] || {}).vistas || []; } catch (e) { return []; } };
 function ponSkinEnci(m) { aplicaElegido(m, 0); }
 try { const v = JSON.parse(localStorage.getItem('enci-ui-rel') || '{}'); catActual = v.cat || 0; itemActual = v.item || 0; vistaJugador = !!v.jugador; } catch (e) {}
+if (window.MODO_PUBLICO) vistaJugador = true;   // publicada: solo lo descubierto, como en una partida nueva
 const guardaUI = () => { try { localStorage.setItem('enci-ui-rel', JSON.stringify({ cat: catActual, item: itemActual, jugador: vistaJugador, tarjetas: typeof modoTarjetas !== 'undefined' && modoTarjetas })); } catch (e) {} };
 const visto = it => !vistaJugador || ENCI.tiene(it.id);
 const vivo = new Escena($('escena'));
@@ -861,7 +862,7 @@ function pasa(dir) {
 $('ant').onclick = () => pasa(-1);
 $('sig').onclick = () => pasa(1);
 function vistaBoton() { if (!$('vista')) return; $('vista').classList.toggle('on', vistaJugador); $('vista').textContent = vistaJugador ? 'Viendo como jugador' : 'Ver como jugador'; }
-if ($('vista')) $('vista').onclick = () => { vistaJugador = !vistaJugador; vistaBoton(); abrirCat(); };
+if ($('vista')) { if (window.MODO_PUBLICO) $('vista').style.display = 'none'; else $('vista').onclick = () => { vistaJugador = !vistaJugador; vistaBoton(); abrirCat(); }; }
 addEventListener('keydown', e => { if (e.target.matches('input, select, textarea')) return; if (e.key === 'ArrowRight') $('sig').click(); if (e.key === 'ArrowLeft') $('ant').click(); });
 
 // Regenerar todas las vistas (mapas, enemigos, jefes…) con los assets que hay ahora: se borran las miniaturas guardadas y se vuelven a pintar.
@@ -873,6 +874,7 @@ window.regeneraVistas = regeneraVistas;
     const b = document.createElement('button'); b.id = 'regeneraVistas'; b.type = 'button'; b.textContent = 'Regenerar vistas'; b.title = 'Vuelve a pintar las miniaturas de mapas, enemigos y jefes con los assets actuales';
     b.style.cssText = 'margin-left:10px;padding:3px 10px;font:600 13px "Alegreya Sans",sans-serif;color:#4a2e20;background:#fff3dc;border:1.5px solid #a84442;border-radius:12px;cursor:pointer';
     b.onclick = () => { b.textContent = 'Regenerando…'; regeneraVistas(); setTimeout(() => { b.textContent = 'Regenerar vistas'; }, 2500); };
+    if (window.MODO_PUBLICO) b.style.display = 'none';   // botón de trabajo
     cab.appendChild(b); } }
 // miniaturas: se pintan una por cuadro con la escena real y se recorta lo importante
 const off = mkCanvas(VW, VH), offEsc = new Escena(off);
