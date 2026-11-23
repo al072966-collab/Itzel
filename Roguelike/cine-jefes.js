@@ -14,7 +14,7 @@
 // =====================================================================
 (() => {
   const U = window.CINE_UTIL;
-  const ORDEN = ['mythos', 'golem', 'serpiente', 'jaguar', 'hadas', 'cocodrilo', 'pirata', 'chaac', 'camazotz', 'abeja', 'brawbot', 'ruptura'];
+  const ORDEN = ['mythos', 'golem', 'serpiente', 'jaguar', 'hadas', 'cocodrilo', 'pirata', 'chaac', 'camazotz', 'abeja', 'ruptura'];
   const CARTA = Object.fromEntries(Object.entries(CAMPECHE.JEFES).map(([k, j]) => [k, j.carta])), NOMBRE_MENU = Object.fromEntries(Object.entries(CAMPECHE.JEFES).map(([k, j]) => [k, j.menu]));
   const FLOOR = JEFES_EXT.FLOOR;
   const ENTRADAS = {};
@@ -37,10 +37,103 @@
   }
   const enMundo = (ctx, V) => ctx.setTransform(V.sx, 0, 0, V.sy, V.ex, V.ey);
   const vectorial = () => !(view.st.pixel || view.st.fixedS || view.st.base);
+  const golemPenasco = new Image();
+  golemPenasco.src = '../Roguelike/assets/cinematicas-jefes/golem-penasco-v1.webp';
+  const golemPenascoBits8 = new Image();
+  golemPenascoBits8.src = '../Roguelike/assets/cinematicas-jefes/golem-penasco-bits8-v1.webp';
+  const golemOnda = new Image();
+  golemOnda.src = '../Roguelike/assets/cinematicas-jefes/golem-onda-v1.webp';
+  const golemOndaBits8 = new Image();
+  golemOndaBits8.src = '../Roguelike/assets/cinematicas-jefes/golem-onda-bits8-v1.webp';
+  const golemDormidoCine = new Image();
+  golemDormidoCine.src = '../Roguelike/assets/cinematicas-jefes/golem-dormido-v1.webp';
+  const golemDespertandoCine = new Image();
+  golemDespertandoCine.src = '../Roguelike/assets/cinematicas-jefes/golem-despertando-v1.webp';
+  const golemDormidoBits8Cine = new Image();
+  golemDormidoBits8Cine.src = '../Roguelike/assets/cinematicas-jefes/golem-dormido-bits8-v1.webp';
+  const golemDespiertaBits8Cine = new Image();
+  golemDespiertaBits8Cine.src = '../Roguelike/assets/cinematicas-jefes/golem-despierta-bits8-v1.webp';
+  const xunanDormidaCine = new Image();
+  xunanDormidaCine.src = '../Roguelike/assets/cinematicas-jefes/xunan-kab-dormida-cine-v1.webp';
+  const xunanDespertandoCine = new Image();
+  xunanDespertandoCine.src = '../Roguelike/assets/cinematicas-jefes/xunan-kab-despertando-cine-v1.webp';
+  const itzelRayo = new Image();
+  itzelRayo.src = '../Roguelike/assets/cinematicas-jefes/itzel-esquiva-rayo-hoja-v1.webp';
+  const itzelSaltoBits8 = new Image();
+  itzelSaltoBits8.src = '../Roguelike/assets/cinematicas-jefes/itzel-salto-bits8-v1.webp';
+  const posesRayo = [[35,300,393,387,17,16], [548,252,396,430,17,18], [1097,23,438,545,18,22], [1650,253,462,436,19,18]];
+  const itzelSusto = new Image();
+  itzelSusto.src = '../Roguelike/assets/cinematicas-jefes/itzel-susto-huida-hoja-v1.webp';
+  const posesSusto = [[180,125,464,568,18,21], [910,39,426,583,17,22], [1546,123,550,560,20,21]];
+  const itzelEquilibrio = new Image();
+  itzelEquilibrio.src = '../Roguelike/assets/cinematicas-jefes/itzel-equilibrio-tronco-v1.webp';
+  const itzelAlcanza = new Image();
+  itzelAlcanza.src = '../Roguelike/assets/cinematicas-jefes/itzel-alcanzar-fresita-v1.webp';
+  const itzelAgua = new Image();
+  itzelAgua.src = '../Roguelike/assets/cinematicas-jefes/itzel-reaccion-agua-v1.webp';
+  const itzelGota = new Image();
+  itzelGota.src = '../Roguelike/assets/cinematicas-jefes/itzel-primera-gota-v1.webp';
+  const rescateRio = new Image();
+  rescateRio.src = '../Roguelike/assets/cinematicas-jefes/fresita-rescata-itzel-v1.webp';
+  const hojaJaguar = new Image();
+  hojaJaguar.src = '../Roguelike/assets/cinematicas-jefes/jaguar-hoja-v1.webp';
+  const polvoJaguar = new Image();
+  polvoJaguar.src = '../Roguelike/assets/cinematicas-jefes/jaguar-polvo-v1.webp';
+  const fresitaCanta = new Image();
+  fresitaCanta.src = '../Roguelike/assets/cinematicas-jefes/fresita-reacciones-hoja-v1.webp';
+  const fresitaSustoBits8 = new Image();
+  fresitaSustoBits8.src = '../Roguelike/assets/cinematicas-jefes/fresita-susto-bits8-v1.webp';
+  const fresitaReconoce = new Image();
+  fresitaReconoce.src = '../Roguelike/assets/cinematicas-jefes/fresita-reconoce-amigos-v1.webp';
+  const rayoCine = new Image();
+  rayoCine.src = '../Roguelike/assets/cinematicas-jefes/chaac-rayo-v1.webp';
+  const rayoBits8 = new Image();
+  rayoBits8.src = '../Roguelike/assets/cinematicas-jefes/chaac-rayo-bits8-v1.webp';
+  const nubeChaac = new Image();
+  nubeChaac.src = '../Roguelike/assets/cinematicas-jefes/chaac-nube-v1.webp';
+  const nubeChaacBits8 = new Image();
+  nubeChaacBits8.src = '../Roguelike/assets/cinematicas-jefes/chaac-nube-bits8-v1.webp';
+  const grietaMythos = new Image();
+  grietaMythos.src = '../Roguelike/assets/cinematicas-jefes/mythos-grieta-v1.webp';
+  const fuegoKukulkan = new Image();
+  fuegoKukulkan.src = '../Roguelike/assets/cinematicas-jefes/kukulkan-fuego-v1.webp';
+  const plumaKukulkan = new Image();
+  plumaKukulkan.src = '../Roguelike/assets/cinematicas-jefes/kukulkan-pluma-v1.webp';
+  const reinaConjuro = new Image();
+  reinaConjuro.src = '../Roguelike/assets/forge/jefes/hadas-v2/processed-v1/raw-sheet-clean.webp';
   // el jefe, encima de todo: nítido (estilos dibujados) o con el pixel de su mundo
   const tmp = mkCanvas(8, 8), tx = tmp.getContext('2d');
   function dibujaJefe(ctx, V, S) {
     const J = S.J, caja = (JEFES_ARTE.CAJA[J.tipo] || (o => [o.x - 60, o.y - 60, o.x + 60, o.y + 60]))(J), pad = 16;
+    let alfaCuerpo = 1;
+    const estiloJefe = String(view.st.id).split('~')[0], golemBits8 = estiloJefe === 'bits8';
+    const imagenDormidoGolem = golemBits8 ? golemDormidoBits8Cine : golemDormidoCine, imagenDespiertoGolem = golemBits8 ? golemDespiertaBits8Cine : golemDespertandoCine;
+    if (J.tipo === 'golem' && S.poseGolem && (estiloJefe === 'acuarela' || golemBits8) && imagenDormidoGolem.complete && imagenDormidoGolem.naturalWidth && imagenDespiertoGolem.complete && imagenDespiertoGolem.naturalWidth) {
+      const h = Math.max(44, (J.hgt || 92) + 14), w = 84;
+      ctx.save(); enMundo(ctx, V); ctx.imageSmoothingEnabled = true;
+      if (S.escala != null && S.escala !== 1) { ctx.translate(J.x, J.y); ctx.scale(S.escala, S.escala); ctx.translate(-J.x, -J.y); }
+      if (S.giro) { ctx.translate(J.x, J.y); ctx.rotate(S.giro); ctx.translate(-J.x, -J.y); }
+      ctx.globalAlpha = S.alfaJefe != null ? S.alfaJefe : 1;
+      if (S.poseGolem === 'dormido') ctx.drawImage(imagenDormidoGolem, J.x - w / 2, FLOOR - h, w, h);
+      else {
+        const a = clamp(S.despertarGolem || 0, 0, 1);
+        if (a < 1) { ctx.globalAlpha *= 1 - a; ctx.drawImage(imagenDormidoGolem, J.x - w / 2, FLOOR - h, w, h); }
+        if (a > 0) { ctx.globalAlpha = (S.alfaJefe != null ? S.alfaJefe : 1) * a; ctx.drawImage(imagenDespiertoGolem, J.x - w / 2, FLOOR - h, w, h); }
+      }
+      ctx.restore(); return;
+    }
+    if (J.tipo === 'abeja' && S.poseAbeja && String(view.st.id).split('~')[0] === 'acuarela' && xunanDormidaCine.complete && xunanDormidaCine.naturalWidth && xunanDespertandoCine.complete && xunanDespertandoCine.naturalWidth) {
+      const w = 70, y = S.poseAbeja === 'dormida' ? 2 : 0, alpha = S.alfaJefe != null ? S.alfaJefe : 1;
+      const pintaPose = (img, a) => { ctx.globalAlpha = alpha * a; const h = w * img.naturalHeight / img.naturalWidth; ctx.drawImage(img, -w / 2, y - h / 2, w, h); };
+      ctx.save(); enMundo(ctx, V); ctx.imageSmoothingEnabled = true; ctx.translate(J.x, J.y); ctx.scale(J.face || 1, 1);
+      if (S.poseAbeja === 'dormida') pintaPose(xunanDormidaCine, 1);
+      else { const a = clamp(S.despertarAbeja || 0, 0, 1); if (a < 1) pintaPose(xunanDormidaCine, 1 - a); if (a > 0) pintaPose(xunanDespertandoCine, a); }
+      ctx.restore(); return;
+    }
+    if (S.tipo === 'hadas' && String(view.st.id).split('~')[0] === 'acuarela' && J.t >= 3.15 && J.t < 3.7 && reinaConjuro.complete && reinaConjuro.naturalWidth) {
+      ctx.save(); enMundo(ctx, V); ctx.imageSmoothingEnabled = true; ctx.translate(J.x, J.y); ctx.scale(-1, 1);
+      ctx.drawImage(reinaConjuro, 162, 732, 355, 430, -21, -29, 42, 51); ctx.restore(); return;
+    }
     // con técnica del mundo (acuarela, vitral, papel…) el retoque cuesta por pixel: se procesa a menos resolución y a 30 cuadros
     const tec = !!JEFES_ARTE.ARTE[String(view.st.id).split('~')[0]];
     // (y en los jefes grandes, como la Ruptura, con un tope de pixeles y a 12 cuadros)
@@ -64,7 +157,7 @@
     ctx.save(); enMundo(ctx, V); ctx.imageSmoothingEnabled = vectorial();
     if (S.escala != null && S.escala !== 1) { ctx.translate(J.x, J.y); ctx.scale(S.escala, S.escala); ctx.translate(-J.x, -J.y); } // nace chiquito de la grieta
     if (S.giro) { ctx.translate(J.x, J.y); ctx.rotate(S.giro); ctx.translate(-J.x, -J.y); }
-    if (S.alfaJefe != null) ctx.globalAlpha = S.alfaJefe;
+    ctx.globalAlpha = alfaCuerpo * (S.alfaJefe != null ? S.alfaJefe : 1);
     const dy = S.dyJefe || 0, pinta = () => ctx.drawImage(tmp, 0, 0, W, H, x0, y0 + dy, W / s0, H / s0);
     if (S.agua == null) pinta();
     else { // bajo el agua se ve apenas, a través de ella
@@ -133,7 +226,7 @@
       if (opc.repeticion) {
         // desde el menú: una partida de mentiras en un mundo que ya visitaron, con el prólogo del jefe
         const vistos = Object.keys(PROG.s.mundos || {}).filter(id => MUNDOS.includes(id) && NIVELES[id] && !NIVELES[id].modo), pool = vistos.length ? vistos : MUNDOS.filter(id => NIVELES[id] && !NIVELES[id].modo);
-        newRun((Math.random() * 1e6) | 0); RUN.styles[0] = STYLE_MAP[pool[(Math.random() * pool.length) | 0]]; RUN.world = 1; RUN.jefeOrden = [tipo]; RUN.bossIdx = 0;
+        newRun((Math.random() * 1e6) | 0); RUN.styles[0] = opc.mundo || STYLE_MAP[pool[(Math.random() * pool.length) | 0]]; RUN.world = 1; RUN.jefeOrden = [tipo]; RUN.bossIdx = 0;
         aplicaElegido(curStyle().id, 0); iniciaPrologo(tipo);
       } else opc.construir();
       $('loading').classList.remove('on');
@@ -175,7 +268,28 @@
         const modo = S.mundoObj || (E.dejaObj ? 'todo' : 'oculto'), tapa = S.Obj && modo === 'oculto', kObj = S.Obj ? S.Obj.k : null, jReal = S.Obj ? S.Obj.j : null;
         if (tapa) S.Obj.k = '__entrada'; else if (S.J && !S.Obj) S.J.__k = S.J.k, S.J.k = '__entrada';
         if (S.Obj && modo === 'sinJefe') S.Obj.j = { tipo: '__nada', x: jReal.x, y: jReal.y, t: jReal.t, pal: jReal.pal };
-        const pv = CUR.p.vis, fx = CUR.fre ? CUR.fre.x : 0; if (nit) { CUR.p.vis = false; if (CUR.fre) CUR.fre.x = -1e5; }
+        const acuarela = String(view.st.id).split('~')[0] === 'acuarela';
+        const poseRayo = S.tipo === 'chaac' && acuarela && T >= 4.55 && T < 5.15 && itzelRayo.complete && itzelRayo.naturalWidth;
+        const saltoBits8 = String(view.st.id).split('~')[0] === 'bits8' && itzelSaltoBits8.complete && itzelSaltoBits8.naturalWidth && ((S.tipo === 'chaac' && T >= 4.7 && T < 5) || (S.tipo === 'golem' && ((T > S.ola - .18 && T < S.ola + .18) || (T > 5.8 && T < 6.12))) || (S.tipo === 'abeja' && T >= 1 && T < 1.3));
+        const poseJaguar = S.tipo === 'jaguar' && acuarela && T >= 3.6 && T < 4.7 && itzelSusto.complete && itzelSusto.naturalWidth;
+        const poseTronco = S.tipo === 'cocodrilo' && acuarela && S.s >= 2.82 && S.s < 2.95 && itzelEquilibrio.complete && itzelEquilibrio.naturalWidth;
+        const poseHuida = S.tipo === 'golem' && acuarela && T >= 5.35 && T < 5.8 && itzelSusto.complete && itzelSusto.naturalWidth;
+        const saltoGolem = S.tipo === 'golem' && acuarela && ((T > S.ola - .22 && T < S.ola + .22) || (T > 5.8 && T < 6.12)) && itzelRayo.complete && itzelRayo.naturalWidth;
+        const posePirata = S.tipo === 'pirata' && acuarela && T >= 4.55 && T < 5.1 && itzelSusto.complete && itzelSusto.naturalWidth;
+        const saltoMiel = S.tipo === 'abeja' && acuarela && T >= 1 && T < 1.3 && itzelRayo.complete && itzelRayo.naturalWidth;
+        const poseAlcanza = S.tipo === 'hadas' && acuarela && T >= 4.35 && T < 4.85 && itzelAlcanza.complete && itzelAlcanza.naturalWidth;
+        const poseAgua = S.tipo === 'cocodrilo' && acuarela && S.s >= 4.45 && S.s < 4.85 && itzelAgua.complete && itzelAgua.naturalWidth;
+        const poseGota = S.tipo === 'chaac' && acuarela && T >= 1.1 && T < 1.45 && itzelGota.complete && itzelGota.naturalWidth;
+        const poseRescate = S.tipo === 'cocodrilo' && acuarela && CUR.fre && S.s >= 2.95 && S.s < 3.15 && rescateRio.complete && rescateRio.naturalWidth;
+        const poseItzel = poseRayo || saltoBits8 || poseJaguar || poseTronco || poseHuida || saltoGolem || posePirata || saltoMiel || poseAlcanza || poseAgua || poseGota || poseRescate;
+        const cantoFresita = S.tipo === 'abeja' && T >= 3.9 && T < 4.65;
+        const sustoFresita = (S.tipo === 'jaguar' && T >= 2.3 && T < 2.75) || (S.tipo === 'golem' && ((T >= 1.25 && T < 1.45) || (T >= 5.35 && T < 5.55))) || (S.tipo === 'hadas' && T >= 4 && T < 5.95);
+        const sustoFresitaT = S.tipo === 'golem' && ((T >= 3.9 && T < 4.2) || (T >= 5.35 && T < 5.55));
+        const aguaFresita = S.tipo === 'cocodrilo' && S.s >= 4.55 && S.s < 4.85;
+        const reconoceAmigos = S.tipo === 'ruptura' && T >= 1.7 && T < 2.3 && fresitaReconoce.complete && fresitaReconoce.naturalWidth;
+        const sustoBits8 = String(view.st.id).split('~')[0] === 'bits8' && sustoFresitaT && fresitaSustoBits8.complete && fresitaSustoBits8.naturalWidth;
+        const poseFresita = CUR.fre && (sustoBits8 || (acuarela && (poseRescate || reconoceAmigos || ((cantoFresita || sustoFresita || aguaFresita) && fresitaCanta.complete && fresitaCanta.naturalWidth))));
+        const pv = CUR.p.vis, fx = CUR.fre ? CUR.fre.x : 0; if (nit || poseItzel) CUR.p.vis = false; if ((nit || poseFresita) && CUR.fre) CUR.fre.x = -1e5;
         // el mundo puede parpadear unos cuadros con el arte de otro mundo (la Ruptura); el jefe sigue en el suyo
         const otro = S.estiloMundo && STYLE_MAP[S.estiloMundo], st0 = view.st; if (otro && otro !== st0) view.setStyle(otro);
         U.pintaMundo(CUR, false);
@@ -187,7 +301,17 @@
         U.componer(ctx, M, c.z, V.A, nit ? (c.dof || 0) * 4 * M.k : 0, V.D);
         if (E.atras) { ctx.save(); enMundo(ctx, V); E.atras(ctx, S, T, V); ctx.restore(); }
         if (!S.oculto) dibujaJefe(ctx, V, S);
-        if (nit) dibujaNinas(ctx, V);
+        if (poseItzel) {
+          const saltoJaguar = poseJaguar && T >= 4.15 && T < 4.5;
+          const saltoPirata = posePirata && T < 4.9;
+          const [sx, sy, sw, sh, w, h] = poseRayo ? posesRayo[T < 4.67 ? 0 : T < 4.76 ? 1 : T < 5.0 ? 2 : 3] : saltoBits8 ? [370,90,720,860,19,23] : saltoGolem || saltoMiel ? posesRayo[2] : poseJaguar || posePirata ? posesSusto[saltoJaguar || saltoPirata ? 1 : 0] : poseHuida ? posesSusto[T < 5.6 ? 0 : 2] : poseAlcanza ? [46,83,1007,1260,19,24] : poseAgua ? [186,20,710,1430,15,22] : poseGota ? [79,9,780,1445,15,23] : poseRescate ? [0,0,1107,1421,23,27] : [47,34,976,1334,20,21], p = CUR.p;
+          ctx.save(); enMundo(ctx, V); ctx.imageSmoothingEnabled = !saltoBits8; ctx.translate(p.x, p.y);
+          if ((poseJaguar && !saltoJaguar) || (posePirata && !saltoPirata)) ctx.scale(-1, 1);
+          if ((saltoGolem || saltoBits8) && p.face < 0) ctx.scale(-1, 1);
+          ctx.drawImage(poseRayo || saltoGolem || saltoMiel ? itzelRayo : saltoBits8 ? itzelSaltoBits8 : poseJaguar || poseHuida || posePirata ? itzelSusto : poseAlcanza ? itzelAlcanza : poseAgua ? itzelAgua : poseGota ? itzelGota : poseRescate ? rescateRio : itzelEquilibrio, sx, sy, sw, sh, poseRescate ? -w * .6 : -w / 2, -h, w, h); ctx.restore();
+        }
+        if (nit) { if (poseItzel) CUR.p.vis = false; if (poseFresita) CUR.fre.x = -1e5; dibujaNinas(ctx, V); CUR.p.vis = pv; if (poseFresita) CUR.fre.x = fx; }
+        if (poseFresita && !poseRescate) { ctx.save(); enMundo(ctx, V); ctx.imageSmoothingEnabled = !sustoBits8; if (sustoBits8) ctx.drawImage(fresitaSustoBits8, 194, 14, 1004, 1172, CUR.fre.x - 7, CUR.fre.y - 7.5, 14, 15); else if (reconoceAmigos) ctx.drawImage(fresitaReconoce, CUR.fre.x - 7.5, CUR.fre.y - 8.5, 15, 17); else ctx.drawImage(fresitaCanta, cantoFresita ? 705 : aguaFresita ? 1410 : 0, 0, aguaFresita ? 738 : 705, 732, CUR.fre.x - 7, CUR.fre.y - 7.5, 14, 15); ctx.restore(); }
         if (E.frente) { ctx.save(); enMundo(ctx, V); E.frente(ctx, S, T, V); ctx.restore(); }
         if (E.pantalla) { ctx.save(); E.pantalla(ctx, M, S, T, V); ctx.restore(); }
         S.foco = E.foco ? V.scr(...E.foco(S)) : [M.w / 2, M.h / 2];
@@ -266,14 +390,16 @@
     ctx.globalCompositeOperation = 'lighter'; glowDot(ctx, x, y, h * .8, '#5fe8ff', .35 * vivo); glowDot(ctx, x, y + h * .2, h * .5, '#ff5dc8', .25 * vivo);
     ctx.globalCompositeOperation = 'source-over';
     // adentro, otro cielo
-    traza(); ctx.save(); ctx.clip();
+    const grietaIlustrada = String(view.st.id).split('~')[0] === 'acuarela' && grietaMythos.complete && grietaMythos.naturalWidth;
+    if (grietaIlustrada) { const ancho = Math.max(1, w * 3.3); ctx.globalAlpha = Math.min(1, ab * 2); ctx.drawImage(grietaMythos, x - ancho / 2, y - h / 2, ancho, h); ctx.globalAlpha = 1; }
+    else { traza(); ctx.save(); ctx.clip();
     const g = ctx.createLinearGradient(x, y - h / 2, x, y + h / 2); g.addColorStop(0, '#1a0638'); g.addColorStop(.5, '#3b0a5e'); g.addColorStop(1, '#0a1840'); ctx.fillStyle = g; ctx.fillRect(x - w - 6, y - h / 2, w * 2 + 12, h);
     ctx.fillStyle = '#ffffff';
     for (let i = 0; i < 16; i++) { const sx = x + (hash1(i, 41) - .5) * 44, sy = y - h / 2 + ((hash1(i, 43) * h + t * 9) % h), r = .4 + hash1(i, 47) * .7; ctx.globalAlpha = .5 + .5 * Math.sin(t * 5 + i); ctx.fillRect(sx - r, sy - r, r * 2, r * 2); }
     ctx.restore();
     // labios de la herida
     traza(); ctx.lineJoin = 'round'; ctx.strokeStyle = '#ff7fd6'; ctx.lineWidth = 2.2; ctx.globalAlpha = .9 * Math.min(1, ab * 2); ctx.stroke();
-    ctx.strokeStyle = '#c6fbff'; ctx.lineWidth = .9; ctx.stroke();
+    ctx.strokeStyle = '#c6fbff'; ctx.lineWidth = .9; ctx.stroke(); }
     ctx.globalAlpha = 1;
     // las puntadas aparecen y jalan los labios hasta cerrarla
     if (ci > 0) {
@@ -300,7 +426,7 @@
       // Mythos baja por la grieta; el ojo se abre a los 3.75
       const baja = EASE.out3(tramo(t, 1.85, 3.3, 'lin')), grieta = S.my - 40;
       S.escala = lerp(.12, 1, EASE.outBack(tramo(t, 1.85, 3.0, 'lin'))); S.alfaJefe = tramo(t, 1.8, 2.05);
-      Object.assign(J, { x: S.mx + Math.sin(t * .8) * 3, y: lerp(grieta, S.my, baja) + Math.sin(t * 1.4) * 2 * baja, t, at: t, st: t > 3.75 ? 'ventana' : 'entra', stunT: 0, flash: t > 3.72 && t < 3.86 ? .4 : 0, mode: 'alcance', conLagrima: false });
+      Object.assign(J, { x: S.mx + Math.sin(t * .8) * 3, y: lerp(grieta, S.my, baja) + Math.sin(t * 1.4) * 2 * baja, t, at: t, st: t > 3.75 ? 'ventana' : 'entra', cineOjoCerrado: t < 3.75, stunT: 0, flash: t > 3.72 && t < 3.86 ? .4 : 0, mode: 'alcance', conLagrima: false });
       // la pupila busca a los lados y se clava en Itzel
       S.mira = t < 4.05 ? [J.x + Math.sin(t * 7) * 70, J.y + 30] : [p.x, p.y - 8];
       if (t < 1.5) S.cam = { x: L.camMin - 44, z: claves(t, [[0, 1.05], [1.5, 1]]), fx: p.x + 70, fy: 110, nit: false };
@@ -312,7 +438,7 @@
     // la grieta del cielo y los pedazos de piedra que caen de ella
     atras(ctx, S, t, V) {
       if (t < 1.45) return;
-      const x = S.mx, y = S.my - 40, ab = EASE.out3(tramo(t, 1.5, 1.85, 'lin')), ci = EASE.io2(tramo(t, 3.0, 3.45, 'lin'));
+      const x = S.mx, y = S.my - (String(view.st.id).split('~')[0] === 'acuarela' ? 12 : 40), ab = EASE.out3(tramo(t, 1.5, 1.85, 'lin')), ci = EASE.io2(tramo(t, 3.0, 3.45, 'lin'));
       rasgon(ctx, x, y, ab, ci, t);
       ctx.fillStyle = S.J.pal.b;
       for (let i = 0; i < 9; i++) { const f = t - 1.6 - hash1(i, 2) * 1.2; if (f < 0 || f > 1.6) continue; const px = x + (hash1(i, 3) - .5) * 40, py = y - 10 + f * f * 140; ctx.save(); ctx.translate(px, py); ctx.rotate(f * (hash1(i, 4) * 6 - 3)); ctx.globalAlpha = 1 - f / 1.6; ctx.fillRect(-1.6, -1.6, 3.2 + hash1(i, 5) * 2, 3.2); ctx.restore(); }
@@ -348,7 +474,11 @@
       const p = CUR.p, st = L.start, J = S.J, fr = CUR.fre, gx = S.gx;
       // el gólem: dormido y agachado, se le prende el cristal, se levanta, pisa
       const sube = EASE.outBack(tramo(t, 2.85, 3.5, 'lin'));
-      Object.assign(J, { x: gx, y: FLOOR, face: 1, t, at: t, hgt: lerp(30, 92, sube), st: t < 1.9 ? 'entra' : 'ventana', stunT: 0, flash: t > 1.9 && t < 2.02 ? .4 : 0, drop: 0, charging: false, atk: 'pisoton', jump: t > 3.6 && t < 4.0 ? Math.sin((t - 3.6) / .4 * Math.PI) * 26 : 0 });
+      const avienta = t >= 4.45 && t < 5.35;
+      const pisa = t >= 4.0 && t < 4.45;
+      Object.assign(J, { x: gx, y: FLOOR, face: 1, t, at: avienta ? t - 4.45 : t, hgt: lerp(30, 92, sube), st: avienta || pisa ? 'ataque' : 'ventana', atk: avienta ? 'rocas' : 'pisoton', cineDormido: t < 2.05, cineDespierta: t >= 2.05 && t < 3.5, stunT: 0, flash: t > 1.9 && t < 2.02 ? .4 : 0, drop: 0, charging: false, jump: t > 3.6 && t < 4.0 ? Math.sin((t - 3.6) / .4 * Math.PI) * 26 : 0 });
+      S.poseGolem = t < 2.05 ? 'dormido' : t < 3.5 ? 'despertando' : null;
+      S.despertarGolem = tramo(t, 2.05, 2.55, 'io2');
       S.tinte = ['#1a1018', .55 * (1 - tramo(t, 1.95, 2.6))]; // la piedra dormida, apagada
       // Itzel: camina, oye algo, voltea; brinca la onda; el peñasco; sale corriendo
       const ola = 4.0 + (st.x + 6 - gx - 18) / 170;
@@ -376,21 +506,29 @@
       ctx.fillStyle = J.pal.b;
       for (let i = 0; i < 14; i++) { const t0 = i < 6 ? .2 + i * .2 : 2.85 + (i - 6) * .09, f = t - t0; if (f < 0 || f > .9) continue; const px = gx + (hash1(i, 1) - .5) * 36, py = FLOOR - J.hgt * (.55 + hash1(i, 2) * .4) + f * f * 300; if (py > FLOOR) continue; ctx.save(); ctx.translate(px, py); ctx.rotate(f * 5); ctx.fillRect(-1.5, -1.5, 3, 3); ctx.restore(); }
       // la onda del pisotón corre por el suelo
-      if (t > 4.0 && t < 5.2) { const x = gx + 18 + (t - 4.0) * 170, a = 1 - tramo(t, 4.8, 5.2); ctx.globalAlpha = a; ctx.fillStyle = J.pal.c; for (let q = 0; q < 3; q++) { ctx.beginPath(); ctx.moveTo(x - 7 + q * 3.5, FLOOR); ctx.lineTo(x - 4.5 + q * 3.5, FLOOR - 10 + q * 2); ctx.lineTo(x - 2 + q * 3.5, FLOOR); ctx.fill(); } ctx.fillStyle = J.pal.b; ctx.fillRect(gx + 18, FLOOR - 1.2, x - gx - 18, 1.2); ctx.globalAlpha = 1;
-        for (let i = 0; i < 6; i++) { const f = ((t - 4) * 3 + i / 6) % 1; ctx.fillStyle = `rgba(200,180,150,${.5 * (1 - f) * a})`; ctx.beginPath(); ctx.arc(x - 6 - f * 14, FLOOR - 3 - f * 6, 2 + f * 3, 0, TAU); ctx.fill(); } }
+      if (t > 4.0 && t < 5.2) { const x = gx + 18 + (t - 4.0) * 170, a = 1 - tramo(t, 4.8, 5.2);
+        const estilo = String(view.st.id).split('~')[0], onda = estilo === 'acuarela' ? golemOnda : estilo === 'bits8' ? golemOndaBits8 : null;
+        if (onda && onda.complete && onda.naturalWidth) { ctx.save(); ctx.globalAlpha = a; ctx.imageSmoothingEnabled = estilo !== 'bits8'; if (estilo === 'bits8') ctx.drawImage(onda, 74, 227, 2009, 417, x - 38, FLOOR - 11, 40, 11); else ctx.drawImage(onda, 45, 215, 2051, 413, x - 38, FLOOR - 11, 40, 11); ctx.restore(); }
+        else { ctx.globalAlpha = a; ctx.fillStyle = J.pal.c; for (let q = 0; q < 3; q++) { ctx.beginPath(); ctx.moveTo(x - 7 + q * 3.5, FLOOR); ctx.lineTo(x - 4.5 + q * 3.5, FLOOR - 10 + q * 2); ctx.lineTo(x - 2 + q * 3.5, FLOOR); ctx.fill(); } ctx.fillStyle = J.pal.b; ctx.fillRect(gx + 18, FLOOR - 1.2, x - gx - 18, 1.2); ctx.globalAlpha = 1;
+          for (let i = 0; i < 6; i++) { const f = ((t - 4) * 3 + i / 6) % 1; ctx.fillStyle = `rgba(200,180,150,${.5 * (1 - f) * a})`; ctx.beginPath(); ctx.arc(x - 6 - f * 14, FLOOR - 3 - f * 6, 2 + f * 3, 0, TAU); ctx.fill(); } } }
     },
     frente(ctx, S, t) {
       const J = S.J, k = J.hgt / 92, gx = S.gx, p = CUR.p;
       // los ojos se encienden
+      const estilo = String(view.st.id).split('~')[0];
       if (t > 2.05) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; const a = tramo(t, 2.05, 2.4) * (.8 + .2 * Math.sin(t * 9)); for (const ex of [4.5, -3.5]) glowDot(ctx, gx + ex, FLOOR - 77 * k - (J.jump || 0), 7, J.pal.eye, .8 * a); ctx.restore(); }
       // el peñasco: lo arranca del suelo, lo avienta en arco y cae frente a Itzel
       if (t > 4.45) {
-        const destino = L.start.x + 8 + 48, x0 = gx + 26, y0 = FLOOR - 70;
+        const destino = L.start.x + 8 + 48, x0 = gx + 36, y0 = FLOOR - 101;
         let x, y, rot = 0;
         if (t < 4.7) { const u = tramo(t, 4.45, 4.7); x = x0; y = lerp(FLOOR, y0, EASE.out2(u)); }
         else if (t < 5.35) { const u = (t - 4.7) / .65; [x, y] = arco(u, x0, y0, destino, FLOOR - 6, 46); rot = u * 6; }
         else { x = destino; y = FLOOR - 6; rot = 6; }
-        ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(2.2, 2.2); ctx.fillStyle = '#6a6458'; ctx.beginPath(); ctx.moveTo(-4, -2); ctx.lineTo(-1, -4.5); ctx.lineTo(4, -3); ctx.lineTo(4.5, 2); ctx.lineTo(0, 4.5); ctx.lineTo(-4, 2.5); ctx.closePath(); ctx.fill(); ctx.strokeStyle = J.pal.b; ctx.lineWidth = .5; ctx.stroke(); ctx.fillStyle = '#9a9484'; ctx.fillRect(-2, -3, 3, 1.4); ctx.restore();
+        { ctx.save(); ctx.translate(x, y); ctx.rotate(rot);
+          const roca = estilo === 'acuarela' ? golemPenasco : estilo === 'bits8' ? golemPenascoBits8 : null;
+          if (roca && roca.complete && roca.naturalWidth) { ctx.imageSmoothingEnabled = estilo !== 'bits8'; ctx.drawImage(roca, -12, -11, 24, 22); }
+          else { ctx.scale(2.2, 2.2); ctx.fillStyle = '#6a6458'; ctx.beginPath(); ctx.moveTo(-4, -2); ctx.lineTo(-1, -4.5); ctx.lineTo(4, -3); ctx.lineTo(4.5, 2); ctx.lineTo(0, 4.5); ctx.lineTo(-4, 2.5); ctx.closePath(); ctx.fill(); ctx.strokeStyle = J.pal.b; ctx.lineWidth = .5; ctx.stroke(); ctx.fillStyle = '#9a9484'; ctx.fillRect(-2, -3, 3, 1.4); }
+          ctx.restore(); }
         if (t > 5.35 && t < 6) { const f = (t - 5.35) / .6; for (let i = 0; i < 14; i++) { const a = Math.PI + i / 13 * Math.PI, d = 6 + EASE.out2(f) * 26; ctx.fillStyle = `rgba(190,170,140,${.7 * (1 - f)})`; ctx.beginPath(); ctx.arc(destino + Math.cos(a) * d, FLOOR - 4 + Math.sin(a) * d * .5, 2 + f * 4, 0, TAU); ctx.fill(); } }
       }
       // el grito de Itzel al ver el peñasco: unas rayitas de susto
@@ -452,8 +590,10 @@
       for (let i = 0; i < 10; i++) {
         const f = (t * .32 + hash1(i, 1)) % 1, x = S.bx - 140 + hash1(i, 2) * 260 + Math.sin(t * 1.6 + i) * 12, y = -10 + f * 220, a = Math.sin(t * 2 + i) * .9;
         ctx.save(); ctx.translate(x, y); ctx.rotate(a); ctx.globalAlpha = Math.min(1, (1 - f) * 3) * .9;
-        ctx.strokeStyle = '#1f8a5a'; ctx.lineWidth = .5; ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(0, 5); ctx.stroke();
-        ctx.fillStyle = i % 3 ? '#3fbf7a' : '#2fa36a'; ctx.beginPath(); ctx.ellipse(0, -.5, 1.8, 4.6, 0, 0, TAU); ctx.fill(); ctx.fillStyle = S.J.pal.core; ctx.beginPath(); ctx.arc(0, -3, .8, 0, TAU); ctx.fill(); ctx.restore();
+        if (String(view.st.id).split('~')[0] === 'acuarela' && plumaKukulkan.complete && plumaKukulkan.naturalWidth) ctx.drawImage(plumaKukulkan, -4, -7, 8, 14);
+        else { ctx.strokeStyle = '#1f8a5a'; ctx.lineWidth = .5; ctx.beginPath(); ctx.moveTo(0, -5); ctx.lineTo(0, 5); ctx.stroke();
+          ctx.fillStyle = i % 3 ? '#3fbf7a' : '#2fa36a'; ctx.beginPath(); ctx.ellipse(0, -.5, 1.8, 4.6, 0, 0, TAU); ctx.fill(); ctx.fillStyle = S.J.pal.core; ctx.beginPath(); ctx.arc(0, -3, .8, 0, TAU); ctx.fill(); }
+        ctx.restore();
       }
     },
     // el fuego: una línea de lumbre que cruza el cielo, con chispas que caen
@@ -461,7 +601,10 @@
       if (t < 3.8 || t > 4.9) return;
       const h = S.J.seg[0], n = S.J.seg[1], a = Math.atan2(h.y - n.y, h.x - n.x), sale = tramo(t, 3.8, 4.1), apaga = tramo(t, 4.45, 4.9);
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      for (let i = 0; i < 40; i++) {
+      if (String(view.st.id).split('~')[0] === 'acuarela' && fuegoKukulkan.complete && fuegoKukulkan.naturalWidth) {
+        const alto = 50 * Math.max(.2, sale);
+        ctx.translate(h.x, h.y); ctx.rotate(a); ctx.globalAlpha = 1 - apaga; ctx.drawImage(fuegoKukulkan, 0, -alto / 2, Math.max(.1, 150 * sale), alto);
+      } else for (let i = 0; i < 40; i++) {
         const f = ((t - 3.8) * 2.2 + i / 40) % 1; if (f > sale * 1.2) continue;
         const d = 12 + f * 150, w = (2 + f * 14) * (1 - apaga), x = h.x + Math.cos(a) * d + Math.sin(i * 7 + t * 20) * f * 6, y = h.y + Math.sin(a) * d + Math.cos(i * 5 + t * 18) * f * 6 + f * f * 10;
         ctx.globalAlpha = (1 - f) * (1 - apaga); glowDot(ctx, x, y, w, f < .3 ? '#fff0a0' : f < .6 ? '#ffa02e' : '#ff4a1a', .9);
@@ -518,7 +661,7 @@
       let jx = S.ex, jy = FLOOR + 12 * (1 - EASE.out2(tramo(t, 2.8, 3.6, 'lin'))), atk = 'acecho', at = t, crouch = true;
       if (t > 4.05) { const u = tramo(t, 4.05, 4.6, 'lin'); jx = lerp(S.ex, S.salta, EASE.io2(u)); jy = FLOOR - Math.sin(u * Math.PI) * 46; crouch = false; atk = 'garras'; at = 1; }
       if (t > 5.3) { atk = 'rugido'; at = .4 + (t - 5.3) * 1.2; }
-      Object.assign(J, { x: jx, y: jy, face: -1, t, at, st: 'ataque', atk, crouch: crouch && t < 4.05, stunT: 0, flash: 0 });
+      Object.assign(J, { x: jx, y: jy, face: -1, t, at, st: 'ataque', atk, saltoCine: t > 4.05 && t < 4.7 ? t - 4.05 : null, cineAcecho: t >= 2.8 && t < 4.05, cineAterriza: t >= 4.6 && t < 5.3, crouch: crouch && t < 4.05, stunT: 0, flash: 0 });
       // cámara
       if (t < 1.4) S.cam = { x: L.camMin, z: claves(t, [[0, 1.08], [1.4, 1.02]]), fx: lerp(p.x, Z.x0, .45), fy: FLOOR - 26, nit: false };
       else if (t < 2.8) S.cam = { x: L.camMin, z: 1.3, fx: lerp(p.x + 40, fr ? fr.x : Z.x0, .5), fy: FLOOR - 34, dof: .15, nit: true };
@@ -548,16 +691,16 @@
         for (let i = 0; i < 16; i++) {
           const f = (t - 4.55) * (.8 + hash1(i, 4) * .6); if (f > 1.4) continue;
           const x = S.salta + (hash1(i, 5) - .5) * 30 + (hash1(i, 6) - .5) * f * 90, y = FLOOR - 4 - f * (50 + hash1(i, 7) * 30) + f * f * 50;
-          ctx.save(); ctx.translate(x, y); ctx.rotate(f * 8 + i); ctx.globalAlpha = 1 - f / 1.4; ctx.fillStyle = HOJA[i % 3]; ctx.beginPath(); ctx.ellipse(0, 0, 2.2, 1, 0, 0, TAU); ctx.fill(); ctx.restore();
+          ctx.save(); ctx.translate(x, y); ctx.rotate(f * 8 + i); ctx.globalAlpha = 1 - f / 1.4; if (String(view.st.id).split('~')[0] === 'acuarela' && hojaJaguar.complete && hojaJaguar.naturalWidth) ctx.drawImage(hojaJaguar, 150, 125, 1540, 635, -2.8, -1.2, 5.6, 2.4); else { ctx.fillStyle = HOJA[i % 3]; ctx.beginPath(); ctx.ellipse(0, 0, 2.2, 1, 0, 0, TAU); ctx.fill(); } ctx.restore();
         }
-        const d = tramo(t, 4.6, 5.3); if (d < 1) { ctx.fillStyle = `rgba(190,170,130,${.45 * (1 - d)})`; for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(S.salta + s * (8 + d * 22), FLOOR - 3 - d * 4, 7 + d * 8, 3 + d * 3, 0, 0, TAU); ctx.fill(); } }
+        const d = tramo(t, 4.6, 5.3); if (d < 1) { if (String(view.st.id).split('~')[0] === 'acuarela' && polvoJaguar.complete && polvoJaguar.naturalWidth) { const w = 30 + d * 28, h = 8 + d * 6; ctx.save(); ctx.globalAlpha = .65 * (1 - d); ctx.drawImage(polvoJaguar, 140, 175, 1600, 510, S.salta - w / 2, FLOOR - h, w, h); ctx.restore(); } else { ctx.fillStyle = `rgba(190,170,130,${.45 * (1 - d)})`; for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(S.salta + s * (8 + d * 22), FLOOR - 3 - d * 4, 7 + d * 8, 3 + d * 3, 0, 0, TAU); ctx.fill(); } } }
       }
       // el rugido: ondas y hojas hacia Itzel
       if (t > 5.3) {
         const u = t - 5.3, bx = J.x - 18, by = J.y - 13;
         ctx.strokeStyle = 'rgba(255,240,210,.75)'; for (let k = 0; k < 4; k++) { const r = 8 + ((u * 70 + k * 12) % 48); ctx.globalAlpha = 1 - r / 56; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(bx, by, r, Math.PI - .65, Math.PI + .65); ctx.stroke(); }
         ctx.globalAlpha = 1;
-        for (let i = 0; i < 10; i++) { const f = (u * 1.4 + hash1(i, 9)) % 1, x = bx - f * 110, y = by + (hash1(i, 10) - .5) * 40 * (1 + f); ctx.save(); ctx.translate(x, y); ctx.rotate(f * 9); ctx.globalAlpha = 1 - f; ctx.fillStyle = HOJA[i % 3]; ctx.beginPath(); ctx.ellipse(0, 0, 2.6, 1.1, 0, 0, TAU); ctx.fill(); ctx.restore(); }
+        for (let i = 0; i < 10; i++) { const f = (u * 1.4 + hash1(i, 9)) % 1, x = bx - f * 110, y = by + (hash1(i, 10) - .5) * 40 * (1 + f); ctx.save(); ctx.translate(x, y); ctx.rotate(f * 9); ctx.globalAlpha = 1 - f; if (String(view.st.id).split('~')[0] === 'acuarela' && hojaJaguar.complete && hojaJaguar.naturalWidth) ctx.drawImage(hojaJaguar, 150, 125, 1540, 635, -3, -1.3, 6, 2.6); else { ctx.fillStyle = HOJA[i % 3]; ctx.beginPath(); ctx.ellipse(0, 0, 2.6, 1.1, 0, 0, TAU); ctx.fill(); } ctx.restore(); }
       }
     },
     entrega(S) { Object.assign(CUR.p, { x: S.atras, y: FLOOR, vx: 0, vy: 0, on: true, face: 1 }); if (CUR.fre) Object.assign(CUR.fre, { x: S.atras - 16, y: FLOOR - 30 }); }, // el jaguar ya está escondido en su zacatal (lo pone el prólogo)
@@ -570,7 +713,14 @@
   //  se hace una reina solo para la toma, con su cuerpo y el arte del mundo.
   // =====================================================================
   const HADITAS = 7;
+  const burbujaHadas = new Image();
+  burbujaHadas.src = '../Roguelike/assets/bosque/piezas/burbuja.png';
   function burbuja(ctx, x, y, r, a) {
+    if (burbujaHadas.complete && burbujaHadas.naturalWidth) {
+      // El centro de la ilustración tiene color: la transparencia deja ver
+      // a Fresita mientras conserva el borde y los reflejos de la burbuja.
+      ctx.save(); ctx.globalAlpha = .42 * a; ctx.drawImage(burbujaHadas, x - r, y - r, r * 2, r * 2); ctx.restore(); return;
+    }
     ctx.save(); ctx.globalAlpha = a;
     ctx.fillStyle = 'rgba(255,214,246,.16)'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
     ctx.strokeStyle = 'rgba(255,255,255,.8)'; ctx.lineWidth = .8; ctx.stroke();
@@ -664,6 +814,9 @@
   //  La mordida va en cámara lenta: el guion corre en su propio tiempo (s).
   // =====================================================================
   const AGUA = FLOOR + 8;
+  const salpiconRio = new Image(), gotaRio = new Image();
+  salpiconRio.src = '../Roguelike/assets/cenote/salpica.png';
+  gotaRio.src = '../Roguelike/assets/golfo/salpica0.png';
   const LENTO = [3.0, 3.6, .3]; // de 3.0 a 3.6 s el tiempo corre al 30%
   const tiempoRio = t => t < LENTO[0] ? t : t < LENTO[1] ? LENTO[0] + (t - LENTO[0]) * LENTO[2] : LENTO[0] + (LENTO[1] - LENTO[0]) * LENTO[2] + (t - LENTO[1]);
   ENTRADAS.cocodrilo = {
@@ -707,7 +860,10 @@
       if (s > 2.98 && s < 3.5) { mord = s < 3.1 ? EASE.out3(tramo(s, 2.98, 3.1, 'lin')) : 1 - EASE.in2(tramo(s, 3.35, 3.5, 'lin')); dy = 8; oculto = mord <= 0; }
       if (s >= 3.45) { oculto = false; mord = 0; dy = lerp(32, 10, EASE.outBack(tramo(s, 3.45, 3.85, 'lin'))); erg = .5 * EASE.io2(tramo(s, 3.85, 4.1, 'lin')) * (1 - EASE.io2(tramo(s, 4.6, 4.9, 'lin'))); if (s > 4.7) dy = lerp(10, 19, EASE.io2(tramo(s, 4.7, 5.4, 'lin'))); }
       S.oculto = oculto; S.dyJefe = dy; S.agua = AGUA;
-      Object.assign(J, { x: cx, face: f, t: s, at: s, st: 'ataque', atk: 'emboscada', sub: 0, erg, mordida: mord, stunT: 0, flash: 0 });
+      // La hoja de mordida usa los tiempos del ataque del juego (1.82–2.4),
+      // no los segundos del guion: así recorre sus cuadros en cámara lenta.
+      const atMordida = mord > 0 ? lerp(1.82, 2.4, tramo(s, 2.98, 3.5, 'lin')) : s, escupe = s >= 3.85 && s < 4.55;
+      Object.assign(J, { x: cx, face: f, t: s, at: atMordida, st: 'ataque', atk: escupe ? 'escupe' : 'emboscada', sub: 0, erg, mordida: mord, cineAgua: AGUA, stunT: 0, flash: 0 });
       // la boca (para el chorro), con el giro del cuerpo al levantarse
       const th = -erg * 1.2; S.boca = [cx + f * (30 * Math.cos(th) + 6 * Math.sin(th)), FLOOR + dy + 30 * Math.sin(th) - 6 * Math.cos(th)];
       S.ojo = [cx + f * 17, FLOOR + dy - 12.5];
@@ -739,14 +895,15 @@
       // el salpicón de la mordida (se ve en cámara lenta) y astillas del tronco
       if (s > 3.0 && s < 3.9) {
         const f = s - 3.0;
-        for (let i = 0; i < 34; i++) { const vx = (hash1(i, 41) - .5) * 160, vy = 120 + hash1(i, 42) * 120, x = S.bx + vx * f, y = AGUA - (vy * f - 260 * f * f); if (y > AGUA + 2) continue; ctx.fillStyle = `rgba(205,236,255,${.9 * (1 - f / .9)})`; ctx.beginPath(); ctx.arc(x, y, .9 + hash1(i, 43) * 1.1, 0, TAU); ctx.fill(); }
+        if (String(view.st.id).split('~')[0] === 'acuarela' && salpiconRio.complete && salpiconRio.naturalWidth) { const k = tramo(s, 3.0, 3.9); ctx.save(); ctx.globalAlpha = Math.min(1, k * 8) * (1 - k); const w = 18 + k * 35, h = 7 + k * 16; ctx.drawImage(salpiconRio, S.bx - w / 2, AGUA - h, w, h); ctx.restore(); }
+        else for (let i = 0; i < 34; i++) { const vx = (hash1(i, 41) - .5) * 160, vy = 120 + hash1(i, 42) * 120, x = S.bx + vx * f, y = AGUA - (vy * f - 260 * f * f); if (y > AGUA + 2) continue; ctx.fillStyle = `rgba(205,236,255,${.9 * (1 - f / .9)})`; ctx.beginPath(); ctx.arc(x, y, .9 + hash1(i, 43) * 1.1, 0, TAU); ctx.fill(); }
         for (let i = 0; i < 8; i++) { const vx = (hash1(i, 44) - .5) * 120, vy = 90 + hash1(i, 45) * 90, x = S.bx + vx * f, y = AGUA - 20 - (vy * f - 260 * f * f); ctx.save(); ctx.translate(x, y); ctx.rotate(f * 14 + i); ctx.globalAlpha = 1 - f / .9; ctx.fillStyle = i % 2 ? '#6a4228' : '#8a5a3a'; ctx.fillRect(-2, -.6, 4, 1.2); ctx.restore(); }
         const k = tramo(s, 3.02, 3.5); ctx.strokeStyle = `rgba(230,245,255,${.8 * (1 - k)})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.ellipse(S.bx, AGUA, 8 + k * 34, 2 + k * 5, 0, 0, TAU); ctx.stroke();
       }
       // el chorro de agua en arco hasta Itzel
       if (s > 4.1 && s < 4.75) {
         const [mx, my] = S.boca, tx = S.orilla + 6, ty = FLOOR - 14;
-        for (let i = 0; i < 26; i++) { const u = (s - 4.1) * 2.6 - i * .025; if (u < 0 || u > 1) continue; const [x, y] = arco(u, mx, my, tx, ty, 38); ctx.fillStyle = `rgba(150,215,255,${.85 * (1 - tramo(s, 4.55, 4.75))})`; ctx.beginPath(); ctx.arc(x, y, 1.6 - i * .03, 0, TAU); ctx.fill(); }
+        for (let i = 0; i < 26; i++) { const u = (s - 4.1) * 2.6 - i * .025; if (u < 0 || u > 1) continue; const [x, y] = arco(u, mx, my, tx, ty, 38), a = .85 * (1 - tramo(s, 4.55, 4.75)); if (String(view.st.id).split('~')[0] === 'acuarela' && gotaRio.complete && gotaRio.naturalWidth) { const w = 3.2 - i * .06; ctx.save(); ctx.globalAlpha = a; ctx.drawImage(gotaRio, x - w / 2, y - w / 2, w, w); ctx.restore(); } else { ctx.fillStyle = `rgba(150,215,255,${a})`; ctx.beginPath(); ctx.arc(x, y, 1.6 - i * .03, 0, TAU); ctx.fill(); } }
         if (s > 4.42) { const k = tramo(s, 4.42, 4.75); for (let i = 0; i < 12; i++) { const a = -Math.PI * (.1 + hash1(i, 46) * .8), d = k * (10 + hash1(i, 47) * 14); ctx.fillStyle = `rgba(190,230,255,${.9 * (1 - k)})`; ctx.beginPath(); ctx.arc(tx + Math.cos(a) * d, ty + Math.sin(a) * d + k * k * 10, 1.1, 0, TAU); ctx.fill(); } }
       }
       // gotitas que Fresita se sacude
@@ -766,6 +923,10 @@
   // =====================================================================
   //  7 · LORENCILLO: «La niebla sobre la muralla»
   // =====================================================================
+  const loroCine = new Image();
+  loroCine.src = '../Roguelike/assets/forge/enemigos/loro-v1/processed-v2/sheet-transparent.png';
+  const humoCanion = new Image();
+  humoCanion.src = '../Roguelike/assets/cinematicas-jefes/lorencillo-humo-v1.webp';
   const NIEBLA = 'rgba(222,230,236,';
   function niebla(ctx, x, y, w, a, t, n = 7) {
     for (let k = 0; k < n; k++) { const px = x + (hash1(k, 61) - .5) * w + Math.sin(t * .7 + k) * 6, py = y + (hash1(k, 62) - .5) * 10, r = 12 + hash1(k, 63) * 14; ctx.fillStyle = NIEBLA + (a * (.25 + hash1(k, 64) * .2)) + ')'; ctx.beginPath(); ctx.ellipse(px, py, r * 1.6, r * .55, 0, 0, TAU); ctx.fill(); }
@@ -793,7 +954,8 @@
       if (fr) { let q = [p.x - 16, p.y - 30 + Math.sin(t * 2.6) * 2]; if (t > 5.2) { const u = tramo(t, 5.2, 5.45); q = [lerp(q[0], p.x - 7, u), lerp(q[1], p.y - 25, u)]; } Object.assign(fr, { x: q[0], y: q[1], face: 1 }); }
       // el barco: sale de la niebla, dispara y pasa por encima de ellas
       const pasa = EASE.io2(tramo(t, 5.0, 5.9, 'lin'));
-      Object.assign(J, { x: lerp(S.bx, S.px + 24, pasa) + Math.sin(t * .6) * 4, y: lerp(62, 66, pasa) + Math.sin(t * 1.3) * 3, face: -1, t, at: t, st: 'ataque', atk: 'canones', stunT: 0, flash: 0 });
+      const atkBarco = t >= 3.95 && t < 4.7 ? 'canones' : 'navega';
+      Object.assign(J, { x: lerp(S.bx, S.px + 24, pasa) + Math.sin(t * .6) * 4, y: lerp(62, 66, pasa) + Math.sin(t * 1.3) * 3, face: -1, t, at: t, st: 'ataque', atk: atkBarco, stunT: 0, flash: 0 });
       S.alfaJefe = tramo(t, 1.5, 2.5); if (t <= 5.95) S.finJ = [J.x, J.y];
       S.giro = t > 3.9 && t < 4.5 ? Math.sin((t - 3.9) * 18) * .015 * (1 - tramo(t, 3.9, 4.5)) : 0; // el retroceso de los cañones
       // cámara
@@ -813,13 +975,16 @@
       // la niebla baja que entra del lado del mar, entre las almenas
       for (let k = 0; k < 9; k++) { const x = L.camMin + VW + 60 - ((t * 38 + k * 61) % (VW + 160)) * tramo(t, .2, 1.4), y = FLOOR - 6 - (k % 3) * 9; ctx.fillStyle = NIEBLA + (.22 * tramo(t, .2, 1.2)) + ')'; ctx.beginPath(); ctx.ellipse(x, y, 34, 7, 0, 0, TAU); ctx.fill(); }
       // el loro fantasma que cruza
-      if (t > .5 && t < 1.6) { const u = (t - .5) / 1.1, x = lerp(S.px + 220, S.px - 160, u), y = 72 + Math.sin(u * 9) * 6; ctx.save(); ctx.translate(x, y); ctx.scale(-1, 1); ctx.globalAlpha = .6; FD.loro(ctx, { anim: 0 }, ct); ctx.restore(); }
+      if (t > .5 && t < 1.6) { const u = (t - .5) / 1.1, x = lerp(S.px + 220, S.px - 160, u), y = 72 + Math.sin(u * 9) * 6; ctx.save(); ctx.translate(x, y); ctx.scale(-1, 1); ctx.globalAlpha = .6;
+        if (String(view.st.id).split('~')[0] === 'acuarela' && loroCine.complete && loroCine.naturalWidth) { const f = Math.floor(ct * 9) % 3; ctx.drawImage(loroCine, (f % 2) * 256, Math.floor(f / 2) * 256, 256, 256, -9, -12, 18, 18); }
+        else FD.loro(ctx, { anim: 0 }, ct); ctx.restore(); }
       // el capitán levanta la mano: «¡fuego!»
       if (t > 3.2 && t < 4.3) { const u = EASE.outBack(tramo(t, 3.2, 3.5, 'lin')) * (1 - tramo(t, 4.0, 4.3)), sx = J.x + 16, sy = J.y - 14, a = lerp(.6, -1.35, u); ctx.strokeStyle = rgba(J.pal.c, .9); ctx.lineWidth = 1.6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(sx, sy); ctx.lineTo(sx + Math.cos(a) * 7, sy + Math.sin(a) * 7); ctx.stroke(); ctx.fillStyle = rgba(J.pal.c, .9); ctx.beginPath(); ctx.arc(sx + Math.cos(a) * 7.6, sy + Math.sin(a) * 7.6, 1.3, 0, TAU); ctx.fill(); }
       // los cañonazos: fogonazo y humo en las troneras
       for (let i = 0; i < 3; i++) { const f = t - (3.95 + i * .2); if (f < 0 || f > 1.2) continue; const x = J.x - [-12, -2, 8][i], y = J.y - 1;
         if (f < .15) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowDot(ctx, x - 4, y, 10, '#ffcf5a', 1 - f / .15); ctx.restore(); }
-        for (let k = 0; k < 5; k++) { ctx.fillStyle = `rgba(200,200,205,${.5 * (1 - f / 1.2)})`; ctx.beginPath(); ctx.arc(x - 6 - f * 20 - k * 3, y + 2 + k * 1.5 - f * 6, 2.4 + f * 5, 0, TAU); ctx.fill(); } }
+        if (String(view.st.id).split('~')[0] === 'acuarela' && humoCanion.complete && humoCanion.naturalWidth) { const w = 10 + f * 20, h = 5 + f * 9; ctx.save(); ctx.globalAlpha = .7 * (1 - f / 1.2); ctx.drawImage(humoCanion, 75, 50, 1620, 790, x - 5 - w, y - h * .65 - f * 5, w, h); ctx.restore(); }
+        else for (let k = 0; k < 5; k++) { ctx.fillStyle = `rgba(200,200,205,${.5 * (1 - f / 1.2)})`; ctx.beginPath(); ctx.arc(x - 6 - f * 20 - k * 3, y + 2 + k * 1.5 - f * 6, 2.4 + f * 5, 0, TAU); ctx.fill(); } }
       // las miras del juego y sus balas, y la explosión al caer
       for (const m of S.miras) { const f = t - m.t0; if (f < 0) continue; if (f < m.espera) MEC.OBJ.mira.draw(ctx, { x: m.x, y: m.y, t: f, espera: m.espera }); else explosion(ctx, m.x, m.y, f - m.espera); }
       // la sombra del barco que pasa por encima
@@ -850,13 +1015,14 @@
       if (fr) { let q = [p.x - 16, p.y - 30 + Math.sin(t * 2.6) * 2]; if (t > 5.05 && t < 5.65) { const a = tramo(t, 5.05, 5.65) * TAU; q = [p.x - 4 + Math.cos(a - Math.PI) * 14, p.y - 34 + Math.sin(a - Math.PI) * 10]; } Object.assign(fr, { x: q[0], y: q[1], face: t > 5.05 && t < 5.65 ? (Math.sin(tramo(t, 5.05, 5.65) * TAU - Math.PI) > 0 ? -1 : 1) : 1 }); }
       // Chaac: sale de la nube, toma aire (se infla) y suelta el aguacero
       const sale = EASE.outBack(tramo(t, 1.5, 2.4, 'lin')), infla = EASE.io2(tramo(t, 2.9, 3.6, 'lin')) * (1 - EASE.out3(tramo(t, 3.75, 3.95, 'lin')));
-      Object.assign(J, { x: S.cx + Math.sin(t * .7) * 3, y: S.cy + Math.sin(t * 1.1) * 2, t, at: t, st: t > 2.0 ? 'ataque' : 'entra', atk: 'aguacero', stunT: 0, flash: 0 });
+      const atkChaac = t < 3.8 ? 'ventarron' : t >= 4.8 && t < 5.2 ? 'rayos' : 'aguacero';
+      Object.assign(J, { x: S.cx + Math.sin(t * .7) * 3, y: S.cy + Math.sin(t * 1.1) * 2, t, at: t, st: t > 2.0 ? 'ataque' : 'entra', atk: atkChaac, cineInhala: t >= 2.9 && t < 3.75, stunT: 0, flash: 0 });
       S.escala = lerp(.5, 1, sale) * (1 + .13 * infla); S.alfaJefe = tramo(t, 1.45, 1.9); S.oculto = t < 1.45; if (t <= 5.95) S.finJ = [J.x, J.y];
       // desde el aguacero, su lluvia y su agua (las del juego) se quedan en el mundo
       if (R) { S.mundoObj = t > 3.8 ? 'sinJefe' : 'oculto'; R.t = 5; R.nivel = lerp(VH + 40, FLOOR + 18, EASE.out2(tramo(t, 3.8, 5.2, 'lin'))); }
       CUR.destello = 0;
       // cámara
-      if (t < 1.4) S.cam = { x: L.camMin, z: claves(t, [[0, 1.08], [1.4, 1.02]]), fx: lerp(p.x + 40, S.cx, .3), fy: FLOOR - 60, nit: false };
+      if (t < 1.4) { const detalle = String(view.st.id).split('~')[0] === 'acuarela' ? Math.sin(Math.PI * tramo(t, .95, 1.4, 'lin')) : 0; S.cam = { x: L.camMin, z: claves(t, [[0, 1.08], [1.4, 1.02]]) + 1.8 * detalle, fx: lerp(lerp(p.x + 40, S.cx, .3), p.x, detalle), fy: lerp(FLOOR - 60, p.y - 14, detalle), nit: detalle > 0 }; }
       else if (t < 2.7) S.cam = { x: L.camMin, z: claves(t, [[1.4, 1.2], [2.7, 1.45, 'io2']]), fx: lerp(p.x + 30, S.cx, .7), fy: lerp(FLOOR - 50, S.cy + 10, EASE.io2(tramo(t, 1.4, 2.2, 'lin'))), dof: .15, nit: true };
       else if (t < 3.8) S.cam = { x: L.camMin, z: claves(t, [[2.7, 2.7], [3.8, 2.95, 'io2']]), fx: J.x, fy: J.y - 2, dof: .8, nit: true };
       else if (t < 5.0) S.cam = { x: L.camMin, z: claves(t, [[3.8, 1.2], [5.0, 1.28]]), fx: lerp(p.x, S.cx, .45), fy: lerp(FLOOR - 30, S.cy, .4), dof: .15, nit: true };
@@ -867,7 +1033,9 @@
       // las nubes que se juntan en una sola
       const u = EASE.io2(tramo(t, .2, 1.6, 'lin')), a = 1 - tramo(t, 2.2, 3.0) * .6;
       for (let k = 0; k < 9; k++) { const lado = k % 2 ? 1 : -1, x0 = S.cx + lado * (170 + hash1(k, 81) * 90), x = lerp(x0, S.cx + (hash1(k, 82) - .5) * 70, u), y = S.cy - 6 + (hash1(k, 83) - .5) * 24, r = 14 + hash1(k, 84) * 10;
-        ctx.fillStyle = `rgba(110,118,134,${.75 * a})`; ctx.beginPath(); ctx.arc(x, y + 3, r, 0, TAU); ctx.fill(); ctx.fillStyle = `rgba(150,158,172,${.8 * a})`; ctx.beginPath(); ctx.arc(x - 2, y, r * .85, 0, TAU); ctx.fill(); }
+        const estilo = String(view.st.id).split('~')[0], nube = estilo === 'acuarela' ? nubeChaac : estilo === 'bits8' ? nubeChaacBits8 : null;
+        if (nube && nube.complete && nube.naturalWidth) { ctx.save(); ctx.globalAlpha = .8 * a; ctx.imageSmoothingEnabled = estilo !== 'bits8'; if (estilo === 'bits8') ctx.drawImage(nube, 110, 70, 1550, 775, x - r * 1.2, y - r * .6, r * 2.4, r * 1.2); else ctx.drawImage(nube, 110, 75, 1555, 750, x - r * 1.2, y - r * .6, r * 2.4, r * 1.2); ctx.restore(); }
+        else { ctx.fillStyle = `rgba(110,118,134,${.75 * a})`; ctx.beginPath(); ctx.arc(x, y + 3, r, 0, TAU); ctx.fill(); ctx.fillStyle = `rgba(150,158,172,${.8 * a})`; ctx.beginPath(); ctx.arc(x - 2, y, r * .85, 0, TAU); ctx.fill(); } }
       // relámpagos dentro de la nube
       if (t > 1.4 && t < 3.8) { const f = Math.max(0, Math.sin(t * 11) * Math.sin(t * 3.7)); if (f > .5) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowDot(ctx, S.cx + Math.sin(t * 17) * 30, S.cy, 30, '#fff6c0', (f - .5) * .8); ctx.restore(); } }
     },
@@ -880,13 +1048,18 @@
         for (let k = 0; k < 110; k++) { const x = x0 + ((k * 37 + CUR.t * 70) % (VW + 60)), y = V.y0 - 10 + ((k * 89 + CUR.t * 330) % ((VISTA.H || VH) + 30)); ctx.moveTo(x, y); ctx.lineTo(x - 3.5, y + 11); } ctx.stroke(); }
       // el rayo del juego: línea de aviso (reforzada) y luego el rayo
       if (t > 3.95 && t < 4.8) { const y1 = L.surfaceY(Math.floor((S.px - 24) / T), 0) * T; ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = `rgba(255,240,150,${.3 + Math.sin(t * 30) * .15})`; ctx.lineWidth = 2.4; ctx.beginPath(); ctx.moveTo(S.px - 24, V.y0); ctx.lineTo(S.px - 24, y1); ctx.stroke(); glowDot(ctx, S.px - 24, y1, 10, '#fff2a0', .5); ctx.restore(); }
-      if (t > 3.95 && t < 5.2) MEC.OBJ.rayoChaac.draw(ctx, { x: S.px - 24, t: t - 3.95 }, { y0: V.y0 - 40 });
+      if (t > 3.95 && t < 5.2) {
+        const estilo = String(view.st.id).split('~')[0], imagenRayo = estilo === 'acuarela' ? rayoCine : estilo === 'bits8' ? rayoBits8 : null;
+        const usaRayo = t >= 4.8 && imagenRayo && imagenRayo.complete && imagenRayo.naturalWidth;
+        if (usaRayo) { const x = S.px - 24, y0 = V.y0 - 44, y1 = L.surfaceY(Math.floor(x / T), 0) * T; ctx.save(); ctx.imageSmoothingEnabled = estilo !== 'bits8'; ctx.globalCompositeOperation = 'lighter'; ctx.drawImage(imagenRayo, x - 22, y0, 44, y1 - y0); ctx.restore(); }
+        else MEC.OBJ.rayoChaac.draw(ctx, { x: S.px - 24, t: t - 3.95 }, { y0: V.y0 - 40 });
+      }
       // empapadas: les escurre el agua
       if (t > 4.2) { ctx.fillStyle = 'rgba(170,215,255,.85)'; for (let i = 0; i < 6; i++) { const f = (t * 1.6 + i / 6) % 1, sx = p.x + (i % 2 ? 5 : -5) + (i % 3 - 1); ctx.globalAlpha = 1 - f; ctx.beginPath(); ctx.ellipse(sx, p.y - 20 + f * 18, .6, 1.1, 0, 0, TAU); ctx.fill(); } ctx.globalAlpha = 1; }
     },
     pantalla(ctx, M, S, t) {
       ctx.fillStyle = `rgba(16,22,38,${.34 * tramo(t, .2, 1.4)})`; ctx.fillRect(0, 0, M.w, M.h); // se oscurece el cielo
-      if (t > 4.8 && t < 5.15) { ctx.fillStyle = `rgba(255,255,240,${.85 * (1 - tramo(t, 4.8, 5.15))})`; ctx.fillRect(0, 0, M.w, M.h); } // el destello del rayo
+      if (t > 4.8 && t < 5.15) { ctx.fillStyle = `rgba(255,255,240,${.22 * (1 - tramo(t, 4.8, 5.15))})`; ctx.fillRect(0, 0, M.w, M.h); } // el destello del rayo sin ocultar la esquiva
     },
     entrega(S) { Object.assign(CUR.p, { x: S.px + 26, y: FLOOR, vx: 0, vy: 0, on: true, face: 1 }); if (CUR.fre) Object.assign(CUR.fre, { x: S.px + 10, y: FLOOR - 30 }); if (S.Obj && S.finJ) S.Obj.j.x = S.finJ[0]; }, // el agua regresa a su nivel (la guarda el prólogo); Chaac sigue desde donde quedó
     foco: S => [S.J.x, S.J.y + 2],
@@ -898,6 +1071,7 @@
   //  prólogo), encima de todo: así Camazotz solo se ve donde alumbra Fresita.
   // =====================================================================
   const velo = mkCanvas(8, 8), vx = velo.getContext('2d');
+  const murcielagosCine = [0, 1, 2].map(i => { const img = new Image(); img.src = `../Roguelike/assets/fauna/murcielagoNoche${i}.png`; return img; });
   function murcielaguito(ctx, x, y, t, s = 1, col = '#1c1622') {
     const al = Math.sin(t * 26) * 3; ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(x, y);
     ctx.quadraticCurveTo(x - 3 * s, y - (2 + al) * s, x - 7 * s, y - al * s); ctx.quadraticCurveTo(x - 4 * s, y + s, x, y + 1.6 * s);
@@ -927,7 +1101,7 @@
       let x = S.cx, y = lerp(18, 92, EASE.io2(tramo(t, 2.8, 3.6, 'lin'))), st = t < 3.3 ? 'ventana' : 'ataque', atk = 'chillido', at = t;
       if (t > 4.4 && t < 4.95) { const u = tramo(t, 4.4, 4.95, 'lin'); x = lerp(S.cx, p.x - 150, u); y = 92 + Math.sin(u * Math.PI) * (p.y - 30 - 92 + 20); atk = 'picada'; at = 1; }
       if (t >= 4.95) { x = S.px + 44; y = 50; st = 'ventana'; }
-      Object.assign(J, { x, y, face: x < p.x ? 1 : -1, t, at, st, atk, stunT: 0, flash: 0 });
+      Object.assign(J, { x, y, face: x < p.x ? 1 : -1, t, at, st, atk, cineAlasCerradas: t >= 2.7 && t < 3.3, cineChilla: t >= 3.3 && t < 4.4, cineColgado: t >= 4.95, stunT: 0, flash: 0 });
       S.oculto = t < 2.7 || (t > 4.95 && t < 5.05);
       S.giro = t >= 4.95 ? Math.PI : 0; // colgado de cabeza
       // cámara
@@ -935,12 +1109,12 @@
       else if (t < 2.6) S.cam = { x: L.camMin, z: claves(t, [[1.4, 1.35], [2.6, 1.45]]), fx: p.x + 20, fy: FLOOR - 40, dof: .1, nit: true };
       else if (t < 3.8) S.cam = { x: L.camMin, z: claves(t, [[2.6, 2.0], [3.8, 2.35, 'io2']]), fx: lerp(S.cx, p.x, .25), fy: lerp(60, 112, tramo(t, 2.8, 3.6)), dof: .4, nit: true };
       else if (t < 5.0) S.cam = { x: L.camMin, z: claves(t, [[3.8, 1.35], [5.0, 1.3]]), fx: p.x + 10, fy: FLOOR - 50, dof: .15, nit: true };
-      else S.cam = { x: L.camMin, z: claves(t, [[5.0, 1.6], [5.95, 1.72]]), fx: lerp(p.x, J.x, .5), fy: lerp(p.y - 24, J.y, .55), dy: 10, dof: .25, nit: true };
+      else S.cam = { x: L.camMin, z: claves(t, [[5.0, 1.6], [5.95, 1.72]]), fx: lerp(p.x, J.x, .5), fy: lerp(lerp(p.y - 24, J.y, .55), J.y + 3, EASE.io2(tramo(t, 5.0, 5.3, 'lin'))), dy: 10, dof: .25, nit: true };
       if (t > 3.85 && t < 4.4) S.sacude = 2.2;
     },
     frente(ctx, S, t) {
       // la ráfaga de murcielaguitos
-      if (t > 1.4 && t < 2.6) for (const b of S.bats) { const u = (t - 1.4 - b.d) * b.v; if (u < 0 || u > 1) continue; murcielaguito(ctx, lerp(S.px + 260, S.px - 220, u), b.y + Math.sin(u * 12 + b.y) * 8, CUR.t + b.y, 1); }
+      if (t > 1.4 && t < 2.6) for (const b of S.bats) { const u = (t - 1.4 - b.d) * b.v; if (u < 0 || u > 1) continue; const x = lerp(S.px + 260, S.px - 220, u), y = b.y + Math.sin(u * 12 + b.y) * 8, f = Math.floor((t * 11 + b.y) % 3), img = murcielagosCine[f]; if (String(view.st.id).split('~')[0] === 'acuarela' && img.complete && img.naturalWidth) ctx.drawImage(img, x - 8, y - 5, 16, 10); else murcielaguito(ctx, x, y, CUR.t + b.y, 1); }
     },
     // la oscuridad (con los huecos de luz del juego), los ojos rojos y el chillido encima
     pantalla(ctx, M, S, t, V) {
@@ -951,6 +1125,8 @@
       vx.globalCompositeOperation = 'destination-out';
       const hueco = (x, y, r) => { const [X, Y] = V.scr(x, y), R = r * V.sx, g = vx.createRadialGradient(X, Y, R * .2, X, Y, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); vx.fillStyle = g; vx.fillRect(X - R, Y - R, R * 2, R * 2); };
       const fr = CUR.fre, p = CUR.p; if (fr) hueco(fr.x, fr.y, (t > 5.0 ? 74 : 62) + Math.sin(CUR.t * 3) * 3); hueco(p.x, p.y - 8, 26);
+      if (t > 3.85 && t < 4.4 && String(view.st.id).split('~')[0] === 'acuarela') hueco(J.x, J.y - 6, 32 * Math.min(tramo(t, 3.85, 3.95), 1 - tramo(t, 4.3, 4.4)));
+      if (t > 5.05 && String(view.st.id).split('~')[0] === 'acuarela') hueco(J.x, J.y, 35 * tramo(t, 5.05, 5.35));
       for (const q of S.cris) hueco(q.x, q.y - 6, 40);
       ctx.drawImage(velo, 0, 0);
       // los ojos rojos brillan aunque esté oscuro
@@ -970,7 +1146,18 @@
   //  Las abejas del enjambre (y su «z z» dormidas) las pinta su prólogo:
   //  se deja en el mundo sin la reina, que la dibuja la entrada.
   // =====================================================================
+  const abejasCine = Array.from({ length: 4 }, (_, i) => { const im = new Image(); im.src = '../Roguelike/assets/jardin/abeja' + i + '.png'; return im; });
+  const abejaDormida = new Image();
+  abejaDormida.src = '../Roguelike/assets/cinematicas-jefes/abeja-dormida-v1.webp';
+  const hiloMiel = new Image();
+  hiloMiel.src = '../Roguelike/assets/cinematicas-jefes/miel-hilo-v1.webp';
+  const charcoMiel = new Image();
+  charcoMiel.src = '../Roguelike/assets/cinematicas-jefes/miel-charco-v1.webp';
   function abejita(ctx, x, y, t, i, dormida = false) {
+    const imagen = dormida && abejaDormida.complete && abejaDormida.naturalWidth ? abejaDormida : abejasCine[dormida ? 3 : Math.floor(t * 12 + i) % abejasCine.length];
+    if (String(view.st.id).split('~')[0] === 'acuarela' && imagen.complete && imagen.naturalWidth) {
+      ctx.drawImage(imagen, x - 3, y - 3, 6, 6); return;
+    }
     ctx.fillStyle = '#2a1a10'; ctx.beginPath(); ctx.ellipse(x, y, 1.6, 1.1, 0, 0, TAU); ctx.fill();
     ctx.fillStyle = '#ffbf00'; ctx.fillRect(x - .6, y - .9, 1.2, .6);
     ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(x, y - 1.6, 1.2, .6, dormida ? .9 : Math.sin(t * 40 + i), 0, TAU); ctx.fill();
@@ -1003,8 +1190,10 @@
       const entra = EASE.out2(tramo(t, 1.4, 2.6, 'lin')), va = EASE.in2(tramo(t, 5.0, 6.0, 'lin'));
       const ox = lerp(L.camMin - 160, S.px - 110, entra) + va * 120, oy = 138 + Math.sin(t * 1.5) * 4;
       if (o) { o.x = ox; o.y = oy; o.espera = 0; o.duerme = t > 4.2 && t < 4.65 ? 2 : 0; S.mundoObj = 'sinJefe'; }
-      const enojo = t > 4.65 && t < 4.95;
-      Object.assign(J, { x: ox - 4 + (enojo ? Math.sin(t * 60) * 1.5 : 0), y: oy - 14, face: 1, t, at: t, st: 'ataque', atk: 'enjambre', stunT: 0, flash: enojo && t < 4.75 ? .3 : 0 });
+      const duerme = t > 4.2 && t < 4.65, despierta = t >= 4.65 && t < 4.95, enojo = despierta;
+      Object.assign(J, { x: ox - 4 + (enojo ? Math.sin(t * 60) * 1.5 : 0), y: oy - 14, face: 1, t, at: t, st: duerme ? 'ventana' : 'ataque', atk: t > 3.1 && t < 3.8 ? 'aguijon' : 'enjambre', cineDormida: duerme, cineDespierta: despierta, stunT: 0, flash: enojo && t < 4.75 ? .3 : 0 });
+      S.poseAbeja = duerme ? 'dormida' : despierta ? 'despertando' : null;
+      S.despertarAbeja = tramo(t, 4.65, 4.95, 'io2');
       S.alfaJefe = tramo(t, 1.9, 2.3); S.oculto = t < 1.9;
       if (t <= 5.95) S.fin = { ox, oy, px: x };
       // cámara
@@ -1018,8 +1207,8 @@
     frente(ctx, S, t) {
       const J = S.J, ct = CUR.t, fr = CUR.fre;
       // el hilo de miel que cae y su charco (el del juego)
-      if (t > .4 && t < 1.15) { const u = tramo(t, .4, .95, 'in2'), x = S.px + 26; ctx.strokeStyle = 'rgba(232,160,30,.9)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x, CUR.camY ?? 0); ctx.lineTo(x, lerp(CUR.camY ?? 0, FLOOR - 1, u)); ctx.stroke(); }
-      if (t > .9) { const k = EASE.outBack(tramo(t, .9, 1.25, 'lin')), c = S.charco, m = (c.x0 + c.x1) / 2, w = (c.x1 - c.x0) / 2 * k; MEC.OBJ.miel.draw(ctx, { x0: m - w, x1: m + w, y: c.y }, { t: ct }); }
+      if (t > .4 && t < 1.15) { const u = tramo(t, .4, .95, 'in2'), x = S.px + 26, y0 = CUR.camY ?? 0, y1 = lerp(y0, FLOOR - 1, u); if (String(view.st.id).split('~')[0] === 'acuarela' && hiloMiel.complete && hiloMiel.naturalWidth && y1 > y0) ctx.drawImage(hiloMiel, x - 5, y0, 10, y1 - y0); else { ctx.strokeStyle = 'rgba(232,160,30,.9)'; ctx.lineWidth = 1.4; ctx.beginPath(); ctx.moveTo(x, y0); ctx.lineTo(x, y1); ctx.stroke(); } }
+      if (t > .9) { const k = EASE.outBack(tramo(t, .9, 1.25, 'lin')), c = S.charco, m = (c.x0 + c.x1) / 2, w = (c.x1 - c.x0) / 2 * k; if (String(view.st.id).split('~')[0] === 'acuarela' && charcoMiel.complete && charcoMiel.naturalWidth && w > 0) ctx.drawImage(charcoMiel, 80, 280, 1600, 400, m - w, c.y - 4, w * 2, 5); else MEC.OBJ.miel.draw(ctx, { x0: m - w, x1: m + w, y: c.y }, { t: ct }); }
       // abejitas sueltas
       if (t < 1.8) for (let i = 0; i < 3; i++) { const u = (t * .6 + i * .33) % 1; abejita(ctx, S.px - 60 + u * 200, 90 + i * 18 + Math.sin(t * 7 + i * 2) * 6, ct, i); }
       // las filas que forma el enjambre detrás de la reina
@@ -1044,80 +1233,23 @@
   };
 
   // =====================================================================
-  //  11 · EL BRAWBOT: «La fábrica despierta»
-  //  Bandas y prensas del prólogo, apagadas al principio y encendidas en
-  //  cadena; travellings que pintan el mundo donde va la cámara.
-  //  La carta lleva el cuadro del azotón (cartaEn); el fondo, el último.
-  // =====================================================================
-  const bajaPrensa = (m, per) => m < per - .9 ? Math.max(0, 1 - 2 * m) : m < per - .7 ? .15 : m < per - .45 ? (m - (per - .7)) / .25 : 1;
-  ENTRADAS.brawbot = {
-    tCarta: 5.95, corta: [1.2, 4.9], cartaEn: 4.32,
-    calienta: [.3, 2.0, 3.2, 4.3, 5.4],
-    cues: [[.3, 'silencio', 'fábrica apagada'], [1.0, 'efecto', 'clic de la palanca'], [1.3, 'swell', 'arrancan las máquinas'], [3.0, 'golpe', 'silbato de vapor'], [4.25, 'golpe', 'azotón'], [5.95, 'acento', 'carta']],
-    inicia(S) {
-      const st = L.start; S.px = st.x + 50; S.palanca = S.px + 34; S.bx = S.J.x;
-      S.bandas = CUR.plats.filter(pl => pl.k === 'conveyor').map(pl => ({ pl, v0: pl.v }));
-      S.prensas = (CUR.objs || []).filter(o => o.k === 'prensaHidra').map((o, i) => ({ o, t0: o.t, i }));
-    },
-    paso(S, t, dt) {
-      const p = CUR.p, J = S.J, fr = CUR.fre;
-      // la fábrica: apagada, y después se enciende en cadena
-      S.bandas.forEach((b, i) => { b.pl.v = t > 1.3 + i * .35 ? b.v0 : 1e-6; });
-      S.prensas.forEach(q => { const on = 1.4 + q.i * .14, o = q.o; o.t = t < on ? .6 : .6 + (t - on) + q.i * .4; o.baja = t < on ? 0 : bajaPrensa(o.t % o.per, o.per); if (t > 4.25 && t < 4.6) o.baja = Math.min(1, o.baja + .25 * Math.sin(tramo(t, 4.25, 4.6) * Math.PI)); });
-      // Itzel llega; al final se acomoda la mochila
-      const anda = tramo(t, 0, 1.0, 'out2');
-      Object.assign(p, { x: lerp(S.px - 80, S.px, anda), y: FLOOR, on: true, vx: anda < 1 ? 70 * (1 - anda) : 0, vy: 0, face: 1, vis: true, inv: 0 }); p.run += Math.abs(p.vx) * dt * .16;
-      p.sq = t > 5.55 && t < 5.8 ? Math.sin((t - 5.55) / .25 * Math.PI) * .15 : 0;
-      if (fr) { let q = [p.x - 16, p.y - 30 + Math.sin(t * 2.6) * 2];
-        if (t > .45 && t < 1.25) { const u = EASE.io2(tramo(t, .45, .9, 'lin')) * (1 - EASE.io2(tramo(t, 1.05, 1.25, 'lin'))); q = [lerp(q[0], S.palanca - 6, u), lerp(q[1], FLOOR - 16, u)]; }
-        if (t > 5.5) { const u = EASE.io2(tramo(t, 5.5, 5.8, 'lin')); q = [lerp(q[0], p.x - 5, u), lerp(q[1], p.y - 23, u)]; }
-        Object.assign(fr, { x: q[0], y: q[1], face: 1 }); }
-      // el BrawBot: apagado, se enciende (caldera, ojos, vapor), choca los puños y azota el suelo
-      const golpe = t > 3.85 && t < 4.9;
-      Object.assign(J, { x: S.bx, y: FLOOR, face: -1, t, at: golpe ? t - 3.85 : t, st: t > 3.0 && t < 3.85 ? 'ventana' : 'ataque', anim: golpe ? 'attack' : 'idle', stunT: 0, flash: t > 3.0 && t < 3.12 ? .3 : 0 });
-      S.tinte = ['#100c08', .6 * (1 - tramo(t, 2.75, 3.1))];
-      // cámara: travelling de ida, el robot, contrapicado, travelling de regreso
-      const ida = EASE.io2(tramo(t, 1.25, 2.55, 'lin')), vuelta = EASE.io2(tramo(t, 5.0, 5.5, 'lin'));
-      if (t < 1.2) S.cam = { x: L.camMin, z: claves(t, [[0, 1.06], [1.2, 1.02]]), fx: p.x + 40, fy: FLOOR - 40, nit: false };
-      else if (t < 2.6) { const cx = lerp(L.camMin, L.camMax, ida); S.cam = { x: cx, z: 1.1, fx: cx + VW / 2, fy: FLOOR - 50, nit: false }; }
-      else if (t < 3.8) S.cam = { x: L.camMax, z: claves(t, [[2.6, 2.3], [3.8, 2.6, 'io2']]), fx: S.bx - 6, fy: FLOOR - 62, dof: .6, nit: true };
-      else if (t < 5.0) S.cam = { x: L.camMax, z: claves(t, [[3.8, 1.55], [5.0, 1.6]]), fx: S.bx - 50, fy: FLOOR - 46, dy: 14, dof: .2, nit: true };
-      else { const cx = lerp(L.camMax, L.camMin, vuelta); S.cam = { x: cx, z: claves(t, [[5.0, 1.1], [5.5, 1.1], [5.95, 1.35, 'io2']]), fx: lerp(cx + VW / 2, p.x + 14, tramo(t, 5.3, 5.6)), fy: lerp(FLOOR - 50, FLOOR - 26, tramo(t, 5.3, 5.6)), dof: .2, nit: t > 5.5 }; }
-      if (t > 3.0 && t < 3.3) S.sacude = 1.5; if (t > 4.25 && t < 4.6) S.sacude = 5 * (1 - tramo(t, 4.25, 4.6));
-    },
-    frente(ctx, S, t) {
-      const ct = CUR.t, J = S.J;
-      // la palanca que toca Fresita
-      { const x = S.palanca, a = t < 1.0 ? -.7 : .7 * Math.min(1, (t - 1.0) / .1); ctx.fillStyle = '#5a4a32'; ctx.fillRect(x - 3, FLOOR - 5, 6, 5); ctx.strokeStyle = '#c9a24a'; ctx.lineWidth = 1.2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(x, FLOOR - 4); ctx.lineTo(x + Math.sin(a) * 9, FLOOR - 4 - Math.cos(a) * 9); ctx.stroke(); ctx.fillStyle = '#ff5a3a'; ctx.beginPath(); ctx.arc(x + Math.sin(a) * 9, FLOOR - 4 - Math.cos(a) * 9, 1.6, 0, TAU); ctx.fill();
-        if (t > 1.0 && t < 1.3) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowDot(ctx, x, FLOOR - 8, 10, '#ffe08a', 1 - (t - 1.0) / .3); ctx.restore(); } }
-      // vapor de las prensas encendidas
-      for (const q of S.prensas) { const on = 1.4 + q.i * .14; if (t < on) continue; for (let k = 0; k < 3; k++) { const f = ((t - on) * .7 + k / 3) % 1; ctx.fillStyle = `rgba(235,232,226,${.35 * (1 - f)})`; ctx.beginPath(); ctx.arc(q.o.x + 8 + Math.sin(ct + k) * 3, (CUR.camY ?? 0) + 10 + 30 * (1 - f) - f * 10, 3 + f * 5, 0, TAU); ctx.fill(); } }
-      // choca los puños: chispas; azota el suelo: la onda corre por las bandas hacia Itzel
-      if (t > 3.95 && t < 4.15) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowDot(ctx, J.x - 8, FLOOR - 70, 14, '#ffd27a', 1 - (t - 3.95) / .2); ctx.restore(); }
-      if (t > 4.25 && t < 5.2) { const f = t - 4.25; for (let r = 0; r < 3; r++) { const x = J.x - 30 - f * 260 - r * 14; ctx.strokeStyle = `rgba(255,190,90,${.75 * (1 - f / .95)})`; ctx.lineWidth = 2 - r * .5; ctx.beginPath(); ctx.ellipse(x, FLOOR, 6 + f * 10, 3 + f * 2, 0, Math.PI, TAU); ctx.stroke(); }
-        for (let i = 0; i < 10; i++) { const vx = -(40 + hash1(i, 101) * 80), vy = 60 + hash1(i, 102) * 70; ctx.fillStyle = `rgba(150,130,100,${.6 * (1 - f)})`; ctx.beginPath(); ctx.arc(J.x - 22 + vx * f, FLOOR - (vy * f - 200 * f * f), 1.6 + f * 3, 0, TAU); ctx.fill(); } }
-    },
-    entrega(S) { // la fábrica sigue encendida; las prensas vuelven a su ritmo del prólogo
-      for (const b of S.bandas) b.pl.v = b.v0; for (const q of S.prensas) { q.o.t = q.t0; q.o.baja = 0; }
-      Object.assign(CUR.p, { x: S.px, y: FLOOR, vx: 0, vy: 0, on: true, face: 1 }); if (CUR.fre) Object.assign(CUR.fre, { x: S.px - 16, y: FLOOR - 30 }); },
-    foco: S => [S.bx - 8, FLOOR - 58],
-  };
-
-  // =====================================================================
   //  12 · LA RUPTURA: «El corazón de la pirámide»
   //  Cierra la historia de la entrada: los tres ajolotes en sus orbes
   //  (los mismos actores de la entrada, en chiquito). Al cambiar de forma,
   //  el mundo parpadea con el arte de los mundos que visitaron.
   // =====================================================================
   const AJOS3 = ['azul', 'naranja', 'violeta'], COLAJO = { azul: '#6fc0ff', naranja: '#ffae5a', violeta: '#b890ff' };
+  const orbeAmigos = new Image();
+  orbeAmigos.src = '../Roguelike/assets/bosque/piezas/burbuja.png';
   function orbeAjolote(ctx, x, y, r, a, T) {
     const col = COLAJO[a.color];
     ctx.save(); ctx.translate(x, y);
     ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowDot(ctx, 0, 0, r * 1.9, col, .45); ctx.restore();
-    ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r * .95, 0, TAU); ctx.clip(); const k = r * 1.5 / 104; ctx.scale(k, k); a.x = 0; a.y = 8; ACTOR.dibuja(ctx, a); ctx.restore();
-    ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fillStyle = rgba(col, .16); ctx.fill(); ctx.lineWidth = r * .1; ctx.strokeStyle = 'rgba(255,79,216,.9)'; ctx.stroke(); ctx.lineWidth = r * .04; ctx.strokeStyle = 'rgba(122,240,255,.9)'; ctx.stroke();
-    for (let i = 0; i < 6; i++) { const an = i / 6 * TAU + T * 1.6; ctx.fillStyle = '#1c1028'; ctx.fillRect(Math.cos(an) * r - r * .08, Math.sin(an) * r - r * .08, r * .16, r * .16); }
-    ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-r * .38, -r * .4, r * .2, r * .1, -.6, 0, TAU); ctx.fill();
+    ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r * .95, 0, TAU); ctx.clip(); const k = r * 1.7 / 104; ctx.scale(k, k); a.x = 0; a.y = 8; ACTOR.dibuja(ctx, a); ctx.restore();
+    if (String(view.st.id).split('~')[0] === 'acuarela' && orbeAmigos.complete && orbeAmigos.naturalWidth) { ctx.save(); ctx.globalAlpha = .25; ctx.drawImage(orbeAmigos, -r, -r, r * 2, r * 2); ctx.restore(); }
+    else { ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.fillStyle = rgba(col, .16); ctx.fill(); ctx.lineWidth = r * .1; ctx.strokeStyle = 'rgba(255,79,216,.9)'; ctx.stroke(); ctx.lineWidth = r * .04; ctx.strokeStyle = 'rgba(122,240,255,.9)'; ctx.stroke();
+      for (let i = 0; i < 6; i++) { const an = i / 6 * TAU + T * 1.6; ctx.fillStyle = '#1c1028'; ctx.fillRect(Math.cos(an) * r - r * .08, Math.sin(an) * r - r * .08, r * .16, r * .16); }
+      ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-r * .38, -r * .4, r * .2, r * .1, -.6, 0, TAU); ctx.fill(); }
     ctx.restore();
   }
   ENTRADAS.ruptura = {
@@ -1152,9 +1284,12 @@
         Object.assign(fr, { x: q[0], y: q[1], face: t > 6.5 && t < 7.25 ? -1 : 1 }); }
       // la Ruptura: aparece detrás de los orbes y cambia de forma
       const destino = S.formaRuptura.cuerpo;
-      const forma = t < 3.6 ? (destino === 0 ? 3 : 0) : destino;
+      const forma = destino; // una sola forma principal por entrada; la metamorfosis la marcan luz y movimiento
       Object.assign(J, { x: S.rx + Math.sin(t * .6) * 3, y: S.ry + Math.sin(t * 1.1) * 3, t, at: t, forma, st: t > 4.8 && t < 6.3 ? 'ventana' : 'ataque', atk: 'laser', stunT: 0, flash: (t > 3.6 && t < 3.72) || (t > 4.2 && t < 4.32) ? .3 : 0 });
       S.oculto = t < 3.0; S.alfaJefe = tramo(t, 3.0, 3.4); S.escala = lerp(.6, 1, EASE.outBack(tramo(t, 3.0, 3.6, 'lin')));
+      const pulsoCambio = t > 3.6 && t < 3.76 ? Math.sin(tramo(t, 3.6, 3.76) * Math.PI) : t > 4.2 && t < 4.36 ? Math.sin(tramo(t, 4.2, 4.36) * Math.PI) : 0;
+      S.escala *= 1 + .08 * pulsoCambio; S.giro = (t > 3.6 && t < 3.76 ? .08 * pulsoCambio : 0) - (t > 4.2 && t < 4.36 ? .06 * pulsoCambio : 0);
+      S.tinte = t < 3.6 ? ['#271032', .42 * tramo(t, 3.0, 3.35)] : t < 4.36 ? ['#ff4fd8', .18 * pulsoCambio] : null;
       // con cada forma, el mundo parpadea con el arte de otro de sus mundos
       if (S.otros) { const z = [[3.0, 3.12], [3.6, 3.74], [4.2, 4.34]].findIndex(([a, b]) => t >= a && t < b); if (z >= 0) S.estiloMundo = S.otros[z % S.otros.length]; }
       // la grieta del prólogo se abre detrás de ellas y empieza a borrar el camino
@@ -1174,7 +1309,7 @@
     frente(ctx, S, t) {
       if (t < 1.6) return;
       const ct = CUR.t, aparece = tramo(t, 1.6, 2.0);
-      S.ajos.forEach((a, i) => { const [x, y] = ENTRADAS.ruptura.orbe(S, i, t); orbeAjolote(ctx, x, y, 9 * aparece + .01, a, ct); });
+      S.ajos.forEach((a, i) => { const [x, y] = ENTRADAS.ruptura.orbe(S, i, t); orbeAjolote(ctx, x, y, 12 * aparece + .01, a, ct); });
       // Cada forma deja una estela distinta al revelarse, sin tapar su silueta.
       if (t >= 3.6 && t < 6.3) {
         const colores = { mural:'#e8ba70', golem:'#95ddff', nucleo:'#ff89e7', marea:'#65d6ec', baluarte:'#ffb263', enjambre:'#e8d772', huracan:'#cae5ef', espejo:'#dc98ff', ceiba:'#9cd990', tentaculos:'#ff78dc' };

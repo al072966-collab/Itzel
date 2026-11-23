@@ -192,15 +192,6 @@
       1140
     ]
   },
-  "calderita": {
-    "file": "calderita.png",
-    "box": [
-      221,
-      0,
-      953,
-      1171
-    ]
-  },
   "campana": {
     "file": "campana de bronce.png",
     "box": [
@@ -696,15 +687,6 @@
       677
     ]
   },
-  "pajaro": {
-    "file": "pajaro de cuerda.png",
-    "box": [
-      191,
-      55,
-      1351,
-      832
-    ]
-  },
   "pavo": {
     "file": "pavo.png",
     "box": [
@@ -986,7 +968,6 @@
     topon: { archivo: 'topon-v1/processed-v1', caja: [45,40,167,185], cajas: [[45,40,165,178],[45,40,165,176],[44,66,168,153],[45,33,166,161]], escalaCaja: [168,185], modo: 'toponForge', acciones: ['caminar: dos poses alternas','aviso agachado','salto'] },
     torreta: { archivo: 'torreta-v1/processed-v1', caja: [25,65,208,118], cajas: [[26,79,207,104],[26,65,203,118],[26,65,197,118],[25,79,207,104]], escalaCaja: [208,118], modo: 'torretaForge', acciones: ['reposo','aviso de disparo','disparo: retroceso con destello','recarga'] },
     rover: { archivo: 'rover-rodar-v1', caja: [55, 64, 146, 124], acciones: ['rodar: cuatro poses', 'baliza intermitente'] },
-    pajaro: { archivo: 'pajaro-vuelo-v1', caja: [45, 59, 167, 134], modo: 'vuelo', acciones: ['vuelo: cuatro poses de aleteo'] },
     zopilote: { archivo: 'zopilote-vuelo-v1', caja: [27, 73, 199, 99], modo: 'vuelo', acciones: ['vuelo: cuatro poses de aleteo'] },
     zancudo: { archivo: 'zancudo-vuelo-v1', caja: [53, 64, 150, 123], modo: 'vuelo', acciones: ['vuelo: cuatro poses del enjambre'] },
     zangano: { archivo: 'zangano-vuelo-v1', caja: [22, 69, 212, 104], modo: 'vuelo', acciones: ['vuelo: cuatro poses'] },
@@ -1015,7 +996,7 @@
     hormiga: { archivo: 'hormiga-v1', caja: [27, 81, 217, 98], modo: 'hormiga', acciones: ['caminar: cuatro poses alternadas', 'lleva hoja'] },
     libelula: { archivo: 'libelula-v1', caja: [57, 73, 132, 105], modo: 'libelula', acciones: ['reposo: dos poses de alas', 'aleteo: cuatro poses', 'vuelo rápido'] },
     bucanero: { archivo: 'bucanero-v1', caja: [79, 31, 112, 200], cajas: [[79, 31, 112, 200], [36, 34, 154, 198], [58, 26, 177, 198], [58, 26, 124, 197]], escalaCaja: [112, 200], escalaY: .79, modo: 'lanzamiento', acciones: ['reposo con coco', 'preparación', 'lanzamiento', 'recuperación'] },
-    cocuyo: { archivo: 'cocuyo-v1', caja: [79, 80, 109, 103], cajas: [[79, 80, 109, 103], [62, 101, 120, 82], [78, 94, 112, 60], [62, 93, 119, 61]], escalaCaja: [120, 103], escalaArte: 1.7, modo: 'vuelo', acciones: ['aleteo: cuatro poses', 'posado'] },
+    cocuyo: { archivo: 'cocuyo-v1', caja: [79, 80, 109, 103], cajas: [[79, 80, 109, 103], [62, 101, 120, 82], [78, 94, 112, 60], [62, 93, 119, 61]], escalaCaja: [120, 103], escalaArte: 1.4, modo: 'vuelo', acciones: ['aleteo: cuatro poses', 'posado'] },
     centinela: { archivo: 'centinela-v1', caja: [36, 14, 174, 230], modo: 'centinela', acciones: ['patrulla: paso alternado', 'lanza al frente', 'lanza elevada al atacar'] },
     nauyaca: { archivo: 'nauyaca-v1', caja: [40, 56, 203, 135], modo: 'nauyaca', acciones: ['enroscada', 'aviso del cascabel', 'mordida extendida', 'recuperación'] },
     erizo: { archivo: 'erizo-v1', caja: [72, 79, 140, 100], cajas: [[72, 79, 140, 100], [45, 79, 142, 100], [69, 79, 141, 100], [46, 79, 142, 100]], escalaCaja: [142, 100], modo: 'erizo', acciones: ['caminar: cuatro poses con patas alternadas', 'dormido: pose estable', 'curl: conserva las púas y la colisión del dibujante'] },
@@ -1037,7 +1018,6 @@
     campana: { archivo: 'campana-v1', caja: [26, 27, 194, 218], escalaX: 1.24, modo: 'campana', acciones: ['reposo', 'aviso de salto', 'salto', 'repique con onda de ataque'] },
     carcoma: { archivo: 'carcoma-v1', caja: [38, 63, 186, 140], modo: 'carcoma', acciones: ['reposo en el hogar', 'asomarse al borde', 'salida y huida: dos poses alternadas'] },
     buho: { archivo: 'buho-v1', caja: [15, 55, 226, 152], modo: 'buho', acciones: ['vuelo', 'picada', 'ascenso', 'dormido'] },
-    calderita: { archivo: 'calderita-v2', caja: [59, 28, 144, 191], modo: 'calderita', acciones: ['caminar', 'aviso', 'resoplar', 'flotar'] },
     escarabajo: { archivo: 'escarabajo-v1/processed', caja: [19,24,217,214], cajas: [[19,24,217,214],[19,26,217,212],[19,26,217,211],[19,34,217,203]], escalaCaja: [217,214], modo: 'escarabajo', acciones: ['reposo', 'caminar: dos poses alternas', 'encogido para aturdido, sueño o rodar'] },
     garabato: { archivo: 'garabato-v1/processed', caja: [27,20,202,217], cajas: [[27,20,202,217],[19,77,217,160],[46,20,164,217],[19,111,217,127]], escalaCaja: [217,217], modo: 'salto', acciones: ['reposo', 'compresión de aviso', 'ascenso', 'aterrizaje'] },
     gaviota: { archivo: 'gaviota-v1/processed', caja: [18,97,218,60], cajas: [[18,97,218,60],[18,29,219,196],[19,28,217,200],[18,40,218,176]], escalaCaja: [219,200], modo: 'gaviota', acciones: ['planeo', 'aleteo arriba', 'aleteo abajo', 'picada'] },
@@ -1091,6 +1071,8 @@
     magma: { archivo: 'magma-v1/processed', hoja: 'sheet-transparent.png', caja: [65, 110, 141, 131], cajas: [[65, 110, 141, 131], [72, 106, 152, 135], [3, 81, 176, 160], [55, 155, 169, 86]], escalaCaja: [170, 154], modo: 'magma', acciones: ['reposo caliente', 'caminar: dos poses', 'recuperación tras daño', 'enfriado de piedra'] },
     mojarra: { archivo: 'mojarra-v1/processed', hoja: 'sheet-transparent.png', caja: [44, 87, 169, 84], cajas: [[44, 87, 169, 84], [60, 52, 137, 150], [45, 70, 165, 115], [48, 75, 161, 106]], escalaCaja: [161, 142], modo: 'mojarra', acciones: ['despegue', 'ascenso', 'cima', 'descenso'] },
   };
+  const ataqueAbordador = new Image(); ataqueAbordador.decoding = 'async';
+  ataqueAbordador.src = '../Roguelike/assets/forge/enemigos/abordador-ataque-v1/sheet-transparent.png';
   const imagenesForge = {};
   function hojaForge(id) {
     if (!hojasForge[id]) return null;
@@ -1105,6 +1087,14 @@
     const air=vuelan.has(id), water=nadan.has(id), idle=quietos.has(id);
     const ph=(e.anim||t||0)*(air?10:water?5:7), pausa=e.quieto||e.st==='sleep'||e.st==='glass'||e.st==='off';
     const hoja = hojaForge(id);
+    if (id === 'abordador' && e.ataqueVisual > 0 && !pausa && ataqueAbordador.complete && ataqueAbordador.naturalWidth) {
+      const cuadro = Math.min(3, Math.floor(e.ataqueVisual * 4));
+      const escala = h * 1.35 / 170, lado = 256 * escala;
+      c.save(); c.imageSmoothingEnabled = true;
+      c.drawImage(ataqueAbordador, (cuadro % 2) * 256, Math.floor(cuadro / 2) * 256, 256, 256,
+        -128 * escala, -210 * escala, lado, lado);
+      c.restore(); return;
+    }
     if (hoja && hoja.complete && hoja.naturalWidth) {
       const config = hojasForge[id];
       const cuadro = e.st === 'sleep' ? (['cuadrito','iguana','escarabajo','perro','perroCeniza','pezloro','pintador'].includes(config.modo) ? 3 : 0) : config.modo === 'monoForge' ? (e.throwT > .2 ? 1 : e.throwT > .1 ? 2 : e.throwT > 0 ? 3 : 0) : config.modo === 'salamandraForge' ? (e.aim > .25 ? 2 : e.aim > 0 ? 3 : Math.floor((e.anim || t || 0) * 6) % 2) : config.modo === 'caminarTortuga' ? (e.st === 'shell' ? 2 : e.st === 'slide' ? 3 : Math.floor((e.anim || t || 0) * 6) % 2) : config.modo === 'pavoForge' ? (e.abre > .5 ? 3 : e.abre > .1 ? 2 : Math.floor((e.anim || t || 0) * 5) % 2) : config.modo === 'toritoForge' ? Math.floor(((e.anim ?? t) * 60) / 8) % (config.cuadros?.length || 4) : config.modo === 'morena' ? (e.fase ? Math.floor((e.ft || 0) * 6) % 4 : 0) : config.modo === 'nadoMedusa' ? Math.floor((e.anim || t || 0) * 5) % 4 : config.modo === 'soploForge'
@@ -1133,8 +1123,6 @@
           ? (e.repica > 0 ? 3 : (e.vy || 0) !== 0 ? 2 : e.cd > 0 && e.cd < .2 ? 1 : 0)
         : config.modo === 'carcoma'
           ? (!e.fuera ? (e.hogar && (e.x < e.hogar.x + 4 || e.x > e.hogar.x + e.hogar.w - 4) ? 1 : 0) : 2 + (Math.floor((e.anim || t) * 8) % 2))
-        : config.modo === 'calderita'
-          ? (pausa ? 0 : e.flota ? 3 : e.resopla ? 2 : e.avisa ? 1 : 0)
         : config.modo === 'iguana'
           ? (e.st === 'stun' || (e.aturde || 0) > 0 ? 3 : Math.abs(e.vx || 0) > 35 ? 2 : Math.floor((e.anim || t) * 6) % 2)
         : config.modo === 'perro'
@@ -1298,9 +1286,8 @@
       } else c.drawImage(hoja, sx, sy, recorte[2], recorte[3], -fw/2, config.modo === 'geoda' ? -fh/2 : -fh, fw, fh);
       if (id === 'charran' && e.amenaza > 0) { c.save(); c.fillStyle = '#c8203a'; c.beginPath(); c.arc(0, -16, 3.5, 0, TAU); c.fill(); c.fillStyle = '#fff8df'; c.font = 'bold 6px "Alegreya Sans", sans-serif'; c.textAlign = 'center'; c.fillText('!', 0, -14); c.restore(); }
       if (id === 'sacapuntas' && e.carga) { c.save(); c.globalCompositeOperation = 'lighter'; c.fillStyle = `rgba(255,211,107,${.45 + Math.sin(t * 30) * .12})`; c.beginPath(); c.arc(6, -6, 3, 0, Math.PI * 2); c.fill(); c.restore(); }
-      if (id === 'abordador') { c.save(); c.scale(fw / 12, fh / 20); c.fillStyle = '#8c96a0'; c.strokeStyle = '#302a2b'; c.lineWidth = .45; c.beginPath(); c.roundRect(-3.9, -11.9, 7.8, 7, 1.6); c.fill(); c.stroke(); c.fillStyle = 'rgba(255,255,255,.45)'; c.fillRect(-2.6, -10.8, 1.6, 4.4); c.strokeStyle = 'rgba(28,22,18,.55)'; c.beginPath(); c.moveTo(0, -11.6); c.lineTo(0, -5.2); c.stroke(); c.fillStyle = '#8c96a0'; c.strokeStyle = '#302a2b'; c.beginPath(); c.moveTo(-5.4, -15.4); c.quadraticCurveTo(0, -14.2, 5.4, -15.4); c.quadraticCurveTo(2.4, -21, 0, -20.6); c.quadraticCurveTo(-2.4, -21, -5.4, -15.4); c.closePath(); c.fill(); c.stroke(); c.fillStyle = 'rgba(255,255,255,.5)'; c.beginPath(); c.ellipse(-1.2, -18, .8, 1.5, .3, 0, TAU); c.fill(); c.restore(); }
       if (id === 'halcon' && e.apunta) { c.save(); c.strokeStyle = '#f83800'; c.lineWidth = .5; c.beginPath(); c.arc(0, -4.6, 7 + Math.sin(t * 20), 0, TAU); c.stroke(); c.restore(); }
-      if (id === 'guerrero' && e.escudo) { c.save(); c.globalCompositeOperation = 'lighter'; c.fillStyle = 'rgba(215,154,61,.12)'; c.beginPath(); c.ellipse(3.6, -9, 5.2, 5.2, 0, 0, TAU); c.fill(); c.strokeStyle = 'rgba(255,216,144,.7)'; c.lineWidth = .6; c.beginPath(); c.arc(3.6, -9, 5.2, 0, TAU); c.stroke(); c.restore(); }
+      // (quitado el círculo brillante del escudo del guerrero, a pedido de David)
       if (id === 'guardia' && e.apunta) { c.save(); c.scale(-1, 1); c.globalCompositeOperation = 'lighter'; c.fillStyle = `rgba(255,205,82,${.65 + Math.sin(t * 30) * .25})`; c.beginPath(); c.arc(10.4, -11.2, 2.2 + Math.sin(t * 30) * .35, 0, TAU); c.fill(); c.strokeStyle = 'rgba(255,244,190,.9)'; c.lineWidth = .45; c.beginPath(); c.moveTo(7.7, -11.2); c.lineTo(13.1, -11.2); c.moveTo(10.4, -13.9); c.lineTo(10.4, -8.5); c.stroke(); c.restore(); }
       if (id === 'nauyaca' && e.aviso > 0) { const v = Math.sin(t * 60) * .6; c.save(); c.fillStyle = '#d8c890'; for (let j = 0; j < 3; j++) { c.beginPath(); c.ellipse(-7.4 - j * 1.2 + v, -2 - j * .6, .8, .6, 0, 0, TAU); c.fill(); } c.fillStyle = 'rgba(255,255,255,.8)'; c.font = 'bold 4px "Alegreya Sans", sans-serif'; c.fillText('tsss', -11, -7); c.restore(); }
       c.restore(); return;
@@ -1332,17 +1319,11 @@
       if (e.sub) return anterior(c,e,t,s);
       // El torito solo usa la carrera Forge durante desplazamiento; quieto conserva su arte base.
       if (id === 'torito' && e.st !== 'run' && Math.abs(e.vx || 0) <= 1) return anterior(c,e,t,s);
-      // Fábrica de Vapor y las dos propuestas Uayamón ya usan ciclos propios de mecha.
-      if (id === 'mecha' && ['vapor', 'uayamon_selva', 'uayamon_taller'].includes(window.CUR?.def?.id)) return anterior(c,e,t,s);
-      // El zángano de Vapor conserva sus ciclos y señal de ataque propios.
-      if (id === 'zangano' && window.CUR?.def?.id === 'vapor') return anterior(c,e,t,s);
-      // La araña de Vapor tiene seis cuadros de muerte; la hoja de caminar no debe borrar ese cierre.
+      // La araña tiene seis cuadros de muerte; la hoja de caminar no debe borrar ese cierre.
       if (id === 'arana' && e.st === 'gone') return anterior(c,e,t,s);
       // El búho conserva la pose dormida del nivel y fija sus alas mientras duerme.
       if (id === 'buho' && e.st === 'sleep') return anterior(c,{...e,anim:1e-6,quieto:true},t,s);
       if (id === 'rinoceronte' && ['eco', 'miniatura'].includes(window.CUR?.def?.id)) return anterior(c,e,t,s);
-      // La calderita conserva su caminata articulada; Forge se reserva para sus estados de acción.
-      if (id === 'calderita' && e.st !== 'sleep' && !e.avisa && !e.resopla && !e.flota) return anterior(c,e,t,s);
       // La hoja del cocuyo solo cubre el aleteo; conservar el posado sin movimiento.
       if (id === 'cocuyo' && (e.st === 'sleep' || e.st === 'stun' || (e.aturde || 0) > 0)) return anterior(c,{...e,anim:0},t,s);
       const im=recurso(id);

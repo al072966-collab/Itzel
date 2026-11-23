@@ -15,10 +15,16 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.neon) return;
-  const V = vestirNivel({ id: 'neon', carpeta: 'neon', ver: 1 });
+  const V = vestirNivel({ id: 'neon', carpeta: 'neon', ver: 1, manifiesto: window.NEON_RITMO_MANIFIESTO });
   const { spr, h1, TAM, IMG } = V, CY = '#00e8ff', MG = '#ff2bd6';
   const iguanaForge = new Image(); iguanaForge.decoding = 'async';
   iguanaForge.src = '../Roguelike/assets/forge/enemigos/iguana-v1/processed/sheet-transparent.png';
+  const panorama = new Image();
+  panorama.onload = () => V.rehaz();
+  panorama.src = '../Roguelike/assets/neon/panorama-puerta-v1.png';
+  const armazonTransparente = new Image();
+  armazonTransparente.onload = () => V.rehaz();
+  armazonTransparente.src = '../Roguelike/assets/neon/armazon-transparente-v1.png';
 
   // Puerta de Tierra: el arco y las dos torres del portón, en trazo de neón al fondo (símbolo del lugar)
   function puerta(c, x, y, f) {
@@ -31,6 +37,17 @@
     c.restore();
   }
   V.cielo((c, f, antes) => {
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    if (id === 'neon' && panorama.complete && panorama.naturalWidth) {
+      const ancho = 650, base = 176 - (f.y0 || 0), alto = f.H || VH;
+      const off = ((f.cam * .12 % ancho) + ancho) % ancho;
+      c.save(); c.fillStyle = '#0b031c'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(panorama, 0, 0, 2172, 570, x, base - 176, ancho, 176);
+        c.drawImage(panorama, 0, 570, 2172, 154, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore(); return;
+    }
     antes();
     const u = 400, off = (f.cam * .1) % u, base = Math.floor(f.cam * .1 / u);
     c.save(); c.globalAlpha = .55;
@@ -50,7 +67,14 @@
     ctx.beginPath(); for (const r of L.tops) { ctx.moveTo(r.x0 + 1, r.y + 1.4); ctx.lineTo(r.x1 - 1, r.y + 1.4); } ctx.strokeStyle = 'rgba(255,43,214,.75)'; ctx.lineWidth = .5; ctx.stroke();
     for (const o of L.deco) {
       const x = o.x, y = o.y + .5, v = h1(o.i, 7);
-      if (o.k === 'T') spr(ctx, o.i % 4 === 3 ? 'armazon' : 'palmera' + (o.i % 3), x, y, { voltea: v < .5 });
+      if (o.k === 'T') {
+        const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+        if (o.i % 4 === 3 && id === 'neon' && armazonTransparente.complete && armazonTransparente.naturalWidth) {
+          const w = TAM.armazon.w, h = TAM.armazon.h;
+          ctx.save(); ctx.translate(x, y); if (v < .5) ctx.scale(-1, 1);
+          ctx.drawImage(armazonTransparente, -w / 2, -h, w, h); ctx.restore();
+        } else spr(ctx, o.i % 4 === 3 ? 'armazon' : 'palmera' + (o.i % 3), x, y, { voltea: v < .5 });
+      }
       else if (o.k === 'f') spr(ctx, ['farol', 'reflector0', 'reflector2'][o.i % 3], x, y, { voltea: v < .5 });
       else if (o.k === 'r') spr(ctx, ['reflector1', 'reflector0'][o.i % 2], x, y, { voltea: v < .5 });
     }

@@ -14,8 +14,18 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.codex) return;
-  const V = vestirNivel({ id: 'codex', carpeta: 'edzna', ver: 1 });
+  const V = vestirNivel({ id: 'codex', carpeta: 'edzna', ver: 1, manifiesto: window.CODEX_EDZNA_MANIFIESTO });
   const { spr, h1, TAM, IMG } = V;
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'paisaje-codice-v1', suelo:'pigmento-terreno-v1', fondoBajo:'pigmento-fondo-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/edzna/' + archivo + '.png';
+  }
+  // también en la enciclopedia (jefes, personajes): el estilo códice se ve igual que en la partida, con el pergamino liso
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'codex' || !!(f.st && String(f.st.id).split('~')[0] === 'codex');
+  // Apagado a pedido de David: el telón y el terreno de láminas (pirámides, colinas, pigmento) se quitan y el nivel usa el telón y terreno
+  // dibujados en código, que es el que le gusta. Los personajes y objetos con láminas se quedan.
+  const paisajeListo = () => false;
 
   // telón de códice: glifos-cartucho que se encienden y se apagan, con puntos y barras mayas, y pigmento que flota
   function glifo(c, x, y, k, i, al) {
@@ -29,9 +39,21 @@
     c.restore();
   }
   V.cielo((c, f, antes) => {
-    antes();
+    if (principal(f) && paisajeListo()) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .12 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#9eaa83'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(paisaje.fondo, 0, 0, 2172, 596, x, arriba, ancho, base - arriba);
+        if (base < alto) c.drawImage(paisaje.fondoBajo, x, base, ancho, alto - base);
+      }
+      c.restore();
+    } else if (principal(f) && typeof paperTex === 'function') {
+      // El telón de este nivel: solo el pergamino de amate, sin pirámides, colinas, sol ni glifos fantasma (a pedido de David)
+      c.drawImage(paperTex(f, 'amate', '#ecdcb4', { grain: 14, blot: 16, fibers: 22 }), 0, 0, VW, VH);
+    } else antes();
     const t = f.t;
-    for (let i = 0; i < 7; i++) {
+    for (let i = 0; i < (principal(f) ? 0 : 7); i++) {
       const per = 8 + h1(i, 5) * 4, T = (t + h1(i, 6) * 12) % per, n = Math.floor((t + h1(i, 6) * 12) / per), u = T / per, w = VW + 80;
       const x = ((h1(n * 7 + i, 7) * w - f.cam * .1) % w + w) % w - 40, y = 30 + h1(n * 7 + i, 8) * 110 - u * 8, al = Math.sin(u * Math.PI) * .42;
       c.save(); c.globalCompositeOperation = 'multiply'; glifo(c, x, y, 1.3 + h1(i, 9) * .5, n * 7 + i, al); c.restore();
@@ -45,7 +67,16 @@
     c.restore();
   });
 
+  // el suelo de este nivel va liso (sin los puntitos de pigmento que le pone el estilo): el estilo lo consulta con esta función
+  window.CODEX_SIN_PUNTOS = () => typeof CUR !== 'undefined' && !!CUR && !!CUR.def && CUR.def.id === 'codex' && !CUR.modo;
+  let pigmento = null;
   V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!pigmento) { pigmento = ctx.createPattern(paisaje.suelo, 'repeat'); pigmento.setTransform(new DOMMatrix().scale(480 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = pigmento;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 16, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+    }
     for (const r of L.tops) for (let x = r.x0 + 12; x < r.x1 - 12; x += 30 + h1(x | 0, r.y) * 46) if (h1(x | 0, 61) > .62) spr(ctx, ['planta2', 'flor', 'olla1'][Math.floor(h1(x | 0, 62) * 3)], x, r.y + 1, { voltea: h1(x | 0, 63) < .5 });
     for (const o of L.deco) {
       const x = o.x, y = o.y + 1, v = h1(o.i, 7);
@@ -83,6 +114,7 @@
   }, 'jaguar0');
   V.fd('escribano', (c, e, t, s, antes) => antes(c, e, t, s), 'escribano0');
   V.fd('guerrero', (c, e, t, s, antes) => {
+    if (window.CODICE_GUERRERO && CODICE_GUERRERO.activo() && CODICE_GUERRERO.dibuja(c, e, t)) return;   // en Las páginas del códice: sus seis poses de lámina
     // Conserva la pieza de sueño del códice; los demás estados usan los
     // recortes Forge, cuyo dibujante mantiene el brillo del escudo.
     if (e.st === 'sleep') {

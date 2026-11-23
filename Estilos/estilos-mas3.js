@@ -1,7 +1,6 @@
 'use strict';
 // =====================================================================
 //  Segunda tanda (3/3): estilos derivados que re-interpretan otra escena
-//  (ya no define estilos: el mundo que era CGA ahora es estilos-vapor.js)
 // =====================================================================
 (function () {
   const B4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
@@ -21,5 +20,4 @@
   // ======================= CAMARA TERMICA =======================
   const IRON = (() => { const st = [[0, '#000010'], [.22, '#2a0a5a'], [.42, '#8a1a7a'], [.6, '#d8402a'], [.78, '#f8a020'], [.92, '#fff070'], [1, '#ffffff']].map(([t, c]) => [t, hex(c)]); const lut = []; for (let i = 0; i < 256; i++) { const t = i / 255; let k = 0; while (k < st.length - 2 && t > st[k + 1][0]) k++; const [t0, a] = st[k], [t1, b] = st[k + 1], u = clamp((t - t0) / (t1 - t0), 0, 1); lut.push([lerp(a[0], b[0], u), lerp(a[1], b[1], u), lerp(a[2], b[2], u)]); } return lut; })();
 
-  // (el mundo que era CGA ahora es «Vapor y engranajes», en estilos-vapor.js)
 })();

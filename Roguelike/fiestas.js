@@ -273,6 +273,8 @@ const FIESTAS = [];
       if (o.listo) { c.save(); c.globalCompositeOperation = 'lighter'; const gr = c.createRadialGradient(x, y - 22, 2, x, y - 22, 34); gr.addColorStop(0, 'rgba(255,210,122,.3)'); gr.addColorStop(1, 'rgba(255,210,122,0)'); c.fillStyle = gr; c.fillRect(x - 34, y - 56, 68, 68); c.restore(); }
     },
   };
+  const GENTE = ['abuela', 'abuelo', 'mujer', 'hombre'].map(n => { const im = new Image(); im.decoding = 'async'; im.src = '../Roguelike/assets/paseo-animas/gente/' + n + '.webp?v=1'; return im; });
+  const GENTE_VELITA = [[.885, .43], [.88, .435], [.875, .435], [.878, .435]];   // dónde queda el cuenco de cada uno (fracción de la lámina)
   // ánima: un alma con su velita que camina delante de Itzel; su luz deja ver las piedras de la niebla
   OBJ.anima = {
     make(g, en) { g.objs.push({ k: 'anima', x: tx(en.x) + 8, y: tl(en.y ?? 8), x1: tx(en.x2 ?? en.x + 20), t: Math.random() * 4, vx: 0 }); },
@@ -288,6 +290,26 @@ const FIESTAS = [];
     },
     draw(c, o, f) {
       const x = o.x, y = o.y, a = o.sube ? Math.max(0, Math.min(1, (o.y + 40) / 60)) : 1;
+      // la gente del Paseo: una abuela, un abuelo, una mujer y un hombre que caminan con su velita (láminas de David)
+      if (o.v === undefined) o.v = (Math.floor(o.x / 9) + Math.floor((o.t || 0) * 10)) & 3;
+      const gi = GENTE[o.v], VELITA = GENTE_VELITA[o.v];
+      if (gi.complete && gi.naturalWidth) {
+        const k = 22 / gi.naturalHeight, w = gi.naturalWidth * k, h = 22, mueve = Math.abs(o.vx || 0) > 4 || o.sube, izq = (o.vx || 0) < -6;
+        const bote = mueve ? Math.abs(Math.sin(f.t * 7 + o.t)) * 1.1 : 0, pies = y + 24 - bote;
+        // se voltean: hacia donde caminan y, quietas, hacia Itzel; el giro se ve como un pasito de lado a lado
+        const dtG = Math.min(.1, Math.max(0, f.t - (o.tG ?? f.t))); o.tG = f.t;
+        if (Math.abs(o.vx || 0) > 4) o.cara = Math.sign(o.vx); else if (o.cara === undefined) o.cara = 1; else { const dxp = f.g.p.x - o.x; if (Math.abs(dxp) > 26) o.cara = Math.sign(dxp); }
+        o.giro = o.giro === undefined ? o.cara : o.giro + (o.cara - o.giro) * Math.min(1, dtG * 9);
+        c.save(); c.globalAlpha = a; c.translate(x, pies); c.scale(Math.abs(o.giro) < .12 ? .12 * Math.sign(o.giro || 1) : o.giro, 1); c.rotate(mueve ? Math.sin(f.t * 7 + o.t) * .035 : 0);
+        c.drawImage(gi, -w * .5, -h, w, h);
+        // la velita sobre el cuenco (el cuenco va dibujado; la llama titila)
+        const vx = (VELITA[0] - .5) * w, vy = -h + VELITA[1] * h, fl = Math.sin(f.t * 13 + o.t) * .4 + Math.sin(f.t * 7.3) * .3;
+        c.fillStyle = '#efe8d8'; c.fillRect(vx - 1.1, vy - 3.6, 2.2, 3.8); c.fillStyle = '#d8cdb4'; c.fillRect(vx + .3, vy - 3.6, .8, 3.8);
+        c.save(); c.globalCompositeOperation = 'lighter'; const gr = c.createRadialGradient(vx, vy - 6, 1, vx, vy - 6, 15); gr.addColorStop(0, 'rgba(255,190,90,.16)'); gr.addColorStop(1, 'rgba(255,170,70,0)'); c.fillStyle = gr; c.fillRect(vx - 15, vy - 21, 30, 30); c.restore();
+        c.fillStyle = '#ff9a1f'; c.beginPath(); c.ellipse(vx + fl * .3, vy - 5.8, 1.1, 2.3, fl * .1, 0, TAU2); c.fill();
+        c.fillStyle = '#fff2b0'; c.beginPath(); c.ellipse(vx + fl * .2, vy - 5.2, .5, 1.2, 0, 0, TAU2); c.fill();
+        c.restore(); return;
+      }
       c.save(); c.globalAlpha = a;
       c.globalCompositeOperation = 'lighter'; const gr = c.createRadialGradient(x, y, 1, x, y, 26); gr.addColorStop(0, 'rgba(220,235,255,.32)'); gr.addColorStop(1, 'rgba(220,235,255,0)'); c.fillStyle = gr; c.fillRect(x - 26, y - 26, 52, 52);
       c.globalCompositeOperation = 'source-over';
@@ -323,8 +345,9 @@ const FIESTAS = [];
       b.g(112, 127).o('vela', 112).h(115, 9).Gl(122).d('T', 118);
     },
   });
-  (NIVELES_ALT.bruma = NIVELES_ALT.bruma || []).push('animas');
-  FIESTAS.push({ id: 'hanalpixan', nombre: 'Hanal Pixán', nivel: 'animas', mundo: 'bruma', hoy: d => (d.getMonth() === 9 && d.getDate() >= 20) || (d.getMonth() === 10 && d.getDate() <= 5) });
+  // el Paseo de las Ánimas ya no es un nivel aparte: es el último tramo de Aluxes de los Chenes (mundos-ampliados2.js)
+  Object.assign(NIVELES.bruma, { meta: arcoAnimas, fiesta: 'hanalpixan' });
+  FIESTAS.push({ id: 'hanalpixan', nombre: 'Hanal Pixán', nivel: 'bruma', mundo: 'bruma', hoy: d => (d.getMonth() === 9 && d.getDate() >= 20) || (d.getMonth() === 10 && d.getDate() <= 5) });
 
   // =================================================================
   //  CARNAVAL DE CAMPECHE (mundo de neón)

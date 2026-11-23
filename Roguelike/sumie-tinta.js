@@ -14,12 +14,26 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.sumie) return;
-  const V = vestirNivel({ id: 'sumie', carpeta: 'tinta', ver: 2 });
+  const V = vestirNivel({ id: 'sumie', carpeta: 'tinta', ver: 2, manifiesto: window.SUMIE_TINTA_MANIFIESTO });
   const { spr, h1, TAM, IMG, listo } = V, ROJ = '#c23b2e', TIN = '#1d1b19';
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'fondo-laguna.webp', suelo:'suelo-tinta-v1.png' })) {   // el telón es la laguna nueva (ChatGPT, rediseño del palo de tinte)
+    const im = paisaje[n] = new Image();
+    im.onload = () => V.rehaz(); im.src = '../Roguelike/assets/tinta/' + archivo;
+  }
+  const nivelPrincipal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'sumie';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
 
   // ---------------- telón: flores de tinta, lluvia a pincel y sello ----------------
   V.cielo((c, f, antes) => {
-    antes();
+    if (nivelPrincipal(f) && paisajeListo()) {
+      const alto = f.H || VH, im = paisaje.fondo, sw = Math.min(im.naturalWidth, im.naturalHeight * VW / VH);
+      // la laguna se recorre despacio con la cámara: del manglar de la izquierda al ocaso de la derecha (ya trae aves y lancha: sin duplicarlas)
+      const sx = Math.max(0, (im.naturalWidth - sw) * clamp(.5 + .5 * Math.sin(f.cam * .00045 - 1.2), 0, 1));
+      // el agua de la laguna llega justo al borde del terreno (y = 177); debajo se alarga el papel
+      c.fillStyle = '#e4d4b2'; c.fillRect(0, 0, VW, alto);
+      c.drawImage(im, sx, 0, sw, im.naturalHeight, 0, -14, VW, VH);
+    } else antes();
     for (let q = 0; q < 4; q++) {                                  // manchas que se abren sobre el papel como flores de agua
       const per = 5.5, T = f.t + q * 1.4, tt = T % per, n = Math.floor(T / per), u = tt / per, r = 4 + u * 26, al = Math.sin(Math.min(1, u * 1.2) * Math.PI) * .16;
       const x = 40 + h1(n * 4 + q, 71) * (VW - 80), y = 30 + h1(n * 4 + q, 72) * 100;
@@ -38,7 +52,12 @@
   });
 
   // ---------------- adornos sobre el terreno de tinta ----------------
+  let patronSuelo = null;
   V.terreno((ctx, f) => {
+    if (nivelPrincipal(f) && paisajeListo()) {
+      if (!patronSuelo) { patronSuelo = ctx.createPattern(paisaje.suelo, 'repeat'); patronSuelo.setTransform(new DOMMatrix().scale(160 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = patronSuelo; ctx.fillRect(0, 0, L.ww, VH + 40); ctx.restore();
+    }
     for (const r of L.tops) {                                   // matas de hierba a pincel, bajitas y salteadas
       for (let x = r.x0 + 10; x < r.x1 - 10; x += 22 + h1(x | 0, r.y) * 40) if (h1(x | 0, 31) > .55) spr(ctx, 'hierba' + Math.floor(h1(x | 0, 32) * 3), x, r.y + 1.2, { voltea: h1(x | 0, 33) < .5, k: .8 });
     }
@@ -114,7 +133,7 @@
   // ---------------- culebra, mancha y koi ----------------
   const REPTA = [3, 4, 5, 6, 5, 4];
   V.fd('culebra', (c, e, t) => {
-    const assets = window.ENEMIGOS_ASSETS, hoja = assets && assets.hojaForge('culebra');
+    const assets = window.ENEMIGOS_ASSETS, hoja = null;   // el coralillo nuevo (12 poses) reemplaza a la hoja anterior
     if (hoja && hoja.complete && hoja.naturalWidth && e.st !== 'gone' && e.st !== 'lunge' && e.st !== 'sleep' && !(e.aturde > 0) && !(e.tt > .3 && e.st === 'ok')) {
       assets.pinta(c, e, t, 'culebra', null); return;
     }
@@ -129,9 +148,9 @@
   V.fd('mancha', (c, e, t) => {
     const peg = e.pegada > 0;
     c.save(); c.rotate(Math.sin(t * 3 + (e.x || 0)) * .08);
-    spr(c, Math.floor(t * 2.5) % 3 === 2 ? 'mancha1' : 'mancha0', 0, 2, { h: peg ? 10 : 13, sx: peg ? 1.15 : 1 });
+    if (peg) spr(c, 'mancha2', 0, 2, { h: 13 }); else spr(c, Math.floor(t * 2.5) % 3 === 2 ? 'mancha1' : 'mancha0', 0, 2, { w: 17 });
     c.restore();
-    if (peg) { c.fillStyle = ROJ; c.fillRect(-2.5, -1.6, 5, 1.4); }
+
   }, 'mancha0');
   const NADA = [0, 1, 2, 3, 4, 6, 4, 3, 2, 1];
   V.fd('koi', (c, e, t) => {

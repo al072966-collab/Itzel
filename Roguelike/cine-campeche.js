@@ -696,12 +696,17 @@ void main() { vec4 c = texture(t, v); c.rgb *= l; c.rgb = mix(c.rgb, vec3(1., .8
     const a = tramo(t, t0, t0 + .4) * (1 - tramo(t, t1 - .45, t1));
     if (a <= 0) return;
     const x0 = Math.max(M.x0 + 34, -300), y0 = M.y0 + 78;
-    ctx.save(); ctx.globalAlpha = a; ctx.textBaseline = 'alphabetic'; ctx.shadowColor = 'rgba(40,20,20,.7)'; ctx.shadowBlur = 6;
-    ctx.font = '700 21px Alegreya, Georgia, serif'; let x = x0;
-    for (let i = 0; i < l1.length; i++) { const k = clamp((t - t0 - .1 - i * .03) / .3, 0, 1); ctx.globalAlpha = a * k; ctx.fillStyle = '#fff3dc'; ctx.fillText(l1[i], x, y0 + (1 - EASE.out3(k)) * 5); x += ctx.measureText(l1[i]).width; }
-    const w1 = x - x0;
-    ctx.font = 'italic 500 14px Alegreya, Georgia, serif'; x = x0 + 2;
-    for (let i = 0; i < l2.length; i++) { const k = clamp((t - t0 - .55 - i * .022) / .3, 0, 1); ctx.globalAlpha = a * k; ctx.fillStyle = '#ffe2b8'; ctx.fillText(l2[i], x, y0 + 18 + (1 - EASE.out3(k)) * 4); x += ctx.measureText(l2[i]).width; }
+    ctx.save(); ctx.globalAlpha = a; ctx.textBaseline = 'alphabetic'; ctx.textAlign = 'left'; ctx.shadowColor = 'rgba(40,20,20,.7)'; ctx.shadowBlur = 6;
+    if ('textRendering' in ctx) ctx.textRendering = 'geometricPrecision'; if ('letterSpacing' in ctx) ctx.letterSpacing = '0px';
+    // el texto ya escrito se dibuja de una sola vez (así las letras quedan bien espaciadas); solo las que van apareciendo se ponen una por una
+    const escribe = (txt, fx, fy, ini, paso, rise) => {
+      const k = i => clamp((t - t0 - ini - i * paso) / .3, 0, 1); let hechas = 0; while (hechas < txt.length && k(hechas) >= 1) hechas++;
+      ctx.globalAlpha = a; ctx.fillText(txt.slice(0, hechas), fx, fy);
+      for (let i = hechas; i < txt.length; i++) { const ki = k(i); if (ki <= 0) break; ctx.globalAlpha = a * ki; ctx.fillText(txt[i], fx + ctx.measureText(txt.slice(0, i)).width, fy + (1 - EASE.out3(ki)) * rise); }
+    };
+    ctx.font = '700 21px Alegreya, Georgia, serif'; ctx.fillStyle = '#fff3dc'; escribe(l1, x0, y0, .1, .03, 5);
+    const w1 = ctx.measureText(l1).width;
+    ctx.font = 'italic 500 14px Alegreya, Georgia, serif'; ctx.fillStyle = '#ffe2b8'; escribe(l2, x0 + 2, y0 + 18, .55, .022, 4);
     ctx.shadowBlur = 0; ctx.globalAlpha = a; const u = tramo(t, t0 + .4, t0 + 1.4, 'io2'); ctx.strokeStyle = '#e0304a'; ctx.lineWidth = 1.4; ctx.setLineDash([3, 2]); ctx.beginPath(); ctx.moveTo(x0, y0 + 5); ctx.lineTo(x0 + w1 * u, y0 + 5); ctx.stroke(); ctx.setLineDash([]);
     ctx.restore();
   }

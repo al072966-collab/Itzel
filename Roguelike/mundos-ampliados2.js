@@ -31,7 +31,7 @@
   // bejuco: cuelga del dosel; en lo oscuro baja de golpe cuando Itzel pasa abajo; la luz lo hace recogerse
   FOE.bejuco = { beh: 'bejuco', w: 8, h: 9, v: 0, sinSombra: false };
   BEH.bejuco = (e, g, d) => {
-    const p = g.p, max = e.max || 92, lit = alumbrado(g, e.x, e.y - 4);
+    const p = g.p, max = e.largoMax || 92, lit = alumbrado(g, e.x, e.y - 4);
     e.len = e.len ?? 6;
     let quiere = 6;
     if (!lit && Math.abs(p.x - e.x) < 34 && p.y > e.hy) quiere = Math.min(max, p.y - 6 - e.hy);
@@ -74,7 +74,7 @@
     }
     return false;
   });
-  amplia('bruma', 190, b => {
+  amplia('bruma', 244, b => {
     // I · la niebla: las piedras solo están donde apunta el faro; el primer nahual
     b.g(0, 13).P(3).d('T', 8).d('r', 11);
     b.p(16, 10, 2).p(20, 9, 2).p(24, 10, 2).c(16, 25, 7);
@@ -85,11 +85,16 @@
     // III · el espejo: carga su luz con el faro y alumbra el otro tramo mientras Fresita se ocupa de los bejucos
     b.g(95, 101).o('obsidiana', 99, 0, { ang: -.12 });
     b.p(104, 10, 2).p(108, 9, 2).p(112, 10, 2).p(116, 8, 2).p(120, 9, 2).c(104, 121, 6).e(110, 1, 'bejuco').e(118, 1, 'bejuco');
-    // IV · todo junto hasta el cenote: nahuales, bejucos, un espejo que gira y la escalera de piedras
+    // IV · todo junto: nahuales, bejucos y un espejo que gira
     b.g(124, 140).e(129, undefined, 'nahual').e(134, 1, 'bejuco').o('obsidiana', 139, 0, { ang: -.45, gira: .25 }).d('T', 126);
-    b.p(143, 9, 2).p(147, 7, 2).p(151, 5, 2).isl(154, 160, 4).c(155, 159, 3).e(157, 3, 'alux');
-    b.p(163, 6, 2).p(167, 8, 2).p(171, 10, 2).c(163, 172, 4);
-    b.g(174, 189).e(178, undefined, 'nahual').h(176, 9).Gl(185).d('T', 182);
+    // V · el Paseo de las Ánimas (Hanal Pixán en Pomuch): ya con velas, altares y ánimas, hasta el arco del barrio
+    const MOR = ['#8a3aa8', '#ff9a1f', '#f4efe2', '#d9443a', '#ffbf00'];
+    b.g(143, 160).e(148, undefined, 'alux').e(156, undefined, 'alux').o('vela', 143).o('altar', 152).o('vela', 149).o('vela', 155).d('T', 145).d('T', 159).o('guirnalda', 147, 5, { x2: 157, cols: MOR, picado: 'calavera' });
+    b.o('vela', 160).p(163, 9, 2).p(167, 7, 2).p(171, 5, 2).isl(174, 180, 4).o('vela', 174, 3).o('vela', 180, 3).c(175, 179, 3).o('anima', 161, 6, { x2: 180 });
+    b.p(183, 6, 2).p(187, 8, 2).p(191, 10, 2).o('anima', 181, 5, { x2: 194 });
+    b.g(194, 214).e(200, undefined, 'alux').e(209, undefined, 'nahual').o('vela', 194).o('altar', 204).o('vela', 201).o('vela', 207).d('T', 197).d('T', 212).o('guirnalda', 198, 5, { x2: 210, cols: MOR, picado: 'calavera' });
+    b.o('vela', 214).p(217, 9, 2).p(221, 8, 2).p(225, 9, 2).c(217, 226, 6).o('anima', 215, 7, { x2: 228 });
+    b.g(228, 243).o('vela', 228).h(231, 9).Gl(238).d('T', 234);
   });
   NIVELES.bruma.fauna = ['alux', 'nahual', 'bejuco', 'calavera'];
   NIVELES.bruma.lema = 'Piedras que solo existen en el haz del faro, nahuales que se vuelven piedra con la luz, bejucos que bajan en lo oscuro y espejos de obsidiana que rebotan la luz.';
@@ -179,9 +184,10 @@
     walkStep(e, d, e.v);
   };
   // guerrero de piedra: su escudo es de un grupo de glifos; mientras esos glifos estén prendidos no se le puede caer encima
-  FOE.guerrero = { beh: 'guerrero', w: 12, h: 15, v: 14, spiky: e => e.escudo };
+  FOE.guerrero = { beh: 'guerrero', w: 12, h: 15, v: 14, spiky: e => e.escudo };   // (e.escudo también se prende tras cada golpe: e.reescudo)
   BEH.guerrero = (e, g, d) => {
-    e.escudo = grupo(g, e.grp).some(q => q.on);
+    e.reescudo = Math.max(0, (e.reescudo || 0) - d);
+    e.escudo = grupo(g, e.grp).some(q => q.on) || e.reescudo > 0;
     if (e.vy !== 0 || !onGround(e)) { gravity(e, d); return; }
     walkStep(e, d, e.escudo ? e.v : e.v * .5);
   };

@@ -84,8 +84,6 @@ const ANOMALIAS = (() => {
       c.restore();
     },
   };
-  // el regalo que las atrae
-  if (typeof BLESS !== 'undefined') BLESS.push({ id: 'anom', icon: 'rings', name: 'Hilo de la grieta', desc: 'Los destellos de anomalía salen mucho más seguido.', max: 3, apply: R => { R.upg.anomalia = (R.upg.anomalia || 0) + 1; } });
   if (typeof COOP !== 'undefined') { const init = COOP.init; COOP.init = g => { init(g); prepara(g); }; }
   return { id, seCuela, todas, prob, prepara, especie };
 })();

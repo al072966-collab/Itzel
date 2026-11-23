@@ -1,6 +1,6 @@
 'use strict';
 // =====================================================================
-//  MUNDOS AMPLIADOS · LOTE 8 (32 bits, 64 bits, vapor)
+//  MUNDOS AMPLIADOS · LOTE 8 (32 bits, 64 bits)
 //  Cuatro actos por mundo; dos enemigos y una pieza que juegan con el
 //  poder de Fresita. Los dibujos de los enemigos van en enemigos-mundos.js.
 // =====================================================================
@@ -143,60 +143,4 @@
   });
   NIVELES.bits64.fauna = ['mono', 'tucan', 'nauyaca'];
   NIVELES.bits64.lema = 'Flores que solo abren con Fresita cerca, dormilonas que se cierran si te quedas, nauyacas que cascabelean y tucanes que la picotean mientras te carga.';
-
-  // =================================================================
-  //  VAPOR · La fábrica de vapor (válvulas y columnas de vapor)
-  // =================================================================
-  const enVapor = (g, x, y) => g.zones.find(z => z.k === 'vapor' && x > z.x0 && x < z.x1 && y > z.y0 && y < z.y1);
-  // calderita: camina y resopla un chorro de vapor de lado que empuja a Itzel; las columnas de Fresita la levantan
-  FOE.calderita = { beh: 'calderita', w: 12, h: 12, v: 16 };
-  BEH.calderita = (e, g, d) => {
-    const z = enVapor(g, e.x, e.y - 4); e.flota = !!z;
-    if (z) { e.y = Math.max(z.y0 + 18, e.y - 70 * d); e.vy = 0; return; }
-    if (e.vy !== 0 || !onGround(e)) { gravity(e, d); return; }
-    e.ct = (e.ct || 0) + d; const u = e.ct % 3.2; e.avisa = u > 2.2 && u < 2.6; e.resopla = u >= 2.6;
-    if (e.resopla) { const x0 = e.x + e.dir * 6, x1 = e.x + e.dir * 46; if (tocaItzel(g, Math.min(x0, x1), e.y - 12, Math.max(x0, x1), e.y)) { g.p.vx = e.dir * 160; } return; }
-    if (!e.avisa) walkStep(e, d, e.v);
-  };
-  // pájaro de cuerda (ornitóptero): vuela en ochos; si entra a una columna de vapor, sale volando lejos
-  FOE.pajaro = { beh: 'pajaro', w: 12, h: 8, v: 0 };
-  BEH.pajaro = (e, g, d) => {
-    if (enVapor(g, e.x, e.y - 4)) { e.st = 'gone'; e.tt = 0; spawn(g, 14, e.x, e.y - 4, { v: 70, life: .6, s: 1.6, k: 'spark', cols: ['#ffb040', '#f2d090', '#ffffff'] }); return; }
-    const a = e.t * 1.1; vuela(e, e.hx + Math.sin(a) * 52, e.hy + Math.sin(a * 2) * 14, 75, d);
-  };
-  // grúa: un gancho que corre por su riel cargando una caja; en las orillas baja un poco
-  PK.grua = (pl, g, d) => {
-    const A = pl.amp || 64, s = Math.sin(pl.t * (pl.sp || .6) + (pl.ph || 0));
-    pl.x = pl.x0 + s * A; pl.y = pl.y0 + s * s * (pl.dip || 20);
-  };
-  LOOK.grua = (c, pl, f) => {
-    const A = pl.amp || 64, rail = pl.y0 - 70, x = pl.x, y = pl.y, w = pl.w, cx = x + w / 2;
-    c.fillStyle = '#2a1a10'; c.fillRect(pl.x0 - A - 4, rail - 3, 2 * A + w + 8, 4); c.fillStyle = '#8a4a24'; c.fillRect(pl.x0 - A - 4, rail - 3, 2 * A + w + 8, 1.2);
-    for (let k = pl.x0 - A; k < pl.x0 + A + w; k += 10) { c.fillStyle = '#c8743a'; c.beginPath(); c.arc(k, rail - 1, .7, 0, TAU); c.fill(); }
-    c.fillStyle = '#4a2a18'; c.fillRect(cx - 4, rail + 1, 8, 4); c.fillStyle = '#e8b860'; for (const dx of [-2.4, 2.4]) { c.beginPath(); c.arc(cx + dx, rail + 1, 1.4, 0, TAU); c.fill(); }
-    c.strokeStyle = '#1a0c06'; c.lineWidth = .7; c.beginPath(); c.moveTo(cx, rail + 5); c.lineTo(cx, y - 7); c.stroke();
-    c.strokeStyle = '#c8743a'; c.lineWidth = 1.2; c.beginPath(); c.arc(cx, y - 5, 2, -Math.PI * .1, Math.PI * 1.1); c.stroke();
-    c.strokeStyle = '#1a0c06'; c.lineWidth = .5; c.beginPath(); c.moveTo(cx, y - 3.4); c.lineTo(x + 1, y); c.moveTo(cx, y - 3.4); c.lineTo(x + w - 1, y); c.stroke();
-    c.fillStyle = '#8a5a30'; c.fillRect(x, y, w, 8); c.fillStyle = '#6a4a30'; c.fillRect(x, y + 3.4, w, 1); c.strokeStyle = '#1a0c06'; c.lineWidth = .6; c.strokeRect(x, y, w, 8); c.beginPath(); c.moveTo(x, y); c.lineTo(x + w, y + 8); c.stroke();
-  };
-  amplia('vapor', 190, b => {
-    const GRUA = (o = {}) => Object.assign({ k: 'grua', look: 'grua', amp: 4 * T, sp: .6, dip: 22 }, o);
-    // I · calderas, válvulas y la primera calderita
-    b.g(0, 14).P(3).d('T', 7).d('r', 11).o('valvula', 9, 0, { grp: 0 }).o('vent', 13, 0, { grp: 0 }).c(5, 10, 9);
-    b.g(15, 27, 6).e(20, 6, 'arana').d('r', 25).c(16, 24, 4);
-    for (const ph of [0, 3.14]) b.p(31, 7, 3, { ph });
-    b.c(29, 34, 4);
-    b.g(37, 54).e(42, undefined, 'calderita').o('vent', 47, 0, { grp: 3 }).e(49, 0, 'torreta').o('valvula', 52, 0, { grp: 3 }).d('T', 45).c(38, 44, 9);
-    // II · el taller de ensamble: ornitópteros y la grúa sobre el foso
-    b.p(57, 9, 3, { amp: 18 }).c(56, 59, 6);
-    b.g(61, 79).e(65, 0, 'mecha').o('valvula', 63, 0, { grp: 1 }).o('vent', 68, 0, { grp: 1 }).isl(70, 75, 5).c(70, 75, 4).e(72, 4, 'pajaro').h(74, 4);
-    b.p(84, 9, 3, GRUA()).c(81, 92, 6);
-    // III · la sala de calderas
-    b.g(94, 118).e(99, undefined, 'calderita').o('valvula', 101, 0, { grp: 2 }).o('vent', 104, 0, { grp: 2 }).o('vent', 109, 0, { grp: 2 }).isl(106, 112, 5).e(110, 3, 'pajaro').e(115, 0, 'torreta').c(106, 112, 4);
-    // IV · dos grúas, el muro y la chimenea
-    b.p(122, 9, 3, GRUA({ amp: 3 * T })).p(131, 9, 3, GRUA({ amp: 3 * T, ph: 3.14 })).c(120, 136, 6);
-    b.g(138, 189).e(143, undefined, 'calderita').e(149, 4, 'zangano').o('valvula', 153, 0, { grp: 4 }).o('vent', 157, 0, { grp: 4 }).blk(160, 5, 3, 6).e(166, 4, 'pajaro').e(171, 0, 'mecha').e(177, undefined, 'calderita').h(182, 9).Gl(186).d('T', 188);
-  });
-  NIVELES.vapor.fauna = ['arana', 'calderita', 'pajaro', 'zangano', 'mecha', 'torreta'];
-  NIVELES.vapor.lema = 'Calderas, engranes y rejillas de vapor: calderitas que resoplan, pájaros de cuerda que el vapor se lleva y grúas que cruzan el foso.';
 })();

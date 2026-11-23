@@ -83,7 +83,12 @@ const PRIMER_PLANO = (() => {
     const W = Math.round(cv.clientWidth * (devicePixelRatio || 1)); cv.width = W; cv.height = Math.round(W * 9 / 16);
     antes = performance.now(); raf = requestAnimationFrame(cuadro);
   }
+  // un cuadro que truena (por ejemplo, un estilo que lee píxeles en una página abierta como archivo) no debe detener la animación:
+  // se vuelve a intentar en el siguiente y, al cambiar de estilo, se recupera sola
   function cuadro(ahora) {
+    try { cuadroReal(ahora); } catch (e) { if (view) raf = requestAnimationFrame(cuadro); }
+  }
+  function cuadroReal(ahora) {
     if (!view) return;
     const dt = Math.min(.05, (ahora - antes) / 1000); antes = ahora;
     const g = view.g, p = g.p; g.t += dt;
@@ -146,7 +151,12 @@ const PRIMER_PLANO = (() => {
     if (itzelNitida || fresitaNitida) {
       const k = cv.width / cw, x0 = cx - cw / 2 + g.cam, y0 = cy - ch / 2, f = { t: g.t, cam: g.cam, S: k, g, st, key: st.id + '@cerca' };
       x.save(); x.setTransform(k, 0, 0, k, -x0 * k, -y0 * k); x.imageSmoothingEnabled = true;
-      if (itzelNitida && solo !== 'fresita') { st.player(x, p, f); } if (fresitaNitida && solo !== 'itzel') { const dibuja = st.fresita || (st.base && STYLE_MAP[st.base] && STYLE_MAP[st.base].fresita); if (dibuja) { const anterior = window.estiloArteDerivado; try { window.estiloArteDerivado = st.id; dibuja(x, { x: g.cx, y: g.cy, face: p.face }, f); } finally { window.estiloArteDerivado = anterior; } } }
+      if (itzelNitida && solo !== 'fresita') {
+        // Conservar el objeto del jugador mantiene el temporizador de reposo.
+        const y = p.y;
+        try { if (st.id === 'pixel') p.y += 2; st.player(x, p, f); }
+        finally { p.y = y; }
+      }   // en 16 bits los pies quedaban 2 unidades sobre el suelo if (fresitaNitida && solo !== 'itzel') { const dibuja = st.fresita || (st.base && STYLE_MAP[st.base] && STYLE_MAP[st.base].fresita); if (dibuja) { const anterior = window.estiloArteDerivado; try { window.estiloArteDerivado = st.id; dibuja(x, { x: g.cx, y: g.cy, face: p.face }, f); } finally { window.estiloArteDerivado = anterior; } } }
       x.restore();
     }
     raf = requestAnimationFrame(cuadro);

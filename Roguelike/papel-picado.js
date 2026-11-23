@@ -38,7 +38,7 @@
   });
   const listo = n => { const im = IMG[n]; return !!(im && im.complete && im.naturalWidth && TAM[n]); };
   let faltan = 1;
-  fetch(RUTA + 'papel.json?v=8').then(r => r.json()).then(m => {
+  (window.PAPEL_MANIFIESTO ? Promise.resolve(window.PAPEL_MANIFIESTO) : fetch(RUTA + 'papel.json?v=8').then(r => r.json())).then(m => {
     Object.assign(TAM, m); faltan = Object.keys(m).length;
     for (const n of Object.keys(m)) { const im = new Image(); im.decoding = 'async'; im.onload = im.onerror = () => { if (--faltan === 0) rehaz(); }; im.src = RUTA + n + '.png?v=8'; IMG[n] = im; }
   }).catch(() => { faltan = -1; });
@@ -59,6 +59,27 @@
   const sombra = (x, f, b = 4, oy = 1.8, a = .3) => { x.shadowColor = `rgba(70,40,20,${a})`; x.shadowBlur = b * f.S; x.shadowOffsetY = oy * f.S; x.shadowOffsetX = 0; };
   const sinSombra = x => { x.shadowColor = 'transparent'; x.shadowBlur = 0; x.shadowOffsetY = 0; };
 
+  const FONDO_PAPEL = {};
+  for (const [n, archivo] of Object.entries({ cielo:'cielo-papel-v1', calle:'calle-papel-v1', tierra:'tierra-papel-v1', pasto:'pasto-papel-v1', puente:'puente-perros-v1' })) {
+    const im = FONDO_PAPEL[n] = new Image(); im.decoding = 'async'; im.onload = rehaz; im.src = RUTA + archivo + '.png';
+  }
+  const papelPrincipal = f => ((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'paper';
+  const papelFondoListo = () => Object.values(FONDO_PAPEL).every(im => im.complete && im.naturalWidth);
+  window.PAPEL_TELON_LISTO = papelFondoListo;
+  function paisajePapel(c, f) {
+    const im = FONDO_PAPEL.cielo, H = f.H || VH, sw = Math.min(im.naturalWidth,im.naturalHeight * VW/H), max = Math.max(0,im.naturalWidth-sw);
+    const sx = max*(.5+.25*Math.sin((f.cam||0)*.0007)); c.save(); c.imageSmoothingEnabled = true;
+    c.drawImage(im,sx,0,sw,im.naturalHeight,0,0,VW,H);
+    const w = 590, h = w*423/2172, off = (((f.cam||0)*.18)%w+w)%w, base = 219-(f.y0||0);
+    for (let x=-off-w;x<VW+w;x+=w) c.drawImage(FONDO_PAPEL.calle,0,191,2172,423,x,base-h,w,h);
+    const paso=540, op=(((f.cam||0)*.22)%paso+paso)%paso;
+    for(let x=-op-paso;x<VW+paso;x+=paso) c.drawImage(FONDO_PAPEL.puente,x+20,base-75,204,75);
+    if (listo('banderitas0')) for (let k=-1;k*130-((f.cam||0)*.18%130)<VW+130;k++) {
+      const x=k*130-((f.cam||0)*.18%130), n='banderitas'+(Math.abs(k)%4), t=TAM[n];
+      if(t && listo(n)) c.drawImage(IMG[n],x,1,t.w*.6,t.h*.6);
+    }
+    c.restore();
+  }
   // ---------------- el telón: el mercado en fiesta, recortado en papel ----------------
   function nube(x, f, cx, cy, s) {
     sombra(x, f, 3, 1.5, .22); x.fillStyle = '#fbf2dc'; x.beginPath();
@@ -139,8 +160,14 @@
     }
   }
   const cieloAntes = ST.sky;
-  ST.sky = function (ctx, f) { if (!esPapel(f.st) || faltan !== 0) return cieloAntes.call(this, ctx, f); cieloPapel(ctx, f); };
+  ST.sky = function (ctx, f) { if (!esPapel(f.st) || faltan !== 0) return cieloAntes.call(this, ctx, f); if (papelPrincipal(f) && papelFondoListo()) paisajePapel(ctx, f); else cieloPapel(ctx, f); };
 
+  // El papel picado ya está en la capa ilustrada; evitar la hilera geométrica duplicada.
+  const papelOverAntes = ST.over;
+  ST.over = function (ctx, f) {
+    if (esPapel(f.st) && papelPrincipal(f) && papelFondoListo()) return;
+    if (papelOverAntes) return papelOverAntes.call(this, ctx, f);
+  };
   // ---------------- el terreno: el de siempre, con el mercado encima ----------------
   // El Puente de los Perros (Campeche): puente amarillo de papel recortado con sus cuatro perros blancos, grande y a la vista,
   // sobre un canal; se repite a lo largo del nivel. Es solo telón: no es piso ni cambia ninguna colisión.
@@ -214,7 +241,7 @@
   const cieloPerros = ST.sky;
   ST.sky = function (ctx, f) {
     const r = cieloPerros.apply(this, arguments);
-    if (esPapel(f.st) && faltan === 0) {
+    if (esPapel(f.st) && faltan === 0 && !(papelPrincipal(f) && papelFondoListo())) {
       const u = 540, off = (f.cam * .22) % u, base = Math.floor(f.cam * .22 / u);
       ctx.save(); ctx.globalAlpha = .96;
       for (let k = -1; k * u - off < VW + u; k++) puentePerros(ctx, k * u - off + 120, 178, f.t);
@@ -227,6 +254,16 @@
     if (window.estiloArteDerivado || faltan !== 0) return terrenoAntes.call(this, ctx, f);
     const deco = L.deco; L.deco = [];
     try { terrenoAntes.call(this, ctx, f); } finally { L.deco = deco; }
+    if (papelPrincipal(f) && papelFondoListo()) {
+      ctx.save(); allLoopsPath(ctx,L.loops); ctx.clip();
+      const p = ctx.createPattern(FONDO_PAPEL.tierra,'repeat'); p.setTransform(new DOMMatrix().scale(140/FONDO_PAPEL.tierra.naturalWidth));
+      ctx.fillStyle=p; ctx.fillRect(0,0,L.ww,VH+40); ctx.restore();
+      for (const r of L.tops) {
+        ctx.save(); ctx.beginPath(); ctx.rect(r.x0,r.y-6,r.x1-r.x0,9); ctx.clip();
+        for(let x=r.x0;x<r.x1;x+=110) ctx.drawImage(FONDO_PAPEL.pasto,5,330,2160,139,x,r.y-5,110,7.1);
+        ctx.restore();
+      }
+    } else {
     // la tierra como cartulina en capas: vetas onduladas, grumos claros y piedritas, recortadas al borde del piso
     ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
     for (let k = 0; k < 7; k++) {
@@ -251,6 +288,7 @@
         ctx.fillStyle = col; for (let q = 0; q < 5; q++) { const a = q * 1.2566; ctx.beginPath(); ctx.ellipse(x + Math.cos(a) * 1.9, fy + Math.sin(a) * 1.9, 1.3, 1, a, 0, 6.2832); ctx.fill(); }
         ctx.fillStyle = '#ffe27a'; ctx.beginPath(); ctx.arc(x, fy, .9, 0, 6.2832); ctx.fill();
       }
+    }
     }
     for (const r of L.tops) for (let x = r.x0 + 16; x < r.x1 - 16; x += 40 + h1(x | 0, r.y) * 40) {
       if (h1(x | 0, 21) < .5) continue;

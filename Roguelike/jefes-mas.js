@@ -233,9 +233,27 @@ Object.assign(JEFES, {
     // la oscuridad: solo se ve alrededor de Itzel y de Fresita
     if (o.osc > .02) {
       const g = f.g, x0 = g.cam - 20, w = VW + 40;
-      c.save(); c.fillStyle = `rgba(6,4,14,${.93 * o.osc})`; c.beginPath(); c.rect(x0, -20, w, VH + 40);
+      c.save(); c.fillStyle = `rgba(4,2,10,${.995 * o.osc})`; c.beginPath(); c.rect(x0, -20, w, VH + 40);
       for (const [x, y, r] of [[g.p.x, g.p.y - 8, 30], [g.fre.x, g.fre.y, 38]]) { c.moveTo(x + r, y); c.arc(x, y, r, 0, TAU, true); }
       c.fill('evenodd'); c.restore();
+      // en la oscuridad de Camazotz solo se le ven los ojos rojos
+      if (o.st !== 'muere') {
+        let luz = 0; for (const [x, y, r] of [[g.p.x, g.p.y - 8, 30], [g.fre.x, g.fre.y, 38]]) luz = Math.max(luz, clamp(1 - (Math.hypot(o.x - x, o.y - y) - r + 12) / 14, 0, 1));   // si lo alumbran, no se le ven los ojos
+        const k = Math.min(1, o.osc * 1.6) * (1 - luz), pestaña = (f.t % 3.1) < .1 ? .2 : 1;
+        // dónde tiene los ojos el arte según la pose (cuadro 0 y 3 de la hoja, ver BODY en jefes-cuerpos.js)
+        const picada = o.st === 'ataque' && o.atk === 'picada' && o.at > .8 && o.at < 2.1, chilla = o.st === 'ataque' && (o.atk === 'chillido' && o.at > .4 || o.atk === 'oscuridad');
+        const cuadro = picada ? 3 : chilla || o.cineChilla ? 1 : o.cineAlasCerradas || o.st === 'ventana' ? 0 : o.cineColgado ? 2 : Math.floor(f.t * 8) % 3;
+        const variante = window.JEFES_VARIANTES && JEFES_VARIANTES.obtener('camazotz', f.st);   // arte propio del estilo (una sola imagen con la cara de frente)
+        const [ox, oy, sep] = variante ? [0, -8, 4.6] : [[.3, .6, 2.7], [.2, -6.4, 2.8], [1.1, -21.3, 2.6], [1.5, 16.4, 3.1]][cuadro];
+        c.save(); c.globalAlpha = k; c.globalCompositeOperation = 'lighter';
+        for (const d of [-1, 1]) {
+          const ex = o.x + ox + d * sep, ey = o.y + oy, gr = c.createRadialGradient(ex, ey, 0, ex, ey, 5);
+          gr.addColorStop(0, 'rgba(255,70,50,.75)'); gr.addColorStop(1, 'rgba(255,40,30,0)'); c.fillStyle = gr; c.beginPath(); c.arc(ex, ey, 5, 0, TAU); c.fill();
+        }
+        c.globalCompositeOperation = 'source-over';
+        for (const d of [-1, 1]) { c.fillStyle = '#ff2a1c'; c.beginPath(); c.ellipse(o.x + ox + d * sep, o.y + oy, 1.2, .85 * pestaña, 0, 0, TAU); c.fill(); c.fillStyle = '#ffd0c0'; c.fillRect(o.x + ox + d * sep - .3, o.y + oy - .35, .6, .6 * pestaña); }
+        c.restore();
+      }
     }
     if (o.st === 'ataque' && o.atk === 'picada' && o.at < .8 && o.lado) { const xa = o.lado < 0 ? o.x0 + 6 : o.x1 - 6, xb = o.lado < 0 ? o.x1 - 6 : o.x0 + 6; c.strokeStyle = rgba(o.pal.core, .35 + Math.sin(f.t * 30) * .25); c.setLineDash([3, 3]); c.lineWidth = .8; c.beginPath(); for (let k = 0; k <= 20; k++) { const u = k / 20; c.lineTo(lerp(xa, xb, u), 40 + Math.sin(u * Math.PI) * (FLOOR - 52)); } c.stroke(); c.setLineDash([]); }
     for (const w of o.ondas) { c.strokeStyle = rgba(o.pal.c, Math.max(0, .8 - w.r / 320)); c.lineWidth = 1.6; c.beginPath(); c.arc(w.x, w.y, w.r, 0, TAU); c.stroke(); c.strokeStyle = rgba('#ffffff', Math.max(0, .5 - w.r / 320)); c.lineWidth = .5; c.beginPath(); c.arc(w.x, w.y, w.r - 2, 0, TAU); c.stroke(); }

@@ -42,7 +42,6 @@
     bits8:    [1, 1, 2, 2, 1],   // 8 bits: seco
     bits32:   [1,     1,     1.3,  1.3,  1   ],
     bits64:   [.95,   1,     1.1,  1.1,  1   ],
-    vapor:    [1, 1, 0.6, 1.2, 1],   // fábrica: maquinaria pesada
     miniatura:[.85,   1,     .9,   .9,   1   ],   // mundo diminuto: saltos largos
   };
   for (const id of Object.keys(PERFIL)) {

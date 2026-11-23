@@ -8,7 +8,7 @@
 //  (subjefes-arte.js), su manera de moverse y dos ataques suyos.
 //  Pelean en un tramo de piso parejo (su arena). Entre ataque y ataque se
 //  cansan (ojos en espiral): ese es el momento seguro para caerles encima.
-//  Las que traen coraza (espinas, concha, piedra, vapor…) solo se dejan
+//  Las que traen coraza (espinas, concha, piedra…) solo se dejan
 //  pisar cansadas. Tras cada golpe se escapan un poco. Se les puede
 //  rodear, pero al vencerlas se rinden y sueltan un corazón. Nadie muere.
 //    mov: paso (camina), brinco, tumbo (de punta a punta), rueda, flota,
@@ -61,8 +61,6 @@ const SUBJEFES = (() => {
       lema: 'Una mancha de chapopote con ganas de pelear: deja charcos que queman y gotas que caminan.', dato: 'El yacimiento Cantarell, en la Sonda de Campeche, se llama así por el pescador Rudesindo Cantarell, que en los años setenta avisó de una mancha de chapopote en el mar.' },
     cinema: { clave: 'fauces', nombre: 'La Casa de las Fauces', mov: 'paso', v: 20, ataques: ['remolino', 'lluvia'], vida: 4, w: 32, h: 36, proy: 'piedra', cosa: 'piedras', col: ['#d8cbb0', '#1a0c08', '#a8322a'],
       lema: 'La puerta con boca de monstruo de Chicanná echó a andar. Jala aire para tragarse a quien pase y escupe piedras.', dato: 'Chicanná quiere decir «casa de la boca de serpiente»: la puerta de su Estructura II tiene forma de las fauces de un monstruo de la tierra.' },
-    vapor: { clave: 'caldera', nombre: 'La Caldera de Uayamón', mov: 'paso', v: 22, coraza: true, ataques: ['erizo', 'salto'], vida: 3, w: 26, h: 38, proy: 'vapor', cosa: 'chorros de vapor', col: ['#b8743a', '#1a0c06', '#f6e0a8'],
-      lema: 'Cuando la aguja llega al rojo suelta todo su vapor. Mientras está caliente no se le puede tocar.', dato: 'La hacienda Uayamón procesaba henequén; sus máquinas desfibradoras se movían con calderas de vapor.', pisar: 'Solo cuando suelta el vapor y se enfría.' },
     barro: { clave: 'horno', nombre: 'El Horno de Tepakán', mov: 'paso', v: 22, ataques: ['lluvia', 'crias'], vida: 3, w: 32, h: 32, proy: 'brasa', cosa: 'brasas', cria: 'jarrito', crias: 'jarritos recién cocidos', col: ['#b8643a', '#2a0c06', '#ffd23f'],
       lema: 'Avienta brasas por la boca y saca jarritos recién cocidos que todavía no se enfrían.', dato: 'Tepakán, en Calkiní, es un pueblo de alfareros: sus ollas y cántaros se cuecen en hornos de leña.' },
     fuego: { clave: 'polvorin', nombre: 'El Polvorín', mov: 'paso', v: 30, ataques: ['bomba', 'embestida'], vida: 3, w: 24, h: 36, col: ['#8a5a2e', '#1a0a04', '#ffd23f'],
@@ -72,7 +70,7 @@ const SUBJEFES = (() => {
     hielo: { clave: 'copo', nombre: 'El Copo de la Nevada', mov: 'flota', alto: 22, ataques: ['erizo', 'pilares'], vida: 3, w: 30, h: 34, proy: 'hielo', cosa: 'picos de hielo', pilar: 'carambano', pilares: 'carámbanos', col: ['#cfe8ff', '#1e4a72', '#ffffff'],
       lema: 'Un copo de papel doblado. Suelta picos de hielo y hace salir carámbanos del piso.', dato: 'Esto es un cuento: en Campeche casi nunca hace frío y no hay registro de que haya nevado.' },
     cielo: { clave: 'tortuga', nombre: 'La Tortuga de Orión', mov: 'flota', alto: 26, coraza: true, voltea: true, ataques: ['granizo', 'picada'], vida: 3, w: 34, h: 26, granizo: 'estrella', cosa: 'estrellas fugaces', col: ['#1a2a5a', '#0a1028', '#d8b860'],
-      lema: 'Nada por el cielo con las estrellas en el caparazón. Si cae panza arriba, se le puede caer encima.', dato: 'Para los mayas, las tres estrellas del cinturón de Orión eran el caparazón de una tortuga.', pisar: 'Solo cuando cae panza arriba o baja cansada.' },
+      lema: 'Nada por el cielo con las estrellas en el caparazón. Si cae panza arriba, se le puede caer encima.', dato: 'Para los mayas, las tres estrellas del cinturón de Orión eran el caparazón de una tortuga.', pisar: 'Solo cuando cae panza arriba o baja cansada. Fresita: une dos estrellas debajo de su picada y se enreda.' },
     hollin: { clave: 'volcan', nombre: 'El Volcancito del Chichonal', mov: 'brinco', ataques: ['granizo', 'ondas'], vida: 3, w: 32, h: 32, granizo: 'ceniza', cosa: 'piedras de ceniza', col: ['#5a5450', '#1a1410', '#ff7a2a'],
       lema: 'La ceniza que llegó del Chichonal se juntó en un cerrito que se cree volcán: retumba y avienta piedras de ceniza.', dato: 'En marzo y abril de 1982 hizo erupción el volcán Chichonal, en Chiapas, y su ceniza llegó hasta Campeche.' },
     bits8: { clave: 'cazon', nombre: 'El Cazón de la Calle 8', mov: 'excava', v: 70, aleta: true, ataques: ['salto', 'latigazo'], vida: 3, w: 36, h: 18, latigo: 'cola', latigazo: 'un coletazo', col: ['#8a8a9a', '#1a1a2a', '#f0ece0'],
@@ -84,7 +82,6 @@ const SUBJEFES = (() => {
     miniatura: { clave: 'tarantula', nombre: 'La Tarántula Yucateca', mov: 'paso', v: 36, ataques: ['salto', 'lluvia'], vida: 3, w: 40, h: 20, proy: 'pelo', cosa: 'pelos que pican', col: ['#3a2a22', '#140a06', '#c8642a'],
       lema: 'Para ustedes es enorme. Brinca sobre su presa y se rasca para soltar pelos que pican.', dato: 'La tarántula de trasero rojizo de Yucatán solo vive en la península. Si se asusta, se rasca la panza y suelta pelos que pican.' },
   };
-  LISTA.uayamon_selva = LISTA.uayamon_taller = LISTA.vapor;
   const UNICOS = [...new Set(Object.values(LISTA))];
   // premios: cada pisotón suelta canisteles, al rendirse sueltan más y un corazón,
   // y si no les tocaron ni un golpe hay otro corazón y un bonito extra
@@ -183,7 +180,20 @@ const SUBJEFES = (() => {
     picada: { av: 1.1, cansa: 1.7,
       aviso(e, g, d, b) { e.y += (e.gy - 92 - e.y) * Math.min(1, d * 4); e.x = clampX(e, e.x + (b.x - e.x) * Math.min(1, d * 3)); e.tx = e.x; },
       ini(e) { e.vy = 0; },
-      paso(e, g, d) { e.vy = Math.min(e.vy + 1600 * d, 520); e.y += e.vy * d; if (e.y >= e.gy) { e.y = e.gy; e.vy = 0; golpePiso(e, g, .55); g.shake = Math.max(g.shake || 0, .3); return true; } } },
+      paso(e, g, d) {
+        // la constelación de Fresita atrapa su picada: si la tortuga cruza una línea de luz, se enreda y queda panza arriba
+        const antes = e.y; e.vy = Math.min(e.vy + 1600 * d, 520); e.y += e.vy * d;
+        if (e.sj.clave === 'tortuga') for (const pl of g.plats) {
+          if (pl.k !== 'seg' || pl.dead || pl.x2 === undefined || e.x < pl.x - 6 || e.x > pl.x2 + 6) continue;
+          const yl = pl.y + (pl.y2 - pl.y) * clamp((e.x - pl.x) / Math.max(1, pl.x2 - pl.x), 0, 1);
+          if (antes <= yl + 2 && e.y >= yl) {
+            e.y = yl; e.vy = 0; e.trampa = true; pl.life = 0; MEC.ring(g, e.x, yl, '#fff3c4', 30, .6);
+            spawn(g, 16, e.x, yl, { v: 90, life: .6, s: 2, k: 'spark', cols: ['#fff3c4', '#e2c06e', '#ffffff'], g: 40 }); g.shake = Math.max(g.shake || 0, .2);
+            if (typeof toast === 'function' && !g.avisoTrampa) { g.avisoTrampa = 1; toast('¡La constelación la enredó! Cáele encima', 2200); }
+            return true;
+          }
+        }
+        if (e.y >= e.gy) { e.y = e.gy; e.vy = 0; golpePiso(e, g, .55); g.shake = Math.max(g.shake || 0, .3); return true; } } },
     granizo: { av: .55, cansa: .8,
       ini(e, g, b) { const xs = [b.x, b.x - 30, b.x + 30, b.x + (Math.random() - .5) * 70]; xs.forEach((x, i) => g.objs.push({ k: 'sjMarca', x: clamp(x, e.ax0 - 30, e.ax1 + 30), gy: e.gy, t: -i * .18, cae: .9, kind: e.sj.granizo || 'piedra', col: e.sj.col })); if (e.sj.clave === 'culebrina') { spawn(g, 10, e.x + e.dir * 18, e.y - 30, { ang: -Math.PI / 2, spread: .8, v: 90, life: .7, s: 2.4, k: 'dust', cols: ['#ffffff', '#d8d0c0'] }); g.shake = Math.max(g.shake || 0, .15); } },
       paso: e => e.ft > 1.1 },
@@ -248,7 +258,7 @@ const SUBJEFES = (() => {
   function fase(e, f) {
     e.fase = f; e.ft = 0; e.tiembla = false; e.agacha = 0; e.alza = 0;
     if (f === 'aviso') e.avT = ATQ[e.atq].av;
-    if (f === 'cansado') { e.durT = ATQ[e.atq] ? ATQ[e.atq].cansa : 1; e.vx = 0; if (e.sj.cae) e.tumbada = 1; if (e.sj.voltea && e.atq === 'picada') e.volteada = 1; e.hunde = 0; e.alfa = 1; e.latigo = 0; e.boca = 0; }
+    if (f === 'cansado') { e.durT = ATQ[e.atq] ? ATQ[e.atq].cansa : 1; if (e.trampa) { e.durT += 1.6; e.trampa = false; } e.vx = 0; if (e.sj.cae) e.tumbada = 1; if (e.sj.voltea && e.atq === 'picada') e.volteada = 1; e.hunde = 0; e.alfa = 1; e.latigo = 0; e.boca = 0; }
     if (f === 'anda' || f === 'huye') { e.tumbada = 0; e.volteada = 0; e.latigo = 0; e.boca = 0; e.alfa = 1; e.salto = false; }
   }
   const pausa = e => (e.hp <= e.max / 2 ? 1 : 1.7) + Math.random() * .6;
@@ -290,12 +300,11 @@ const SUBJEFES = (() => {
     }
     const lejos = !e.vitrina && p && Math.abs(p.x - e.x) > 230;
     if (s.espinas && e.fase === 'anda') e.espinas = Math.min(1, (e.espinas ?? 1) + d / .6);
-    if (e.fase === 'anda' && s.clave === 'caldera') e.presion = Math.min(.6, (e.presion || 0) + d * .15);
     switch (e.fase) {
       case 'anda': {
         mueve(e, g, d, b); if (!lejos) e.cd -= d;
         const enPiso = s.mov === 'flota' || s.mov === 'excava' || (e.y >= e.gy && !e.vy);
-        if (e.cd <= 0 && enPiso) { e.cual = Math.random() < .25 ? e.cual : 1 - e.cual; e.atq = s.ataques[e.cual]; fase(e, 'aviso'); const A = ATQ[e.atq]; if (A.prep) A.prep(e, g); }
+        if (e.cd <= 0 && enPiso) { e.cual = Math.random() < .25 ? e.cual : 1 - e.cual; e.atq = s.firma && ATQ[s.firma] && e.ultimo !== s.firma && Math.random() < (e.hp <= e.max / 2 ? .45 : .22) ? s.firma : s.ataques[e.cual]; e.ultimo = e.atq; fase(e, 'aviso'); const A = ATQ[e.atq]; if (A.prep) A.prep(e, g); }
         break;
       }
       case 'aviso': {
@@ -475,6 +484,9 @@ const SUBJEFES = (() => {
     const cam = clamp((g.p.x + e.x) / 2 - VW / 2, L.camMin - rec, L.camMax + rec);
     o.zona = { k: 'arenaSubjefe', x0: cam + rec + 5, x1: cam + VW - rec - 5, t: 0 };
     g.zones.push(o.zona); g.arenaSubjefe = { cam, zona: o.zona }; g.cam = cam;
+    // el subjefe solo anda dentro de lo que se ve: antes su arena podía pasar de los muros de la pantalla y se salía por un lado
+    e.ax0 = Math.max(e.ax0, o.zona.x0); e.ax1 = Math.min(e.ax1, o.zona.x1);
+    if (e.ax1 - e.ax0 > e.w + 8) e.x = clamp(e.x, e.ax0 + e.w / 2, e.ax1 - e.w / 2);
   }
   function abrirArena(g, o) {
     if (o.zona) o.zona.dead = true;
@@ -488,7 +500,20 @@ const SUBJEFES = (() => {
     const x = (c + PAD) * T + 8, gy = L.surfaceY(c + PAD, 0) * T, [a0, a1] = arena(x, gy), e = crea(s, x, gy, a0, a1);
     g.foes = g.foes.filter(q => q.x < a0 - 24 || q.x > a1 + 24 || q.y < gy - 60); // la arena es suya
     g.foes.push(e); g.objs.push({ k: 'subjefe', foe: e, s, fase: 'espera', t: 0, barra: s.vida, x0: e.x, y0: e.y });
+    // la tortuga de Orión: Fresita tiene estrellas en su arena para tender constelaciones; una línea de luz atrapa su picada
+    // y en su arena no quedan plataformas normales (ni la escalera de la ruta alta): solo valen las de luz que tienda Fresita
+    if (s.clave === 'tortuga') for (let i = g.plats.length - 1; i >= 0; i--) { const p = g.plats[i]; if (!p.pw && p.k !== 'seg' && p.x + (p.w || 0) > a0 - 4 && p.x < a1 + 4 && p.y < gy - 8) g.plats.splice(i, 1); }
+    if (s.clave === 'tortuga') [.14, .38, .62, .86].forEach(u => g.objs.push({ k: 'estrella', x: a0 + (a1 - a0) * u, y: gy - 46 - (u > .3 && u < .7 ? 10 : 0), i: g.objs.filter(o => o.k === 'estrella').length }));
   }
+  // Si Itzel cruza la meta mientras vuelan, los canisteles ya ganados se conservan.
+  GANCHOS.en('levelDone', siguiente => function (...args) {
+    const g = typeof CUR !== 'undefined' && CUR;
+    if (g && g.objs && RUN) for (const o of g.objs) {
+      if (o.k === 'subjefe' && o.fase === 'fin' && o.premiosPorSoltar > 0) { RUN.coins += o.premiosPorSoltar; o.premiosPorSoltar = 0; }
+      if (o.k === 'canistelSubjefe' && o.moneda && !o.moneda.got) { o.moneda.got = true; RUN.coins++; }
+    }
+    return siguiente.apply(this, args);
+  });
   // los niveles alternos de un mundo (imprenta, posadas…) traen al subjefe de su mundo
   const deNivel = g => { const id = g.def && g.def.id; if (!id) return null; if (LISTA[id]) return LISTA[id]; const m = Object.keys(NIVELES_ALT || {}).find(k => NIVELES_ALT[k].includes(id)); return (m && LISTA[m]) || null; };
   // busca un tramo de piso parejo y largo, de preferencia pasando la mitad del nivel y lejos de la meta
@@ -510,8 +535,28 @@ const SUBJEFES = (() => {
     }
     return mejor;
   }
+  // Cada canistel sale del subjefe, describe un arco y luego busca a Itzel.
+  function lanzaCanistel(g, e) {
+    const a = Math.PI * (1.08 + Math.random() * .84), v = 65 + Math.random() * 90;
+    const c = { x:e.x, y:e.y - e.h * .6, got:false, demora:.35, premioSubjefe:true };
+    g.coins.push(c);
+    g.objs.push({ k:'canistelSubjefe', moneda:c, vx:Math.cos(a)*v, vy:Math.sin(a)*v, t:0 });
+  }
+  OBJ.canistelSubjefe = {
+    step(o, g, dt) {
+      const c = o.moneda; if (c.got) { o.dead = true; return; }
+      o.t += dt; c.demora = Math.max(0, c.demora - dt);
+      if (o.t < .8) {
+        o.vy += 230 * dt; c.x += o.vx * dt; c.y += o.vy * dt;
+        if (SOLID(c.x, c.y + 3)) { c.y = borde(c.x, c.y + 3, 'arriba') - 4; o.vy = -Math.abs(o.vy) * .3; o.vx *= .75; }
+      } else {
+        const dx = g.p.x - c.x, dy = g.p.y - 9 - c.y, d = Math.hypot(dx, dy);
+        if (d > .01) { const paso = Math.min(d, (120 + Math.min(240, o.t * 90)) * dt); c.x += dx / d * paso; c.y += dy / d * paso; }
+      }
+    }
+  };
   function vencido(g, o) {
-    abrirArena(g, o); o.fase = 'fin'; o.t = 0; const s = o.s, p = g.p, e = o.foe; const perfecto = !o.recibio; RUN.coins += PREMIO + (perfecto ? PERFECTO : 0); RUN.subjefes = (RUN.subjefes || 0) + 1;
+    abrirArena(g, o); o.fase = 'fin'; o.t = 0; const s = o.s, p = g.p, e = o.foe; const perfecto = !o.recibio; o.premiosPorSoltar = PREMIO + (perfecto ? PERFECTO : 0); o.relojPremios = 0; RUN.subjefes = (RUN.subjefes || 0) + 1;
     g.pickups.push({ k: 'heart', x: p.x, y: Math.max(40, p.y - 34), got: false });
     if (perfecto) g.pickups.push({ k: 'heart', x: p.x + 14, y: Math.max(40, p.y - 40), got: false });
     for (let i = 0; i < 3; i++) spawn(g, 16, e.x, e.y - e.h * .6, { ang: -Math.PI / 2, spread: 2.6, v: 160, life: 1.2, s: 2.2, k: 'confetti', cols: ['#ffd23f', '#ff5d73', '#ffffff', s.col[0]], g: 220 });
@@ -524,20 +569,34 @@ const SUBJEFES = (() => {
   OBJ.subjefe = {
     front: true,
     step(o, g, dt) {
-      o.t += dt; const e = o.foe, p = g.p; if (o.fase === 'fin') { if (o.t > 3) o.dead = true; return; }
+      o.t += dt; const e = o.foe, p = g.p;
+      if (o.fase === 'fin') {
+        o.relojPremios += dt * 30;
+        while (o.relojPremios >= 1 && o.premiosPorSoltar > 0) { o.relojPremios--; o.premiosPorSoltar--; lanzaCanistel(g, e); }
+        if (!o.premiosPorSoltar && o.t > 3) o.dead = true;
+        return;
+      }
       if (e.y > VH + 16) { e.x = o.x0; e.y = e.gy; e.vy = 0; e.vx = 0; }
-      if (e.st === 'gone' || !g.foes.includes(e)) { vencido(g, o); return; }
       if (o.fase === 'espera' && e.pelea) { o.fase = 'pelea'; o.t = 0; cerrarArena(g, o); g.shake = Math.max(g.shake, .25); if (typeof ENCI !== 'undefined') ENCI.ver('subjefe:' + o.s.clave); if (typeof toast === 'function') toast(`¡${o.s.nombre}! Cuando se maree, cáiganle encima: cada golpe da canisteles.`, 3400); }
       if (o.fase === 'pelea') {
-        // cada pisotón que le dan suelta canisteles que vuelan hacia Itzel
+        // si Itzel queda sobre un hueco (la arena es más ancha que el piso parejo) y cae, vuelve al piso de la pelea en vez de seguir cayendo
+        const pj = g.p;
+        if (pj && !g.win && pj.y > e.gy + 22) {
+          if (g.seda) { g.seda = null; g.sedaSuelta = true; }
+          pj.x = clamp(pj.x, e.ax0 + 16, e.ax1 - 16); if (Math.abs(pj.x - e.x) < 22) pj.x = clamp(e.x + (pj.x < e.x ? -34 : 34), e.ax0 + 16, e.ax1 - 16);
+          pj.y = e.gy - 1; pj.vx = 0; pj.vy = 0; pj.on = true; pj.inv = Math.max(pj.inv || 0, 1.2);
+          spawn(g, 12, pj.x, pj.y - 8, { v: 70, life: .5, s: 1.8, k: 'spark', cols: ['#ffffff', '#ffe27a'], g: 40 });
+          if (typeof toast === 'function' && !g.avisoCaida) { g.avisoCaida = 1; toast('Itzel vuelve al piso de la pelea', 2200); }
+        }
         if (o.hpPrev === undefined) { o.hpPrev = e.hp; o.cor = RUN.hearts; }
         if (e.hp < o.hpPrev) {
-          o.hpPrev = e.hp; RUN.coins += POR_GOLPE;
+          const golpes = o.hpPrev - e.hp; o.hpPrev = e.hp;
+          for (let i = 0; i < POR_GOLPE * golpes; i++) lanzaCanistel(g, e);
           spawn(g, 12, e.x, e.y - e.h * .6, { ang: -Math.PI / 2, spread: 2.4, v: 130, life: .9, s: 2.2, k: 'confetti', cols: ['#ffd23f', '#ffe680', '#ffffff'], g: 260 });
-          if (typeof toast === 'function' && e.hp > 0) toast(`+${POR_GOLPE} canisteles por el golpe`, 1100);
         }
         if (RUN.hearts < o.cor) o.recibio = true; o.cor = RUN.hearts;
       }
+      if (e.st === 'gone' || !g.foes.includes(e)) { vencido(g, o); return; }
       if (e.hp !== undefined) o.barra += (e.hp - o.barra) * Math.min(1, dt * 7);
     },
     draw(c, o, f) {

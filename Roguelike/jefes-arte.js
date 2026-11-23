@@ -37,7 +37,6 @@
     chaac: o => [o.x - 48, o.y - 36, o.x + 48, o.y + 34],
     camazotz: o => [o.x - 58, o.y - 42, o.x + 58, o.y + 36],
     abeja: o => [o.x - 50, o.y - 50, o.x + 50, o.y + 30],
-    brawbot: o => [o.x - 62, FLOOR - 104, o.x + 62, FLOOR + 4],
     cocodrilo: o => o.mordida > 0 ? [o.x - 20, FLOOR - 52, o.x + 20, FLOOR + 2] : [o.x - 56, FLOOR - 96, o.x + 56, FLOOR + 4],
   };
 
@@ -162,7 +161,7 @@
     }, atras(c, o, f, b) { c.save(); c.fillStyle = 'rgba(20,20,20,.18)'; for (let k = 0; k < 6; k++) { const x = b[0] + hash(k, 3) * (b[2] - b[0]), y = b[3] - hash(k, 9) * 14; c.beginPath(); c.ellipse(x, y, 2 + hash(k, 5) * 4, 1 + hash(k, 7) * 2, 0, 0, TAU); c.fill(); } c.restore(); } },
     // Acuarela: bordes de pigmento acumulado, papel granulado, colores lavados
     acuarela: { tec(W, H, S, o, f) {
-      if (!(f.g && f.g.vistaJefeNitida)) desenfocar(W, H, .7 * S);
+      // sin desenfoque: el jefe se queda nítido (antes se lavaba y se veía borroso)
       px(W, H, (d, i, x, y) => { const a = d[i + 3]; put(d, i, [255, 255, 255], .22); if (a > 30 && a < 200) { for (let k = 0; k < 3; k++) d[i + k] *= .72; d[i + 3] = Math.min(255, a * 1.6); } const n = .9 + hash(x, y) * .1; for (let k = 0; k < 3; k++) d[i + k] *= n; d[i + 3] *= .92; });
     } },
     // Papel recortado: colores planos, filo blanco, sombra y un hilo de títere
@@ -230,12 +229,12 @@
     ocaso: { tec(W, H, S) { const r = Math.max(1, Math.round(.9 * S)); borde(W, H, 1, (d, i, x, y, v) => { if (nucleo(d, i, x, y) || lum(d, i) > .9) return; put(d, i, [42, 22, 48]); if (v(x - r, y) || v(x, y - r) || v(x - r, y - r)) put(d, i, [255, 179, 107]); }); },
       atras(c, o, f, b) { const [mx, my] = centro(b); c.save(); c.globalCompositeOperation = 'lighter'; glowDot(c, mx - 10, my - 10, (b[3] - b[1]) * .7, '#ff9a4a', .25); c.restore(); } },
     // Bruma: se pierde en la niebla, borroso y lavado, con jirones
-    bruma: { tec(W, H, S, o, f) { if (!(f.g && f.g.vistaJefeNitida)) desenfocar(W, H, .5 * S); px(W, H, (d, i, x, y) => { const g = lum(d, i) * 255 * .7 + 200 * .3; d[i] = d[i + 1] = d[i + 2] = g; d[i + 3] *= .55 + .45 * (1 - y / H); }); },
+    bruma: { tec(W, H, S, o, f) { px(W, H, (d, i, x, y) => { const g = lum(d, i) * 255 * .7 + 200 * .3; d[i] = d[i + 1] = d[i + 2] = g; d[i + 3] *= .55 + .45 * (1 - y / H); }); },
       frente(c, o, f, b) { c.save(); c.fillStyle = 'rgba(225,225,225,.35)'; for (let k = 0; k < 3; k++) { const x = b[0] + ((f.t * 8 + k * 40) % (b[2] - b[0] + 40)) - 20, y = b[3] - 10 - k * 12; c.beginPath(); c.ellipse(x, y, 18, 3, 0, 0, TAU); c.fill(); } c.restore(); } },
     // Plastilina: relieve de arcilla con huellas
     barro: { tec(W, H, S) { if (window.relieveArcilla) relieveArcilla(cv, S, {}); } },
     // Jardín de ecos (Luma): suave, con luz de arriba y halo
-    eco: { tec(W, H, S, o, f) { if (!(f.g && f.g.vistaJefeNitida)) desenfocar(W, H, .3 * S); px(W, H, (d, i, x, y) => { const k = 1.15 - y / H * .35; for (let q = 0; q < 3; q++) d[i + q] = Math.min(255, (d[i + q] * .8 + 50) * k); }); },
+    eco: { tec(W, H, S, o, f) { px(W, H, (d, i, x, y) => { const k = 1.15 - y / H * .35; for (let q = 0; q < 3; q++) d[i + q] = Math.min(255, (d[i + q] * .8 + 50) * k); }); },
       atras(c, o, f, b) { const [mx, my] = centro(b); c.save(); c.globalCompositeOperation = 'lighter'; glowDot(c, mx, my, (b[2] - b[0]) * .6, '#9affee', .2); c.restore(); } },
     // Agua: refracción que ondula, tinte de mar y burbujas
     agua: { tec(W, H, S, o, f) {
@@ -277,8 +276,6 @@
       for (let y = 0; y + p / 2 < H; y += p) for (let x = 0; x + p / 2 < W; x += p) { const i = (Math.floor(y + p / 2) * W + Math.floor(x + p / 2)) * 4; if (d[i + 3] > 110) cel.push([x, y, PUNTO.hilo(d[i], d[i + 1], d[i + 2])]); }
       cx.clearRect(0, 0, W, H); PUNTO.bordar(cx, cel, p);
     } },
-    // Vapor y engranajes: los jefes se vuelven de latón y cobre, con remaches
-    vapor: { tec(W, H, S) { paleta(W, H, ['#1a0c06', '#4a2a18', '#8a4a24', '#c8743a', '#e8b860', '#f6e0a8']); contorno(W, H, '#140804', .8 * S, 10); } },
     // 8 bits: tres colores planos por sprite y contorno negro grueso
     bits8: { tec(W, H, S, o) {
       if (o.tipo === 'mythos') {
@@ -294,7 +291,7 @@
     // 32 bits: sombreado suave con luz de borde, como sprite de los noventa tardíos
     bits32: { tec(W, H, S) { luzPixel(W, H, [255, 240, 200], [30, 20, 60]); px(W, H, (d, i, x, y) => { const k = 1.12 - y / H * .3; for (let q = 0; q < 3; q++) d[i + q] = Math.min(255, d[i + q] * k); }); contorno(W, H, 'rgba(20,10,40,.8)', Math.max(1, S * .8), 6); } },
     // 64 bits: polígonos grandes con sombreado de vértice, como de consola de cartucho 3D
-    bits64: { tec(W, H, S, o, f) { if (!(f.g && f.g.vistaJefeNitida)) desenfocar(W, H, .35 * S); posterizar(W, H, 7); facetas(W, H, Math.max(6, 9 * S), .3, 0); contorno(W, H, 'rgba(10,10,30,.75)', .7 * S, 6); } },
+    bits64: { tec(W, H, S, o, f) { posterizar(W, H, 7); facetas(W, H, Math.max(6, 9 * S), .3, 0); contorno(W, H, 'rgba(10,10,30,.75)', .7 * S, 6); } },
   });
 
   // ---------------- el dibujo con técnica ----------------
@@ -344,8 +341,10 @@
     return function (c, o, f) {
       const id = ESTILO(f), A = ARTE[id], caja = CAJA[k];
       // Las máscaras propias ya están pintadas para su estilo; no se vuelven a filtrar.
-      if (k === 'mythos' && typeof MASCARA_ESTILOS !== 'undefined' && MASCARA_ESTILOS.obtener(f)) return orig(c, o, f);
+      if (k === 'mythos' && typeof MASCARA_ESTILOS !== 'undefined' && (MASCARA_ESTILOS.obtener(f) || (MASCARA_ESTILOS.obtenerCuerpo && MASCARA_ESTILOS.obtenerCuerpo(f.st)))) return orig(c, o, f);
       if (k === 'golem' && (o.modeloMascaron == null || o.modeloMascaron === 1) && typeof MASCARON_ESTILOS !== 'undefined' && MASCARON_ESTILOS.obtener(f.st)) return orig(c, o, f);
+      // La cabeza bordada es una ilustración propia; no se debe volver a pixelar.
+      if (k === 'serpiente' && id === 'bordado') return orig(c, o, f);
       if (k === 'jaguar' && window.BALAM_ESTILOS && window.BALAM_ESTILOS.obtener(f.st)) return orig(c, o, f);
       if (k === 'hadas' && window.XTABAY_ESTILOS && window.XTABAY_ESTILOS.obtener(f.st)) return orig(c, o, f);
       if (k === 'cocodrilo' && window.COCODRILO_ESTILOS && window.COCODRILO_ESTILOS.obtener(f.st)) return orig(c, o, f);

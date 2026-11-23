@@ -137,9 +137,10 @@
   FOE.morena = { beh: 'morena', w: 12, h: 7, v: 0, spiky: () => true, sinSombra: true };
   BEH.morena = (e, g, d) => {
     const p = g.p; e.cd = Math.max(0, (e.cd || 0) - d); e.ft = (e.ft || 0);
+    if (e.visor && !e.fase && e.cd <= 0) { e.fase = 'sale'; e.ft = 0; }   // la ficha de la enciclopedia: asoma sola
     if (!e.fase && e.cd <= 0 && Math.sign(p.x - e.hx) === e.dir && Math.abs(p.x - e.hx) < 56 && Math.abs(p.y - 6 - e.hy) < 22) { e.fase = 'sale'; e.ft = 0; }
     let ext = 0;
-    if (e.fase) { e.ft += d; const k = e.ft; ext = k < .25 ? k / .25 : k < .65 ? 1 : Math.max(0, 1 - (k - .65) / .6); if (k > 1.25) { e.fase = null; e.cd = 1.4; } }
+    if (e.fase) { e.ft += d; const k = e.ft, sale = e.visor ? 1.9 : .65; ext = k < .25 ? k / .25 : k < sale ? 1 : Math.max(0, 1 - (k - sale) / .6); if (k > sale + .6) { e.fase = null; e.cd = e.visor ? .5 : 1.4; } }   // (en la ficha del libro se queda más rato afuera)
     e.ext = ext; e.asoma = !e.fase && e.cd <= 0; e.x = e.hx + e.dir * (2 + ext * 30); e.y = ext > .05 ? e.hy + 4 : -999;
   };
   OBJ.morena = {

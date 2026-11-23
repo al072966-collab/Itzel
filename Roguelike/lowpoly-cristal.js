@@ -14,12 +14,30 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.lowpoly) return;
-  const V = vestirNivel({ id: 'lowpoly', carpeta: 'cristal', ver: 2 });
+  const V = vestirNivel({ id: 'lowpoly', carpeta: 'cristal', ver: 2, manifiesto: window.LOWPOLY_CRISTAL_MANIFIESTO });
   const { spr, h1, TAM, IMG } = V;
+  const cornisa = new Image();
+  cornisa.onload = () => V.rehaz(); cornisa.src = '../Roguelike/assets/cristal/cornisa-facetada-v1.png';
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'grutas-panorama-v1', roca:'roca-facetada-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/cristal/' + archivo + '.png';
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'lowpoly';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
 
   // telón: destellos de cristal en cruz y bandada de murciélagos
   V.cielo((c, f, antes) => {
-    antes();
+    if (principal(f) && paisajeListo()) {
+      const im = paisaje.fondo, ancho = 720, base = 193 - (f.y0 || 0), off = ((f.cam * .1 % ancho) + ancho) % ancho, alto = f.H || VH;
+      c.save(); c.fillStyle = '#292447'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        const arriba = Math.min(0, base - 193);
+        c.drawImage(im, 0, 0, 2172, 650, x, arriba, ancho, base - arriba);
+        c.drawImage(im, 0, 650, 2172, 74, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore();
+    } else antes();
     const t = f.t;
     c.save(); c.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 12; i++) {                                         // destellos de cristal en cruz
@@ -36,7 +54,27 @@
     }
   });
 
+  let texturaSuelo = null;
   V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (cornisa.complete && cornisa.naturalWidth) {
+        // Eliminar los triángulos decorativos anteriores por encima del piso.
+        for (const r of L.tops) ctx.clearRect(r.x0, r.y - 5, r.x1 - r.x0, 5);
+      }
+      if (!texturaSuelo) { texturaSuelo = ctx.createPattern(paisaje.roca, 'repeat'); texturaSuelo.setTransform(new DOMMatrix().scale(500 / paisaje.roca.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = texturaSuelo;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 9, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+      if (cornisa.complete && cornisa.naturalWidth) {
+        ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
+        for (const r of L.tops) {
+          ctx.save(); ctx.beginPath(); ctx.rect(r.x0, r.y, r.x1 - r.x0, 9); ctx.clip();
+          for (let x = r.x0; x < r.x1; x += 150) ctx.drawImage(cornisa, 35, 312, 2100, 102, x, r.y, 150, 9);
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+    }
     for (const r of L.tops) for (let x = r.x0 + 10; x < r.x1 - 10; x += 24 + h1(x | 0, r.y) * 40) if (h1(x | 0, 51) > .58) spr(ctx, ['cristales4', 'helecho2', 'planta3', 'cristales3', 'roca2'][Math.floor(h1(x | 0, 52) * 5)], x, r.y + 1, { voltea: h1(x | 0, 53) < .5 });
     for (const o of L.deco) {
       const x = o.x, y = o.y + 1.2, v = h1(o.i, 7);

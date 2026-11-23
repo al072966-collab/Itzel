@@ -14,17 +14,36 @@
 //  Nada cambia colisiones ni mecánicas. Solo aplica a «Garabatos del cuaderno».
 // =====================================================================
 (function () {
+  // Apagado a pedido de David: el cuaderno se dibuja todo en código (Roguelike/cuaderno-dibujos.js), sin láminas.
+  if (true) return;
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.cuaderno) return;
-  const V = vestirNivel({ id: 'cuaderno', carpeta: 'cuaderno', ver: 3 });
+  const V = vestirNivel({ id: 'cuaderno', carpeta: 'cuaderno', ver: 3, manifiesto: window.CUADERNO_GARABATOS_MANIFIESTO });
   const { spr, h1, TAM, IMG } = V;
+  const jaguarBoceto = new Image();
+  jaguarBoceto.onload = () => V.rehaz(); jaguarBoceto.src = '../Roguelike/assets/cuaderno/jaguar-boceto-v1.png';
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'hochob-cuaderno-v1', suelo:'tierra-lapiz-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/cuaderno/' + archivo + '.png';
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'cuaderno';
+  // El fondo y el suelo de láminas se apagan: el nivel vuelve al arte de antes (el del mapa de la enciclopedia, dibujado en código)
+  const paisajeListo = () => false;
 
   // los Chenes de Hochob dibujados a lápiz al fondo (fachadas de piedra con mascarones), muy tenues: es el «lugar» de este cuaderno
   V.cielo((c, f, antes) => {
+    if (principal(f) && paisajeListo()) {
+      const ancho = 650, base = 178 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .1 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 178);
+      c.save(); c.fillStyle = '#eeeae1'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(paisaje.fondo, 0, 0, 1850, 680, x, arriba, ancho, base - arriba);
+        c.drawImage(paisaje.fondo, 0, 708, 1850, 16, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore(); return;
+    }
     antes();
-    const u = 260, off = (f.cam * .1) % u, base = Math.floor(f.cam * .1 / u);
-    c.save(); c.globalAlpha = .4;
-    for (let k = -1; k * u - off < VW + u; k++) { const i = base + k; if (h1(i, 2) < .3) continue; if (window.LUGARES_CAMPECHE && window.LUGARES_CAMPECHE.listo('hochob')) { c.save(); c.filter = 'grayscale(1) contrast(1.1) brightness(.95)'; window.LUGARES_CAMPECHE.dib(c, 'hochob', k * u - off + h1(i, 5) * 60 + 120, 178, { w: 120, alfa: .6 }); c.restore(); } else spr(c, 'chenes' + Math.floor(h1(i, 3) * 4), k * u - off + h1(i, 5) * 60, 160, { ay: 1, k: 1.5 }); }
-    c.restore();
+    // (quitadas las fachadas de Hochob a lápiz del fondo: no pintaban nada en el cuaderno)
   });
   // garabatos que se dibujan solos a lápiz (espiral, estrella, flor, jaguarcito) y migajas de goma que caen
   function trazo(c, tipo, x, y, u) {
@@ -44,7 +63,15 @@
     for (let i = 0; i < 4; i++) {
       const per = 10, T = (t + i * 2.5) % per, n = Math.floor((t + i * 2.5) / per), u = T / 4, al = T > 8 ? 1 - (T - 8) / 2 : 1;
       const w = VW + 60, x = ((h1(n * 4 + i, 81) * w - f.cam * .12) % w + w) % w - 30, y = 30 + h1(n * 4 + i, 82) * 90;
-      c.globalAlpha = .55 * al; trazo(c, (n + i) % 3, x, y, u);
+      c.globalAlpha = .55 * al;
+      if (principal(f) && jaguarBoceto.complete && jaguarBoceto.naturalWidth && V.listo('flor0') && V.listo('estrella0')) {
+        // Revelar cada dibujo sin alterar el papel ni señalar superficies.
+        c.save(); c.beginPath(); c.rect(x - 15, y - 13, 30 * Math.min(1, u), 26); c.clip();
+        const tipo = (n + i) % 3;
+        if (tipo === 0) c.drawImage(jaguarBoceto, 377, 174, 791, 655, x - 14, y - 11, 28, 22);
+        else spr(c, tipo === 1 ? 'estrella0' : 'flor0', x, y, { ay: .5, w: 17 });
+        c.restore();
+      } else trazo(c, (n + i) % 3, x, y, u);
     }
     c.restore();
     c.save(); c.fillStyle = '#e8a0b0';
@@ -54,7 +81,14 @@
     }
     c.restore();
   });
+  let tierra = null;
   V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!tierra) { tierra = ctx.createPattern(paisaje.suelo, 'repeat'); tierra.setTransform(new DOMMatrix().scale(500 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = tierra;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 8, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+    }
     for (const r of L.tops) for (let x = r.x0 + 14; x < r.x1 - 14; x += 34 + h1(x | 0, r.y) * 50) if (h1(x | 0, 91) > .65) spr(ctx, ['flor0', 'flor1', 'estrella0', 'estrella1'][Math.floor(h1(x | 0, 92) * 4)], x, r.y + .8, { voltea: h1(x | 0, 93) < .5 });
     for (const o of L.deco) {
       const x = o.x, y = o.y + 1, v = h1(o.i, 7);

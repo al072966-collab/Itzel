@@ -29,17 +29,34 @@ const teclas = () => ({
   up: KEYS.has('ArrowUp') || KEYS.has('KeyW'), down: KEYS.has('ArrowDown') || KEYS.has('KeyS'),
   left: KEYS.has('ArrowLeft') || KEYS.has('KeyA'), right: KEYS.has('ArrowRight') || KEYS.has('KeyD'), space: KEYS.has('Space'),
 });
+function altoExtra(j, view) {
+  if (!j || !j.modo || !j.modo.extiende || typeof VISTA === 'undefined' || typeof canvas === 'undefined' || view.ctx !== canvas.getContext('2d')) return 0;
+  return Math.max(0, (VISTA.H || VH) - VH);
+}
+// el paso de un modo alto: el mouse llega en coordenadas de la ventana y el modo las espera en las de su escena
+function pasoModo(j, dt) {
+  const ex = j.modo.extiende && typeof VISTA !== 'undefined' ? Math.max(0, VISTA.H - VH) : 0;
+  if (ex) { MOUSE.y -= ex; for (const c of MOUSE.clicks) if (!c.bajado) { c.y -= ex; c.bajado = true; } }
+  try { j.modo.paso(j, dt); } finally { if (ex) MOUSE.y += ex; }
+}
 function marcoModo(j, view) {
   const st = view.st, S = view.S, ctx = view.ctx;
+  // el color de la orilla de arriba de la escena (del cuadro anterior): ahí empata el escenario de la ventana alta
+  { const ex0 = altoExtra(j, view); if (ex0 > 0 && (!j.colTope || Math.floor(j.t * 4) !== j.colTopeT)) { j.colTopeT = Math.floor(j.t * 4); try { const d = ctx.getImageData(Math.floor(ctx.canvas.width / 2), Math.floor((ex0 + 1.5) * S), 1, 1).data; if (d[3] > 200) j.colTope = `rgb(${d[0]},${d[1]},${d[2]})`; } catch (e) { /* lienzo sin permiso de lectura */ } } }
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1; ctx.filter = 'none'; ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-  ctx.setTransform(S, 0, 0, S, 0, 0); ctx.imageSmoothingEnabled = !st.pixel;
-  const f = { t: j.t, cam: L.camMin + (j.panCam || 0), S, g: j, st, key: st.id + '@' + S.toFixed(3) };
+  // en una ventana más alta que 16:9, los modos con `extiende` bajan su escena y pintan su propio escenario arriba
+  const ex = altoExtra(j, view);
+  ctx.setTransform(S, 0, 0, S, 0, ex * S); ctx.imageSmoothingEnabled = !st.pixel;
+  const f = { t: j.t, cam: L.camMin + (j.panCam || 0), S, g: j, st, key: st.id + '@' + S.toFixed(3), ex };
   st.sky(ctx, f);
-  return { ctx, f, st, S };
+  if (ex > 0) { ctx.save(); ctx.beginPath(); ctx.rect(0, -ex - 1, VW, ex + 1.5); ctx.clip(); j.modo.extiende(ctx, j, ex, f); ctx.restore(); }
+  // el marco del estilo (viñeta, papel, scanlines…) cubre toda la ventana, no solo la escena de 16:9
+  const stV = ex > 0 && st.over ? Object.assign(Object.create(st), { over: (c, ff) => { c.save(); c.translate(0, -ex); c.scale(1, (VH + ex) / VH); st.over(c, ff); c.restore(); } }) : st;
+  return { ctx, f, st: stV, S };
 }
 function dañoModo(j, cuanto = 1) {
   if (j.inv > 0 || j.win) return false;
-  RUN.hearts -= cuanto; j.inv = difi().inv; j.shake = .3;
+  recibeDanio(cuanto); j.inv = tiempoInvulnerable(); j.shake = .3;
   if (typeof cambiaDiseno === 'function') cambiaDiseno({ p: { x: 0, y: 0 }, parts: j.parts || [] });
   if (RUN.hearts <= 0) animarDerrota(j);
   return true;

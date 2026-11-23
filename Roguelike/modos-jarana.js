@@ -13,6 +13,11 @@ MODOS.campechanidad = (() => {
   const tropiezoItzel = new Image();
   tropiezoItzel.src = 'assets/forge/itzel/nouveau-tropiezo-v1/sheet-transparent.png';
   const DUR_TROPIEZO = .64;
+  const baileFresita = new Image();
+  baileFresita.src = 'assets/forge/fresita/nouveau-baile-16-v1/sheet-transparent.png';
+  const falloFresita = new Image();
+  falloFresita.src = 'assets/forge/fresita/nouveau-fallo-v1/sheet-transparent.png';
+  const DUR_FALLO_FRESITA = .64;
   // Acentos detectados en la grabación «Campechanita habanera», en segundos.
   const ACENTOS = [2.601, 2.879, 3.158, 3.808, 4.11, 4.412, 4.737, 4.992, 5.341, 5.619, 5.944, 6.223, 6.525, 6.827, 7.129, 7.454, 7.732, 8.034, 8.522, 8.916, 9.265, 9.799, 10.101, 10.542, 11.006, 11.471, 11.749, 12.237, 12.678, 12.98, 13.607, 13.909, 14.211, 14.489, 14.814, 15.441, 15.882, 16.324, 16.649, 17.136, 17.601, 17.903, 18.506, 18.785, 19.11, 19.412, 19.714, 20.039, 20.341, 20.782, 21.246, 21.571, 21.85, 22.175, 22.477, 22.802, 23.266, 23.568, 24.033, 24.311, 24.636, 24.938, 25.24, 25.542, 25.844, 26.122, 26.448, 26.889, 27.353, 27.655, 27.957, 28.282, 28.537, 28.886, 29.164, 29.489, 29.814, 30.093, 30.72, 31.347, 31.602, 31.927, 32.276, 32.554, 33.019, 33.785, 34.087, 34.412, 34.691, 35.016, 35.318, 35.643, 35.921, 36.246, 36.688, 37.129, 37.454, 37.756, 38.058, 38.592, 39.033, 39.335, 39.636, 39.915, 40.565, 40.844, 41.123, 41.587, 42.051, 42.376, 42.701, 42.957, 43.305, 43.584, 43.909, 44.188, 44.489, 44.791, 45.093, 45.418, 45.697, 45.999, 46.463, 46.881, 47.206, 47.763, 48.205, 48.506, 48.971, 49.435, 49.714, 50.341, 50.643, 50.945, 51.548, 51.873, 52.152, 52.477, 52.779, 53.081, 53.383, 53.847, 54.288, 54.613, 55.101, 55.565, 55.844, 56.471, 56.75, 57.075, 57.377, 57.678, 58.003, 58.305, 58.746, 59.211, 59.536, 59.815, 60.14, 60.442, 60.767, 61.208, 61.533, 61.974, 62.601, 62.903, 63.205, 63.483, 63.808, 64.064, 64.389, 64.853, 65.318, 65.62, 65.898, 66.223, 66.502, 66.85, 67.129, 67.454, 67.779, 68.058, 68.685, 69.288, 69.567, 69.892, 70.194, 70.519, 70.983, 71.75, 72.052, 72.353, 72.655, 72.98, 73.282, 73.607, 73.863, 74.211, 74.652, 75.117, 75.418, 76.022, 76.533, 76.997, 77.299, 77.601, 77.88, 78.53, 78.809, 79.087, 79.552, 80.016, 80.318, 80.643, 80.922, 81.27, 81.548, 81.874, 82.175, 82.454, 82.756, 83.058, 83.36, 83.661, 83.963, 84.428, 84.846, 85.171, 85.728, 86.169, 86.471, 86.936, 87.377, 87.679, 88.305, 88.607, 88.909, 89.513, 89.838, 90.117, 90.442, 90.744, 91.045, 91.347, 91.812, 92.253, 92.578, 93.042, 93.53, 93.809, 94.436, 94.714, 95.039, 95.318, 95.643, 95.945, 96.247, 96.711, 97.176, 97.477, 97.779, 98.104, 98.406, 98.708, 99.172, 99.498, 99.939, 100.566, 100.867, 101.169, 101.448, 101.773, 102.028, 102.354, 102.818, 103.282, 103.584, 103.863, 104.188, 104.467, 104.815, 105.094, 105.419, 105.72, 106.022, 106.649, 107.253, 107.532, 107.857, 108.182, 108.484, 108.925, 109.273, 109.714, 109.993, 110.318, 110.62, 110.922, 111.224];
   function coreografia(rand) {
@@ -43,24 +48,29 @@ MODOS.campechanidad = (() => {
     const r = rng((RUN && RUN.seed || 7) + 11);
     const c = coreografia(r);
     return { t: 0, win: 0, shake: 0, bubbles: [], parts: [], def, st, inv: 0, ...c, pose: poseItzel(), teclas: {}, tamb: 0, caidas: 0,
-      tropiezo: 0, inicioBaile: null, palmaPulsada: false, aciertos: 0, total: c.notas.length + c.palmas.length, combo: 0, mejor: 0, letreros: [], paso: 0, giro: 0, fre: { x: 300, y: 130 } };
+      tropiezo: 0, inicioBaile: null, inicioBaileFresita: null, falloFresita: 0, palmaPulsada: false, aciertos: 0, total: c.notas.length + c.palmas.length, combo: 0, mejor: 0, letreros: [], paso: 0, giro: 0, fre: { x: 300, y: 130 } };
   }
   const enBomba = (j, t = j.t) => j.bombas.find(b => t >= b.t && t < b.t + b.dur);
+  const suenaNota = a => { if (window.AUDIO_ARCHIVOS) window.AUDIO_ARCHIVOS.efecto(a, 'efectos', .12); };   // los sonidos de acierto y de error de las notas
   function califica(j, dt, x, y, col) {
+    suenaNota('nota perfecta.mp3');
     const ok = Math.abs(dt) < VENT[0] ? '¡Así!' : '¡Bien!';
     j.aciertos++; j.combo++; j.mejor = Math.max(j.mejor, j.combo); j.tamb = Math.max(0, j.tamb - .5);
     j.letreros.push({ txt: ok, x, y, t: 0, col }); chispas(j, x, y, [col, '#ffffff'], ok === '¡Así!' ? 10 : 5, 50);
     if (j.combo % 10 === 0) { RUN.coins += 1; j.letreros.push({ txt: `${j.combo} seguidos`, x: 213, y: 70, t: 0, col: '#ffd23f' }); }
   }
   function falla(j, x, y) {
+    suenaNota('mistake.mp3');
     j.combo = 0; j.tamb += 1; j.letreros.push({ txt: 'uy…', x, y, t: 0, col: '#c9c0b0' });
     if (j.tamb >= 6) { j.tamb = 0; j.caidas++; dañoModo(j); j.letreros.push({ txt: '¡Sigan el ritmo!', x: 213, y: 90, t: 0, col: '#ff9a8a' }); }
   }
   function tropezar(j) { if (j.inicioBaile !== null && j.tropiezo <= 0) j.tropiezo = DUR_TROPIEZO; }
   function paso(j, dt) {
+    if (window.AUDIO_ARCHIVOS && window.AUDIO_ARCHIVOS.asegurarCampechanidad) window.AUDIO_ARCHIVOS.asegurarCampechanidad(j);
     const reloj = window.AUDIO_ARCHIVOS && window.AUDIO_ARCHIVOS.tiempoCampechanidad();
     if (reloj === undefined) j.t += dt; else if (reloj !== null) j.t = reloj;
     j.tropiezo = Math.max(0, j.tropiezo - dt);
+    j.falloFresita = Math.max(0, j.falloFresita - dt);
     j.inv = Math.max(0, j.inv - dt); j.shake = Math.max(0, j.shake - dt);
     const t = j.t;
     // Una nota larga se califica al terminar; soltarla antes cuenta como fallo una sola vez.
@@ -79,13 +89,13 @@ MODOS.campechanidad = (() => {
         if (j.inicioBaile === null) j.inicioBaile = t;
         if (n.dur) { n.st = 'sosteniendo'; n.precision = n.t - t; }
         else { n.st = 'ok'; califica(j, n.t - t, LX[lane], LY - 14, cr.col); }
-      } else { tropezar(j); j.combo = 0; j.letreros.push({ txt: '·', x: LX[lane], y: LY - 14, t: 0, col: '#c9c0b0' }); }
+      } else { suenaNota('mistake.mp3'); tropezar(j); j.combo = 0; j.letreros.push({ txt: '·', x: LX[lane], y: LY - 14, t: 0, col: '#c9c0b0' }); }
     });
     // Las palmas largas se mantienen con el botón izquierdo y se califican al terminar.
     const terminarPalma = (n, exito) => {
       n.st = exito ? 'ok' : 'x';
       if (exito) { califica(j, n.precision, RX, RY - 16, '#ff7fb0'); j.aplauso = .25; }
-      else falla(j, RX, RY - 16);
+      else { falla(j, RX, RY - 16); if (j.falloFresita <= 0) j.falloFresita = DUR_FALLO_FRESITA; }
     };
     for (const c of MOUSE.clicks) {
       if (c.b !== 0 || c.move) continue;
@@ -99,9 +109,10 @@ MODOS.campechanidad = (() => {
       j.palmaPulsada = true;
       const n = j.palmas.filter(q => !q.st).sort((a, b) => Math.abs(a.t - t) - Math.abs(b.t - t))[0];
       if (n && Math.abs(n.t - t) < VENT[1]) {
+        if (j.inicioBaileFresita === null) j.inicioBaileFresita = t;
         if (n.dur) { n.st = 'sosteniendo'; n.precision = n.t - t; }
         else { n.st = 'ok'; califica(j, n.t - t, RX, RY - 16, '#ff7fb0'); j.aplauso = .25; }
-      } else j.combo = 0;
+      } else { suenaNota('mistake.mp3'); j.combo = 0; if (j.falloFresita <= 0) j.falloFresita = DUR_FALLO_FRESITA; }
     }
     const palmaSostenida = j.palmas.find(q => q.st === 'sosteniendo');
     if (palmaSostenida && j.palmaPulsada && t >= palmaSostenida.t + palmaSostenida.dur - .08) terminarPalma(palmaSostenida, true);
@@ -109,7 +120,7 @@ MODOS.campechanidad = (() => {
     if (MOUSE.active) { j.fre.x += (MOUSE.x - j.fre.x) * Math.min(1, dt * 8); j.fre.y += (MOUSE.y - j.fre.y) * Math.min(1, dt * 8); }
     // las que se pasaron
     for (const n of j.notas) if (!n.st && t - n.t > VENT[1]) { n.st = 'x'; falla(j, LX[n.lane], LY - 14); tropezar(j); }
-    for (const n of j.palmas) if (!n.st && t - n.t > VENT[1]) { n.st = 'x'; falla(j, RX, RY - 16); }
+    for (const n of j.palmas) if (!n.st && t - n.t > VENT[1]) { n.st = 'x'; falla(j, RX, RY - 16); if (j.falloFresita <= 0) j.falloFresita = DUR_FALLO_FRESITA; }
     j.paso = Math.max(0, j.paso - dt); j.aplauso = Math.max(0, (j.aplauso || 0) - dt);
     for (const l of j.letreros) l.t += dt; j.letreros = j.letreros.filter(l => l.t < .8);
     if (!j.win && t > j.fin) {
@@ -126,6 +137,25 @@ MODOS.campechanidad = (() => {
     ctx.beginPath(); ctx.moveTo(7, 0); ctx.lineTo(0, -7); ctx.lineTo(0, -3.4); ctx.lineTo(-7, -3.4); ctx.lineTo(-7, 3.4); ctx.lineTo(0, 3.4); ctx.lineTo(0, 7); ctx.closePath();
     if (lleno) { ctx.fillStyle = col; ctx.fill(); }
     ctx.strokeStyle = lleno ? 'rgba(255,250,235,.9)' : col; ctx.setLineDash(lleno ? [1.4, 1.2] : []); ctx.lineWidth = lleno ? .7 : 1.2; ctx.stroke(); ctx.setLineDash([]);
+    ctx.restore();
+  }
+  // Una cinta bordada deja ver cuánto falta y responde mientras se sostiene.
+  function pintaSostenida(ctx, x, arriba, abajo, color, activa, t, ancho = 9) {
+    const alto = abajo - arriba;
+    if (alto <= 0) return;
+    ctx.save();
+    if (activa) { ctx.shadowColor = color; ctx.shadowBlur = 7 + Math.sin(t * 12) * 2; }
+    ctx.fillStyle = 'rgba(35,18,28,.8)'; ctx.beginPath(); roundRect(ctx, x - ancho / 2 - 1, arriba, ancho + 2, alto, Math.min(4, alto / 2)); ctx.fill();
+    ctx.fillStyle = color; ctx.beginPath(); roundRect(ctx, x - ancho / 2, arriba + .7, ancho, Math.max(0, alto - 1.4), Math.min(3.5, alto / 2)); ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = 'rgba(255,250,230,.25)'; ctx.fillRect(x - ancho / 2 + 1.5, arriba + 3, 2, Math.max(0, alto - 6));
+    ctx.strokeStyle = 'rgba(255,250,230,.85)'; ctx.lineWidth = .7; ctx.setLineDash([2, 2]);
+    ctx.beginPath(); ctx.moveTo(x + ancho / 2 - 1.5, arriba + 3); ctx.lineTo(x + ancho / 2 - 1.5, abajo - 3); ctx.stroke();
+    ctx.setLineDash([]);
+    if (activa) {
+      ctx.strokeStyle = 'rgba(255,250,225,.85)'; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(x, abajo, 9 + Math.sin(t * 10), 0, TAU); ctx.stroke();
+    }
     ctx.restore();
   }
   function catedral(ctx, x, y, t, pulso) {
@@ -167,11 +197,24 @@ MODOS.campechanidad = (() => {
         ctx.drawImage(tropiezoItzel, (cuadro % 2) * 256, Math.floor(cuadro / 2) * 256, 256, 256, p.x - lado / 2, p.y - lado * 238 / 256, lado, lado);
       } else if (baileItzel.complete && baileItzel.naturalWidth === 1280 && baileItzel.naturalHeight === 1536) {
         const cuadro = j.inicioBaile === null ? 0 : Math.floor(Math.max(0, t - j.inicioBaile) / .16) % 30, lado = 68;
-        ctx.drawImage(baileItzel, (cuadro % 5) * 256, Math.floor(cuadro / 5) * 256, 256, 256, p.x - lado / 2, p.y - lado * 238 / 256, lado, lado);
+        // de vez en cuando se voltea a bailar del otro lado
+        const volteada = j.inicioBaile !== null && Math.floor(Math.max(0, t - j.inicioBaile) / (OCT * 8)) % 3 === 1;
+        ctx.save(); ctx.translate(p.x, 0); if (volteada) ctx.scale(-1, 1);
+        ctx.drawImage(baileItzel, (cuadro % 5) * 256, Math.floor(cuadro / 5) * 256, 256, 256, -lado / 2, p.y - lado * 238 / 256, lado, lado); ctx.restore();
       } else st.player(ctx, p, f);
     }
     // Fresita aplaudiendo arriba de la tarima (o donde esté el ratón)
-    if (st.fresita) st.fresita(ctx, { x: j.fre.x, y: j.fre.y + Math.sin(t * 4) * 2 - (j.aplauso > 0 ? 3 : 0), face: j.fre.x < 213 ? 1 : -1 }, f);
+    {
+      const fallo = j.falloFresita > 0 && falloFresita.complete && falloFresita.naturalWidth === 512 && falloFresita.naturalHeight === 512;
+      const hoja = fallo ? falloFresita : baileFresita;
+      if (hoja.complete && hoja.naturalWidth === (fallo ? 512 : 1024) && hoja.naturalHeight === (fallo ? 512 : 1024)) {
+        const cuadro = fallo ? Math.min(3, Math.floor((DUR_FALLO_FRESITA - j.falloFresita) / .16)) : j.inicioBaileFresita === null ? 0 : Math.floor(Math.max(0, t - j.inicioBaileFresita) / .16) % 16;
+        const cols = fallo ? 2 : 4, lado = 54;
+        const y = j.fre.y + (j.inicioBaileFresita === null ? 0 : Math.sin(t * 4) * 2) - (j.aplauso > 0 ? 3 : 0);
+        ctx.save(); ctx.translate(j.fre.x, y); if ((j.fre.x < 213) !== (j.inicioBaileFresita !== null && !fallo && Math.floor(Math.max(0, t - j.inicioBaileFresita) / (OCT * 6)) % 3 === 2)) ctx.scale(-1, 1);
+        ctx.drawImage(hoja, (cuadro % cols) * 256, Math.floor(cuadro / cols) * 256, 256, 256, -lado / 2, -lado / 2, lado, lado); ctx.restore();
+      } else if (st.fresita) st.fresita(ctx, { x: j.fre.x, y: j.fre.y, face: j.fre.x < 213 ? 1 : -1 }, f);
+    }
     // carriles de Itzel
     ctx.fillStyle = 'rgba(20,12,20,.45)'; ctx.fillRect(16, 18, 100, LY + 10 - 18);
     CARRILES.forEach((cr, lane) => { flecha(ctx, LX[lane], LY, cr.dir, cr.col, false, j.teclas[lane] ? 1.15 : 1); });
@@ -184,8 +227,7 @@ MODOS.campechanidad = (() => {
       ctx.globalAlpha = n.st === 'x' ? .3 : 1;
       if (n.dur) {
         const cabeza = Math.min(LY, y), arriba = Math.max(20, cola);
-        ctx.fillStyle = cr.col; ctx.globalAlpha *= .65; ctx.fillRect(LX[n.lane] - 3, arriba, 6, Math.max(0, cabeza - arriba));
-        ctx.globalAlpha = n.st === 'x' ? .3 : 1; ctx.strokeStyle = '#fff4df'; ctx.lineWidth = .6; ctx.strokeRect(LX[n.lane] - 3, arriba, 6, Math.max(0, cabeza - arriba));
+        pintaSostenida(ctx, LX[n.lane], arriba, cabeza, cr.col, n.st === 'sosteniendo', t);
       }
       flecha(ctx, LX[n.lane], Math.min(LY, y), cr.dir, cr.col, true); ctx.restore();
     }
@@ -199,7 +241,7 @@ MODOS.campechanidad = (() => {
       const y = RY - u * (RY - 26), cola = RY - fin * (RY - 26);
       ctx.save(); ctx.beginPath(); ctx.rect(RX - 22, 18, 44, LY + 10); ctx.clip();
       ctx.globalAlpha = n.st === 'x' ? .3 : 1;
-      if (n.dur) { ctx.fillStyle = '#ff7fb0'; ctx.globalAlpha *= .65; ctx.fillRect(RX - 4, Math.max(20, cola), 8, Math.max(0, Math.min(RY, y) - Math.max(20, cola))); ctx.globalAlpha = n.st === 'x' ? .3 : 1; }
+      if (n.dur) pintaSostenida(ctx, RX, Math.max(20, cola), Math.min(RY, y), '#ff7fb0', n.st === 'sosteniendo', t, 10);
       ctx.fillStyle = '#ff7fb0'; ctx.beginPath(); ctx.ellipse(RX - 3, Math.min(RY, y), 3.6, 5, -.4, 0, TAU); ctx.ellipse(RX + 3, Math.min(RY, y), 3.6, 5, .4, 0, TAU); ctx.fill(); ctx.strokeStyle = '#fff4e0'; ctx.lineWidth = .5; ctx.stroke(); ctx.restore();
     }
     // Indicador visible de racha y etapa de dificultad.

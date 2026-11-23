@@ -3,7 +3,9 @@
 (() => {
   const X=JEFES_EXT, anterior=X.BODY.hadas, art=new Image();
   art.src='../Roguelike/assets/jefes/xtabay-perfil.png';
-  const estilos=new Set(['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','anime','nouveau','deco','cyber','cinema','vapor','barro','eco','fuego','agua','hielo','cielo','hollin','bits8','bits32','bits64','miniatura']);
+  const accionesAnime = new Image();
+  accionesAnime.src = '../Roguelike/assets/forge/jefes/xtabay-anime-acciones-v1/sheet-transparent.png';
+  const estilos=new Set(['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','anime','nouveau','deco','cyber','cinema','barro','eco','fuego','agua','hielo','cielo','hollin','bits8','bits32','bits64','miniatura','bordado']);
   const imagenes=Object.create(null), cache=new Map();
   function obtener(estilo){
     const id=String(window.estiloArteDerivado||estilo&&estilo.id||'').split('~')[0];
@@ -61,8 +63,21 @@
     if(!partes)return anterior(c,o,f);
     const abierto=o.st==='ventana'||o.st==='herido', ataca=o.st==='ataque';
     c.save();c.translate(o.x,o.y);c.scale(o.xtFace||1,1);c.imageSmoothingEnabled=!esPixel;
+    // El gesto de daño gira alrededor del núcleo sin cambiar la escala.
+    if(o.st==='herido'||o.flash>0){const a=o.at||0;c.translate(-3,-17);c.rotate(.08*Math.sin(a*18)*Math.exp(-a*3.5));c.translate(3,17);}
     if(o.st==='muere')c.globalAlpha*=clamp(1-(o.at||0)/2.4,0,1);
     if(o.flash>0&&Math.sin(t*40)>0)c.filter='brightness(2)';
+    if(id==='anime'&&ataca&&(o.at||0)>.25&&accionesAnime.complete&&accionesAnime.naturalWidth){
+      const q=o.atk==='secuestro'?1:o.atk==='polvo'?2:o.atk==='espejos'?3:0;
+      // El vestido se mueve suavemente durante el conjuro; el rostro queda fijo.
+      const sx=(q%2)*256,sy=Math.floor(q/2)*256,bandas=24;
+      for(let i=0;i<bandas;i++){
+        const u=i/bandas,v=(i+1)/bandas, falda=Math.max(0,Math.min(1,(u-.42)*2.2));
+        const dx=Math.sin(t*2.8-u*5)*1.1*falda;
+        c.drawImage(accionesAnime,sx,sy+u*256,256,256/bandas,-49+dx,-40+u*96,96,(v-u)*96+.06);
+      }
+      c.restore();return;
+    }
     // Todas las capas se obtienen de regiones excluyentes del dibujo original.
     c.translate(-35,-25);c.scale(46/1024,69/1536);
     // La paleta de Game Boy comparte el tono del cielo y del vestido:
@@ -70,7 +85,7 @@
     if(id==='gameboy')for(const [x,y] of [[-14,0],[14,0],[0,-14],[0,14],[-10,-10],[10,-10],[-10,10],[10,10]])c.drawImage(partes.contorno,x,y,1024,1536);
     const parte=(id,px,py,a)=>{c.save();c.translate(px,py);c.rotate(a);c.translate(-px,-py);c.drawImage(partes[id],0,0,1024,1536);c.restore();};
     const ritmo=Math.sin(t*2.5)*(silueta?.55:1), oleaje=Math.sin(t*1.7)*(silueta?.55:1), fase=o.at||0;
-    const gesto=ataca ? (o.atk==='secuestro' ? -.20-.10*Math.sin(fase*4) : o.atk==='polvo' ? .14*Math.sin(fase*7) : .17*Math.sin(fase*5)) : 0;
+    const entrada=Math.min(1,fase*4), gesto=ataca ? entrada*(o.atk==='secuestro' ? -.20-.10*Math.sin(fase*4) : o.atk==='polvo' ? .14*Math.sin(fase*7) : .17*Math.sin(fase*5)) : 0;
     parte('cabello',660,300,oleaje*.045);
     parte('pieIzq',515,1060,ritmo*.10);
     parte('pieDer',650,1140,-ritmo*.10);

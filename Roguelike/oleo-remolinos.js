@@ -14,20 +14,41 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.oleo) return;
-  const V = vestirNivel({ id: 'oleo', carpeta: 'oleo', ver: 1 });
+  const V = vestirNivel({ id: 'oleo', carpeta: 'oleo', ver: 1, manifiesto: window.OLEO_REMOLINOS_MANIFIESTO });
   const { spr, h1, TAM, IMG } = V;
+  const vientoVertical = new Image();
+  vientoVertical.onload = () => V.rehaz(); vientoVertical.src = '../Roguelike/assets/oleo/viento-vertical-v1.png';
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'fuerte-noche-v1', suelo:'pincelada-terreno-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/oleo/' + archivo + '.png';
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'oleo';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
 
   // el Fuerte de San Miguel, pintado en el cerro lejano, entre las nubes arremolinadas (símbolo del lugar)
   V.cielo((c, f, antes) => {
+    if (principal(f) && paisajeListo()) {
+      const im = paisaje.fondo, alto = f.H || VH, horizonte = 166, corte = im.naturalHeight * .85;
+      c.drawImage(im, 0, 0, im.naturalWidth, corte, 0, 0, VW, horizonte);
+      c.drawImage(im, 0, corte, im.naturalWidth, im.naturalHeight - corte, 0, horizonte, VW, Math.max(1, alto - horizonte));
+      return;
+    }
     antes();
     const u = 380, off = (f.cam * .08) % u, base = Math.floor(f.cam * .08 / u);
     c.save(); c.globalAlpha = .6;
     for (let k = -1; k * u - off < VW + u; k++) { const i = base + k; if (h1(i, 2) < .2) continue; spr(c, 'sanmiguel', k * u - off + 120 + h1(i, 5) * 60, 150, { ay: 1, k: 1.25 }); spr(c, 'sanmiguelGarita', k * u - off + 120 + h1(i, 5) * 60 + 56, 142, { ay: 1, k: .9 });
       if (window.LUGARES_CAMPECHE) window.LUGARES_CAMPECHE.dib(c, 'sanJose', k * u - off + 120 + h1(i, 5) * 60 + 200, 160, { w: 104, alfa: 1, filtro: 'brightness(.95) saturate(.85) hue-rotate(185deg) contrast(1.1)' }); }
     c.restore();
-    c.restore();
   });
+  let pincelada = null;
   V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!pincelada) { pincelada = ctx.createPattern(paisaje.suelo, 'repeat'); pincelada.setTransform(new DOMMatrix().scale(500 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = pincelada;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 8, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+    }
     for (const r of L.tops) for (let x = r.x0 + 10; x < r.x1 - 10; x += 20 + h1(x | 0, r.y) * 36) if (h1(x | 0, 71) > .5) spr(ctx, ['trigo2', 'trigo1', 'roca2', 'trigo2'][Math.floor(h1(x | 0, 72) * 4)], x, r.y + 1.2, { voltea: h1(x | 0, 73) < .5 });
     for (const o of L.deco) {
       const x = o.x, y = o.y + 1.5, v = h1(o.i, 7);
@@ -51,6 +72,24 @@
   }, 'luna0');
 
   // ---------------- el remolino de Fresita ----------------
+  V.zona('swirl', (c, z, f) => {
+    if (!principal(f) || !vientoVertical.complete || !vientoVertical.naturalWidth) return false;
+    const w = z.x1 - z.x0, h = z.y1 - z.y0, a = z.life === undefined ? 1 : Math.max(0, Math.min(1, z.life));
+    c.save(); c.globalAlpha = (.48 + .07 * Math.sin(f.t * 2)) * a;
+    c.beginPath(); c.rect(z.x0, z.y0, w, h); c.clip();
+    // Ondular bandas del mismo trazo hace circular el viento sin alterar
+    // la zona que impulsa a Itzel ni sustituir la ilustración original.
+    const bandas = 36, fuenteAlto = 1701 / bandas, bandaAlto = h / bandas;
+    for (let i = 0; i < bandas; i++) {
+      const u = (i + .5) / bandas;
+      const envolvente = Math.sin(Math.PI * u);
+      const onda = Math.sin(u * Math.PI * 5 - f.t * 3.4) * w * .065 * envolvente;
+      const vaiven = Math.sin(f.t * 1.1 + u * 3) * w * .025;
+      c.drawImage(vientoVertical, 140, 33 + i * fuenteAlto, 596, fuenteAlto,
+        z.x0 + onda + vaiven, z.y0 + i * bandaAlto, w, bandaAlto + .3);
+    }
+    c.restore(); return true;
+  }, 'espiral');
   V.zona('orbita', (ctx, z, f) => {
     const a = Math.min(1, z.life) * (z.cap ? 1 : .85), giro = f.t * (z.cap ? 5 : 2), d = z.r * 2.3;
     ctx.save(); ctx.globalAlpha *= a; ctx.translate(z.cx, z.cy); ctx.rotate(-giro); ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high';

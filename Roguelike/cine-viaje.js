@@ -23,10 +23,10 @@
     neon: 'luz', cyber: 'luz', biolum: 'luz', cielo: 'luz', cinema: 'luz',
     vitral: 'vidrio', deco: 'vidrio', nouveau: 'vidrio', lowpoly: 'vidrio', flat: 'vidrio',
     oleo: 'pintura', ocaso: 'pintura', anime: 'pintura',
-    vapor: 'engranes', barro: 'plastilina', eco: 'diorama', hollin: 'ceniza',
+    barro: 'plastilina', eco: 'diorama', hollin: 'ceniza',
   };
   const HILOS = ['#c8203a', '#f2b233', '#3f9a5c', '#2f7fc8', '#e85a8a'];
-  let ultimaFamilia = null, vueltas = 0;
+  let ultimaFamilia = null, vueltas = 0, armaMundoParaCine = null;
   const familiaDe = id => FAMILIA[(STYLE_MAP[id] && STYLE_MAP[id].id) || id] || 'bordado';
 
   // ---------- utilidades de pantalla (en pixeles del lienzo de cinemáticas) ----------
@@ -261,25 +261,6 @@
         ctx.drawImage(Q.cop, 0, 0);
       },
     },
-    // engranes: se abre como diafragma de latón, con engranes y vapor
-    engranes: {
-      prep(P) { return { D: Math.hypot(P.W, P.H) }; },
-      draw(ctx, P, Q, u, T) {
-        const e = EASE.in2(clamp((u - .05) / .85, 0, 1)), R = e * Q.D * .78, n = 8, rot = u * 2.2, O = P.O, poly = [];
-        for (let i = 0; i < n; i++) { const a = rot + i / n * TAU; poly.push([O[0] + Math.cos(a) * R, O[1] + Math.sin(a) * R]); }
-        ctx.save(); ctx.beginPath(); ctx.rect(0, 0, P.W, P.H); poly.forEach((q, i) => i ? ctx.lineTo(q[0], q[1]) : ctx.moveTo(q[0], q[1])); ctx.closePath(); ctx.clip('evenodd');
-        ctx.drawImage(P.img, 0, 0);
-        if (R > 2) {
-          ctx.lineCap = 'round';
-          for (let i = 0; i < n; i++) { const q = poly[i], a = rot + i / n * TAU + Math.PI / 2 + .55; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(q[0] + Math.cos(a) * Q.D, q[1] + Math.sin(a) * Q.D); ctx.strokeStyle = '#3a2614'; ctx.lineWidth = Math.max(2, P.H * .006); ctx.stroke(); ctx.strokeStyle = 'rgba(240,190,100,.7)'; ctx.lineWidth = 1; ctx.stroke(); }
-          traza(ctx, poly); ctx.lineWidth = P.H * .014; ctx.strokeStyle = '#b8862e'; ctx.stroke(); ctx.lineWidth = Math.max(1.5, P.H * .003); ctx.strokeStyle = '#ffe2a0'; ctx.stroke();
-        }
-        ctx.restore();
-        const ap = tramo(u, .02, .12) * (1 - tramo(u, .78, 1));
-        for (const [k, an, sz] of [[0, .6, .12], [1, 2.8, .085], [2, 4.4, .065]]) { const r = P.H * sz, d = R + r * .55, gx = O[0] + Math.cos(an + rot * .3) * d, gy = O[1] + Math.sin(an + rot * .3) * d; engrane(ctx, gx, gy, r, (k % 2 ? -1 : 1) * T * 2.5, ap); }
-        if (u > .08 && u < .75) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; for (let i = 0; i < 14; i++) { const an = i / 14 * TAU + hash1(i, 3), f = clamp((u - .08 - hash1(i, 4) * .2) / .4, 0, 1); if (f <= 0 || f >= 1) continue; const d = R + f * P.H * .18, r = P.H * (.02 + f * .06); ctx.globalAlpha = (1 - f) * .35; ctx.fillStyle = '#f4f0ea'; ctx.beginPath(); ctx.arc(O[0] + Math.cos(an) * d, O[1] + Math.sin(an) * d, r, 0, TAU); ctx.fill(); } ctx.restore(); }
-      },
-    },
     // plastilina: la lámina se pela y se enrolla desde una esquina
     plastilina: {
       prep(P) {
@@ -414,8 +395,8 @@
         const viejoId = view.st ? view.st.id : '', vistos = Object.keys(PROG.s.mundos || {}).filter(id => MUNDOS.includes(id));
         const pool = MUNDOS.filter(id => id !== viejoId && familiaDe(id) !== familia && NIVELES[id]), pref = pool.filter(id => vistos.includes(id)), lista = pref.length ? pref : pool;
         newRun(seed); const dest = STYLE_MAP[lista[(rnd() * lista.length) | 0]]; RUN.styles[0] = dest; RUN.world = 1;
-        _startLevel();
-      } else (opc.construir || _startLevel)();
+        armaMundoParaCine();
+      } else (opc.construir || armaMundoParaCine)();
       $('loading').classList.remove('on');
     }
     function revisaConstruccion() {
@@ -571,7 +552,9 @@
   //  de «Bordando el mundo…» sale el viaje.
   // ---------------------------------------------------------------------
   // el de menu.js (skins y progreso), que llama al de juego.js
-  GANCHOS.en('startLevel', _armaMundo => function (o = {}) {
+  GANCHOS.en('startLevel', _armaMundo => {
+    armaMundoParaCine = _armaMundo;
+    return function (o = {}) {
     const elegido = ENCI_LLEGA; ENCI_LLEGA = false;
     // Se prepara el destino antes de mostrar su ficha. El viaje comienza
     // únicamente cuando la persona pulsa «¡Vamos!».
@@ -584,5 +567,6 @@
       if (!info || !INTRO_NIVEL.mostrar(info, llega)) llega();
     };
     _armaMundo(o);
+    };
   });
 })();

@@ -202,6 +202,10 @@
   function nuevaOtra(x, o, f) {
     const w = 25, h = 37, paso = 8, marcha = Math.min(1, Math.abs(o.vx || 0) / 120);
     x.save(); x.scale(o.face < 0 ? -1 : 1, 1);
+    // Mantiene la misma silueta; inclina el cuerpo al prepararse y al recibir daño.
+    const a = o.at || 0, aviso = o.st === 'ataque' && o.pose === 'agacha' ? -.10 * Math.min(1, a * 4) : 0;
+    const herida = o.st === 'herido' || o.flash > 0 ? .10 * Math.sin(a * 18) * Math.exp(-a * 3.5) : 0;
+    x.translate(0, -15); x.rotate(aviso + herida); x.translate(0, 15);
     for (let sy = 0; sy < arteOtra.height; sy += paso) {
       const sh = Math.min(paso, arteOtra.height - sy), u = sy / arteOtra.height;
       const vaiven = Math.sin(f.t * (marcha ? 10 : 2.8) + u * 4) * (marcha * .55 + .12) * Math.abs(u - .7);

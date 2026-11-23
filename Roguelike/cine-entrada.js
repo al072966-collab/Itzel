@@ -231,27 +231,32 @@
     // las tomas de Campeche (cine-campeche.js) entran a los 6 s, entre la grúa y Itzel: el guion de abajo sigue
     // contando sin ellas (tiempo interno) y solo su lista de sonidos y subtítulos se recorre
     const PRE0 = 6, PRE = opc.final ? 0 : CAMPECHE_TOMAS.DUR;
-    // la toma ancha de Itzel retrocediendo ante la Ruptura (la 7, a los 31 s) dura ESTIRA s más: sus primeros 1.65 s se estiran
-    const ESTIRA = opc.final ? 0 : 2.2, E0 = 31, E1 = 1.65;
-    const estira = T => !ESTIRA || T < E0 ? T : T < E0 + E1 + ESTIRA ? E0 + (T - E0) * E1 / (E1 + ESTIRA) : T - ESTIRA;
-    const encoge = T => !ESTIRA || T < E0 ? T : T < E0 + E1 ? E0 + (T - E0) * (E1 + ESTIRA) / E1 : T + ESTIRA;
+    // dos tomas se alargan (tiempo extra en segundos, repartido parejo dentro de la toma):
+    //  · la ancha de Itzel retrocediendo ante la Ruptura (31 s, dura 1.65 s) +2.2 s
+    //  · la de Fresita pidiendo ayuda (41 s, dura 6 s) +4 s, para que quepan sus voces y las de Itzel
+    //  · en el final, el reencuentro (13.5 s, dura 7 s) +1.5 s para sus tres voces
+    const ALARGA = opc.final ? [[13.5, 7, 1.5]] : [[31, 1.65, 2.2], [41, 6, 4]], EXTRA = ALARGA.reduce((a, q) => a + q[2], 0);
+    const estira = T => { let d = 0; for (const [a, l, x] of ALARGA) { const ini = a + d; if (T < ini) return T - d; if (T < ini + l + x) return a + (T - ini) * l / (l + x); d += x; } return T - d; };
+    const encoge = T => { let d = 0; for (const [a, l, x] of ALARGA) { if (T < a) break; if (T < a + l) return T + d + (T - a) * x / l; d += x; } return T + d; };
     const interno = T => estira(T < PRE0 ? T : Math.max(PRE0, T - PRE)), externo = T => { const R = encoge(T); return R < PRE0 ? R : R + PRE; };
-    const DUR = opc.final ? 32 : 61 + PRE + ESTIRA;
-    const cues = [[0, 'swell', 'inicio, marimba suave'], [0, 'ambiente', 'olas y gaviotas'], [6.7, 'efecto', 'la piedrita cae en el 3'], [7.36, 'golpe', 'brinco'], [7.78, 'golpe', 'brinco'], [8.32, 'golpe', 'brinco con los dos pies'], [9.16, 'golpe', 'brinco'], [9.66, 'acento', 'llega al cielo'], [10.35, 'golpe', 'da la vuelta'], [11.23, 'efecto', 'se tambalea'],
-      [12, 'silencio', 'contraluz'], [18.0, 'silencio', 'el mundo se detiene (las olas se frenan)'], [19.3, 'efecto', 'zumbido grave'], [19.5, 'golpe', 'se abre la rendija del horizonte'], [20.3, 'golpe', 'destello'], [20.6, 'silencio', 'corte'],
+    const DUR = (opc.final ? 32 : 61 + PRE) + EXTRA;
+    const cues = [[0, 'swell', 'inicio, marimba suave'], [0, 'ambiente', 'olas y gaviotas'], [6.0, 'musica', 'empieza la tarde: música y mar'], [6.1, 'efecto', 'Itzel lanza la piedrita'], [6.5, 'efecto', 'la piedrita cae en el 3'], [7.36, 'golpe', 'brinco'], [7.78, 'golpe', 'brinco'], [8.32, 'golpe', 'brinco con los dos pies'], [9.16, 'golpe', 'brinco'], [9.66, 'acento', 'llega al cielo'], [10.35, 'golpe', 'brinco: da la vuelta'], [11.23, 'efecto', 'se tambalea'],
+      [12, 'silencio', 'contraluz'], [18.0, 'silencio', 'el mundo se detiene (las olas se frenan)'], [18.7, 'efecto', 'zumbido grave'], [19.5, 'golpe', 'se abre la rendija del horizonte'], [20.3, 'golpe', 'destello'], [20.6, 'silencio', 'corte'],
       [22.6, 'nota', 'luz azul'], [23.0, 'nota', 'luz naranja'], [23.4, 'nota', 'luz violeta'], [23.8, 'nota', 'luz rosa'],
-      [25.6, 'golpe', 'se rasga el cielo'], [26.1, 'swell', 'la grieta se abre'], [26.6, 'efecto', 'salen huyendo los ajolotes'], [27.5, 'swell', 'sale la Ruptura'], [28.3, 'golpe', 'destello del núcleo'],
-      [32.1, 'golpe', 'tentáculos'], [32.8, 'golpe', 'encierra a Fresita en un cristal'], [33.25, 'golpe', 'azul golpea el cristal'], [33.55, 'golpe', 'naranja golpea el cristal'], [33.85, 'golpe', 'violeta golpea el cristal'], [33.9, 'acento', 'el cristal revienta: Fresita sale volando'], [34.15, 'golpe', 'orbe azul'], [34.3, 'golpe', 'orbe naranja'], [34.45, 'golpe', 'orbe violeta'], [36.4, 'silencio', 'se los llevó'],
-      [37.5, 'golpe', 'Fresita cae en el pretil'], [43.3, 'golpe', 'visión: pixel'], [43.8, 'golpe', 'visión: tinta'], [44.3, 'golpe', 'visión: neón'], [44.8, 'golpe', 'visión: acuarela'], [46.2, 'acento', 'acepta'],
-      [47, 'golpe', 'la grieta crece'], [47.6, 'swell', 'viento hacia la grieta'], [54.5, 'silencio', 'cámara lenta'], [56.45, 'golpe', 'entran a la grieta'], [58.6, 'golpe', 'destello'], [58.8, 'musica', 'tema del primer mundo']];
-    const subs = [[38.3, 39.7, 'Itzel', '¡Ey! ¿Estás bien?'], [41.1, 42.9, 'Fresita', 'Soy Fresita. ¡Esa cosa se llevó a mis amigos!'], [43.0, 44.8, 'Fresita', 'Los escondió en otros mundos. ¿Me ayudas?'],
-      [45.0, 46.9, 'Itzel', 'Va, Fresita. Vamos por ellos.'], [53.3, 54.5, 'Itzel', '¡Fresita, conmigo!']];
+      [25.6, 'golpe', 'se rasga el cielo'], [26.1, 'swell', 'la grieta se abre'], [26.6, 'efecto', 'salen huyendo los ajolotes'], [27.5, 'swell', 'sale la Ruptura'], [36.4, 'archivo', 'se va la Ruptura'], [28.3, 'golpe', 'destello del núcleo'],
+      [31.85, 'golpe', 'tentáculos'], [32.55, 'golpe', 'encierra a Fresita en un cristal'], [33.25, 'golpe', 'azul golpea el cristal'], [33.55, 'golpe', 'naranja golpea el cristal'], [33.85, 'golpe', 'violeta golpea el cristal'], [33.9, 'acento', 'el cristal revienta: Fresita sale volando'], [34.15, 'golpe', 'orbe azul'], [34.3, 'golpe', 'orbe naranja'], [34.45, 'golpe', 'orbe violeta'], [36.4, 'silencio', 'se los llevó'],
+      [37.4, 'ambiente', 'vuelven el mar y las gaviotas'], [37.4, 'golpe', 'Fresita cae en el pretil'], [43.3, 'golpe', 'visión: pixel'], [43.8, 'golpe', 'visión: tinta'], [44.3, 'golpe', 'visión: neón'], [44.8, 'golpe', 'visión: acuarela'], [46.2, 'acento', 'acepta'],
+      [47, 'golpe', 'la grieta crece'], [47.6, 'swell', 'viento hacia la grieta'], [54.5, 'silencio', 'cámara lenta'], [52.7, 'musica', 'sube la música para entrar a la grieta'], [56.45, 'golpe', 'entran a la grieta'], [58.74, 'efecto', 'se empieza a bordar el logo'], [59.9, 'acento', 'el logo termina: acorde'], [56.7, 'archivo', 'se va el mar'], [58.6, 'golpe', 'destello'], [58.8, 'musica', 'tema del primer mundo']];
+    // (los tiempos de los diálogos son los de la cinemática ya alargada; duran lo que dura cada voz)
+    const subs = [[40.5, 42.05, 'Itzel', '¡Ey! ¿Estás bien?'], [43.3, 47.0, 'Fresita', 'Soy Fresita. ¡Esa cosa se llevó a mis amigos!'], [47.3, 50.2, 'Fresita', 'Los escondió en otros mundos. ¿Me ayudas?'],
+      [50.5, 52.65, 'Itzel', 'Va, Fresita. Vamos por ellos.'], [59.5, 60.85, 'Itzel', '¡Fresita, conmigo!']];
     for (const q of cues) q[0] = externo(q[0]);
-    for (const q of subs) { q[0] = externo(q[0]); q[1] = externo(q[1]); }
-    cues.push([PRE0, 'ambiente', 'Parque Principal: palomas y campanas de la catedral'], [PRE0 + 3.2, 'ambiente', 'la muralla: viento y bandera'], [PRE0 + 6.3, 'ambiente', 'calle del centro: marimba lejana'], [PRE0 + PRE, 'archivo', 'fin del bullicio']); cues.sort((a, b) => a[0] - b[0]);
+    for (const q of subs) { q[0] += PRE; q[1] += PRE; }
+    cues.push([15.0, 'efecto', 'pasa la bicicleta'], [PRE0, 'ambiente', 'Parque Principal: palomas y campanas de la catedral'], [PRE0 + 3.2, 'ambiente', 'la muralla: viento y bandera'], [PRE0 + 6.3, 'ambiente', 'calle del centro: marimba lejana'], [PRE0 + PRE, 'archivo', 'fin del bullicio']); cues.sort((a, b) => a[0] - b[0]);
     if (opc.final) {
       cues.length = 0; cues.push([0, 'swell', 'la grieta se cierra'], [4.7, 'golpe', 'destello: se cierra'], [7.5, 'ambiente', 'olas y gaviotas otra vez'], [8, 'nota', 'luz azul'], [8.4, 'nota', 'luz naranja'], [8.8, 'nota', 'luz violeta'], [13.5, 'musica', 'tema de Itzel'], [27, 'musica', 'final bordado']);
-      subs.length = 0; subs.push([14.2, 15.9, 'Fresita', '¡Están todos! ¡Lo logramos!'], [16.3, 18, 'Itzel', 'Y Campeche sigue en su lugar.'], [18.4, 20.1, 'Fresita', 'Gracias, Itzel. Por todo.']);
+      subs.length = 0; subs.push([14.0, 16.45, 'Fresita', '¡Están todos! ¡Lo logramos!'], [16.7, 19.0, 'Itzel', 'Y Campeche sigue en su lugar.'], [19.3, 21.55, 'Fresita', 'Gracias, Itzel. Por todo.']);
+      for (const q of cues) q[0] = externo(q[0]); // las marcas del final también se recorren con la toma alargada
     }
     if (opc.soloDatos) return { dur: DUR, cues, subs };
 
@@ -1431,14 +1436,17 @@
       // 3 · el reencuentro en el malecón
       plano(13.5, 20.5, {
         act(t, T) {
-          TODOS.forEach(a => { a.vis = true; ini(a); }); itz.x = -46; itz.y = PISO; itz.face = -1; ACTOR.POSE.quieta(itz, t); Object.assign(itz.cara, { sonrisa: 1.1, ojos: 1.05 }); habla(itz, 'Itzel', T);
+          TODOS.forEach(a => { a.vis = true; ini(a); }); itz.x = -46; itz.y = PISO; itz.face = -1; ACTOR.POSE.quieta(itz, t); Object.assign(itz.cara, { sonrisa: 1.1, ojos: 1.05 }); const hablaI = habla(itz, 'Itzel', T), dice = q => subs.some(([a, b, w]) => w === q && externo(T) >= a && externo(T) <= b);
           fre.x = -96; fre.y = PISO - 38 + Math.sin(T * 3) * 3; fre.face = 1; fre.cara.risa = 1; habla(fre, 'Fresita', T);
+          // mientras hablan no ríen a boca abierta: así se nota cómo abren y cierran la boca
+          if (dice('Fresita')) { fre.cara.risa = 0; fre.cara.sonrisa = .6; if (fre.cara.boca) fre.cara.boca = Math.min(1, fre.cara.boca * 1.5 + .15); }
+          if (dice('Itzel')) { itz.cara.risa = 0; itz.cara.sonrisa = .7; }
           // 0–2.4: de frente, feliz de verlos · 2.2–2.6: Fresita vuela a sus brazos · 2.6–4.7: el abrazo · luego Fresita se aparta para darle las gracias
-          const ABR = [2.6, 4.7];
+          const ABR = [4.4, 5.3]; // el abrazo va después de la línea de Itzel: así se le ve la boca al hablar
           itz.vista = 'lado'; // cada cuadro parte de lado: si no, el abrazo se quedaba pegado después de soltarla
-          if (t < 2.4) { itz.vista = 'frente'; itz.cara.risa = 1; }
+          if (t < ABR[0]) { itz.vista = 'frente'; if (t < 2.4) itz.cara.risa = 1; }
           else if (t >= ABR[0] && t < ABR[1]) { itz.vista = 'abrazo'; fre.vis = false; }
-          if (t > 2.2 && t < ABR[0]) { const u = EASE.in2(tramo(t, 2.2, ABR[0], 'lin')); fre.x = lerp(-96, itz.x - 14, u); fre.y = lerp(fre.y, PISO - 62, u); fre.pose.nado = 2; }
+          if (t > 2.2 && t < ABR[0]) { const w = EASE.io2(tramo(t, 2.2, 3.1, 'lin')), u = EASE.in2(tramo(t, ABR[0] - .45, ABR[0], 'lin')); fre.x = lerp(lerp(-96, itz.x - 62, w), itz.x - 14, u); fre.y = lerp(fre.y, PISO - 62, u); fre.pose.nado = 2; }
           if (t >= ABR[1]) { const u = EASE.out3(tramo(t, ABR[1], ABR[1] + .6, 'lin')); fre.x = lerp(itz.x - 16, -96, u); fre.y = lerp(PISO - 62, fre.y, u); }
           // los tres dan vueltas de felicidad sobre la cabeza de Itzel, parejos para no encimarse: al pasar por delante se ven un poco más grandes
           // dan vueltas bien arriba de su cabeza: no se le enciman

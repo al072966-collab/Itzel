@@ -25,7 +25,7 @@
   const TAM = {}, IMG = {};
   const listo = n => { const im = IMG[n]; return !!(im && im.complete && im.naturalWidth && TAM[n]); };
   let faltan = 1;
-  fetch(RUTA + 'cenote.json?v=6').then(r => r.json()).then(m => {
+  (window.CENOTE_MANIFIESTO ? Promise.resolve(window.CENOTE_MANIFIESTO) : fetch(RUTA + 'cenote.json?v=6').then(r => r.json())).then(m => {
     Object.assign(TAM, m); faltan = Object.keys(m).length;
     for (const n of Object.keys(m)) { const im = new Image(); im.decoding = 'async'; im.onload = im.onerror = () => { if (--faltan === 0) rehaz(); }; im.src = RUTA + n + '.png?v=6'; IMG[n] = im; }
   }).catch(() => { faltan = -1; });
@@ -50,6 +50,22 @@
     path(0); x.save(); x.filter = `blur(${.7 * f.S}px)`; x.globalAlpha = o.orilla ?? .3; x.lineWidth = 1; x.strokeStyle = shade(col, -.3); x.stroke(); x.restore();
   }
 
+  const CENOTE_FONDO = {};
+  for (const [n, archivo] of Object.entries({ gruta:'gruta-cenote-v1', piedra:'caliza-cenote-v1', borde:'borde-cenote-v1' })) {
+    const im = CENOTE_FONDO[n] = new Image(); im.decoding = 'async'; im.onload = rehaz; im.src = RUTA + archivo + '.png';
+  }
+  const cenotePrincipal = f => ((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'acuarela';
+  const cenoteFondoListo = () => Object.values(CENOTE_FONDO).every(im => im.complete && im.naturalWidth);
+  window.CENOTE_TELON_LISTO = cenoteFondoListo;
+  function grutaIlustrada(c, f) {
+    const im = CENOTE_FONDO.gruta, sw = Math.min(im.naturalWidth, im.naturalHeight * VW / VH), max = Math.max(0, im.naturalWidth - sw);
+    const sx = max * (.5 + .35 * Math.sin((f.cam || 0) * .0007));
+    c.save(); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
+    // La imagen se divide en la línea de agua para mantenerla en y=162, donde flotan los nenúfares.
+    c.drawImage(im,sx,0,sw,487,0,0,VW,162);
+    c.drawImage(im,sx,487,sw,im.naturalHeight-487,0,162,VW,VH-162);
+    c.restore();
+  }
   // ---------------- el telón: la gruta dibujada ----------------
   const OJOS = 360;                                                    // cada cuánto se abre el techo (en el ancho de su franja)
   function techo(x, f, w) {
@@ -135,8 +151,8 @@
     // gotas que caen de las estalactitas y abren un anillo en el agua
     for (let i = 0; i < 5; i++) {
       const per = 2.6 + hh(i, 11) * 1.5, ph = ((t + hh(i, 12) * per) % per) / per, x = ((60 + i * 83 + hh(i, 13) * 40 - f.cam * .32) % 460 + 460) % 460 - 15;
-      if (ph < .55) { const y = 22 + (ph / .55) ** 2 * 156; c.fillStyle = 'rgba(210,235,240,.85)'; c.beginPath(); c.ellipse(x, y, .9, 2, 0, 0, 6.2832); c.fill(); }
-      else { const u = (ph - .55) / .45; c.strokeStyle = 'rgba(220,245,248,' + (.7 * (1 - u)).toFixed(2) + ')'; c.lineWidth = .7; c.beginPath(); c.ellipse(x, 182, 1 + u * 12, .5 + u * 2.4, 0, 0, 6.2832); c.stroke(); }
+      if (ph < .55) { const y = 22 + (ph / .55) ** 2 * (cenotePrincipal(f) && cenoteFondoListo() ? 140 : 156); c.fillStyle = 'rgba(210,235,240,.85)'; c.beginPath(); c.ellipse(x, y, .9, 2, 0, 0, 6.2832); c.fill(); }
+      else { const u = (ph - .55) / .45; c.strokeStyle = 'rgba(220,245,248,' + (.7 * (1 - u)).toFixed(2) + ')'; c.lineWidth = .7; c.beginPath(); c.ellipse(x, cenotePrincipal(f) && cenoteFondoListo() ? 162 : 182, 1 + u * 12, .5 + u * 2.4, 0, 0, 6.2832); c.stroke(); }
     }
     // libélulas: vuelan, se quedan quietas y salen disparadas, con las cuatro alas vibrando
     for (let i = 0; i < 3; i++) {
@@ -151,7 +167,7 @@
       c.fillStyle = 'rgba(210,240,250,.55)'; c.beginPath(); c.ellipse(-.5, -2 - w * .3, 4, 1.3, -.2, 0, 6.2832); c.ellipse(1, 2.2 + w * .3, 3.5, 1.2, .2, 0, 6.2832); c.fill(); c.restore();
     }
   }
-  ST.sky = function (ctx, f) { if (!esCenote(f.st)) return cieloAntes.call(this, ctx, f); cieloCenote(ctx, f); try { vidaCenote(ctx, f); } catch (e) { /* el telón nunca rompe la partida */ } };
+  ST.sky = function (ctx, f) { if (!esCenote(f.st)) return cieloAntes.call(this, ctx, f); if (cenotePrincipal(f) && cenoteFondoListo()) grutaIlustrada(ctx, f); else cieloCenote(ctx, f); try { vidaCenote(ctx, f); } catch (e) { /* el telón nunca rompe la partida */ } };
 
   // ---------------- el terreno: la acuarela de siempre, en piedra caliza ----------------
   const terrenoAntes = ST.terrain;
@@ -163,6 +179,16 @@
     ctx.save(); ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = 'rgba(176,206,196,.34)'; ctx.fillRect(0, 0, L.ww, VH + 8);
     const g = ctx.createLinearGradient(0, 160, 0, VH); g.addColorStop(0, 'rgba(60,110,120,0)'); g.addColorStop(1, 'rgba(60,110,120,.35)'); ctx.fillStyle = g; ctx.fillRect(0, 160, L.ww, VH);
     ctx.restore();
+    if (cenotePrincipal(f) && cenoteFondoListo()) {
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
+      const patron = ctx.createPattern(CENOTE_FONDO.piedra, 'repeat'); patron.setTransform(new DOMMatrix().scale(150 / CENOTE_FONDO.piedra.naturalWidth));
+      ctx.fillStyle = patron; ctx.fillRect(0,0,L.ww,VH+40); ctx.restore();
+      for (const r of L.tops) {
+        ctx.save(); ctx.beginPath(); ctx.rect(r.x0,r.y-5,r.x1-r.x0,11); ctx.clip();
+        for (let x = r.x0; x < r.x1; x += 110) ctx.drawImage(CENOTE_FONDO.borde,5,237,2163,203,x,r.y-3,110,10.3);
+        ctx.restore();
+      }
+    }
     const hueco = (x, y) => !L.solid(Math.floor(x / T), Math.floor(y / T));
     // lo que cuelga: raíces de las orillas que dan al vacío y estalactitas bajo los techos
     for (const r of L.tops) for (const lado of [-1, 1]) {

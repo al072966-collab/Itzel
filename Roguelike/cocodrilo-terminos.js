@@ -4,13 +4,15 @@
   const X=JEFES_EXT, original=X.BODY.cocodrilo, cerrado=new Image(), abierto=new Image();
   const mordidaAcuarela = new Image();
   mordidaAcuarela.src = '../Roguelike/assets/forge/jefes/cocodrilo-acuarela-morder-v1/sheet-transparent.png';
+  const mordidaAnime = new Image();
+  mordidaAnime.src = '../Roguelike/assets/forge/jefes/cocodrilo-anime-mordida-v1/sheet-transparent.png';
   cerrado.src='../Roguelike/assets/jefes/cocodrilo-terminos.png'; abierto.src='../Roguelike/assets/jefes/cocodrilo-mordida.png';
   // Activar cada variante cuando estén disponibles sus dos poses.
-  const estilos=new Set(['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','anime','nouveau','deco','cyber','cinema','vapor','barro','eco','fuego']);
+  const estilos=new Set(['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','anime','nouveau','deco','cyber','cinema','barro','eco','fuego','bordado','bits8','bits32','bits64','cielo','hielo','hollin','miniatura','agua']);
   const variantes=Object.create(null);
   function obtener(estilo){
     const id=String(window.estiloArteDerivado||estilo&&estilo.id||'').split('~')[0];if(!estilos.has(id))return null;
-    if(!variantes[id]){const cerrado=new Image(),abierto=new Image();cerrado.src='../Roguelike/assets/jefes/cocodrilo-estilos/'+id+'.png';abierto.src='../Roguelike/assets/jefes/cocodrilo-estilos/'+id+'-mordida.png';variantes[id]={cerrado,abierto};}
+    if(!variantes[id]){const cerrado=new Image(),abierto=new Image(),archivo=id==='hielo'?'origami':id;cerrado.src='../Roguelike/assets/jefes/cocodrilo-estilos/'+archivo+'.png';abierto.src='../Roguelike/assets/jefes/cocodrilo-estilos/'+archivo+'-mordida.png';variantes[id]={cerrado,abierto};}
     const v=variantes[id];return v.cerrado.complete&&v.cerrado.naturalWidth?v:null;
   }
   window.COCODRILO_ESTILOS={obtener, forge: { acuarela: ['emboscada'] }};
@@ -28,31 +30,39 @@
   };
   X.BODY.cocodrilo=(c,o,f)=>{
     const t=f.t||0,px=!!(f.st&&(f.st.pixel||f.st.fixedS||f.st.base));
-    const m=o.mordida||0, atacando=o.st==='ataque'&&(o.atk==='escupe'||m>0),v=obtener(f.st),base=v?v.cerrado:cerrado,boca=v&&v.abierto.complete&&v.abierto.naturalWidth?v.abierto:(v?base:abierto),id=String(window.estiloArteDerivado||f.st&&f.st.id||'').split('~')[0],sil=id==='hollin'&&!!v,gb=id==='gameboy'&&!!v,img=sprite(atacando?boca:base,px,sil,gb)||sprite(base,px,sil,gb);
+    const m=o.mordida||0, atacando=o.st==='ataque'&&(o.atk==='escupe'||m>0),v=obtener(f.st),base=v?v.cerrado:cerrado,boca=v&&v.abierto.complete&&v.abierto.naturalWidth?v.abierto:(v?base:abierto),id=String(window.estiloArteDerivado||f.st&&f.st.id||'').split('~')[0],sil=id==='hollin'&&!!v,gb=id==='gameboy'&&!!v,img=v?(atacando?boca:base):(sprite(atacando?boca:base,px,sil,gb)||sprite(base,px,sil,gb));
     if(!img)return original(c,o,f);
     if((o.sub||0)>.7&&!m)return;
-    c.save();c.imageSmoothingEnabled=!px;
+    c.save();c.imageSmoothingEnabled=v?true:!px;
     if(o.st==='muere')c.globalAlpha*=clamp(1-(o.at||0)/2.4,0,1);
     if(o.flash>0&&Math.sin(t*40)>0)c.filter='brightness(2)';
     if(m>0){
       // Brota con la cabeza hacia arriba; la parte aún bajo tierra queda oculta.
       c.beginPath();c.rect(o.x-24,X.FLOOR-58,48,58);c.clip();c.translate(o.x,X.FLOOR+35*(1-m));c.rotate(-Math.PI/2);
-      if(gb){c.save();c.filter='brightness(0)';for(const [x,y] of [[-.7,0],[.7,0],[0,-.7],[0,.7]])c.drawImage(img,-30+x,-14+y,76,28);c.restore();}
-      if (id === 'acuarela' && mordidaAcuarela.complete && mordidaAcuarela.naturalWidth) {
+      if(gb){c.save();c.filter='brightness(0)';for(const [x,y] of [[-.7,0],[.7,0],[0,-.7],[0,.7]])c.drawImage(img,-48+x,-18+y,96,36);c.restore();}
+      if (id === 'anime' && mordidaAnime.complete && mordidaAnime.naturalWidth) {
+        const fase = (o.at || 0) < 1.92 ? 0 : (o.at || 0) < 2.02 ? 1 : (o.at || 0) < 2.26 ? 2 : 3;
+        c.drawImage(mordidaAnime, (fase % 2) * 256 + 29, Math.floor(fase / 2) * 256 + 102, 198, 52, -48, -18, 96, 36);
+      } else if (id === 'acuarela' && mordidaAcuarela.complete && mordidaAcuarela.naturalWidth) {
         // Las cuatro poses cubren la subida de la mordida: cierre,
         // apertura, mandíbula abierta y repliegue. La señal de aviso
         // conserva el dibujante del nivel antes de que empiece a emerger.
         const fase = (o.at || 0) < 1.92 ? 0 : (o.at || 0) < 2.02 ? 1 : (o.at || 0) < 2.26 ? 2 : 3;
-        c.drawImage(mordidaAcuarela, (fase % 2) * 256 + 17, Math.floor(fase / 2) * 256 + 94, 224, 68, -30, -14, 76, 28);
-      } else c.drawImage(img,-30,-14,76,28);
+        c.drawImage(mordidaAcuarela, (fase % 2) * 256 + 17, Math.floor(fase / 2) * 256 + 86, 224, 84, -48, -18, 96, 36);
+      } else c.drawImage(img,-48,-18,96,36);
       c.restore();return;
     }
     const sub=o.sub||0,erg=o.erg||0;
     c.beginPath();c.rect(o.x-65,X.FLOOR-110,130,110);c.clip();
     c.translate(o.x,X.FLOOR+sub*16-erg*18);c.scale(o.face||1,1);c.rotate(-erg*.5);
+    // Retorno de ataque y golpe alrededor de la gema, sin cambiar la escala.
+    const a=o.at||0;let giro=0;
+    if(o.st==='ataque'&&o.atk==='escupe')giro+=.025*Math.sin(a*7)*Math.min(1,a*4);
+    if(o.st==='herido'||o.flash>0)giro+=.075*Math.sin(a*18)*Math.exp(-a*3.5);
+    c.translate(12.5,-19.3);c.rotate(giro);c.translate(-12.5,19.3);
     const W=2048,H=768; c.translate(-48,-32);c.scale(96/W,36/H);
     const pieza=(pol,px,py,rot=0)=>{c.save();c.translate(px,py);c.rotate(rot);c.translate(-px,-py);c.beginPath();pol.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip();if(gb){c.save();c.filter='brightness(0)';for(const [x,y] of [[-20,0],[20,0],[0,-20],[0,20]])c.drawImage(img,x,y,W,H);c.restore();}c.drawImage(img,0,0,W,H);c.restore();};
-    const cola=o.st==='ataque'&&o.atk==='coletazo' ? Math.sin((o.at||0)*7)*.13 : Math.sin(t*2)*.025;
+    const cola=o.st==='ataque'&&o.atk==='coletazo' ? Math.sin((o.at||0)*7)*.13*Math.min(1,(o.at||0)*4) : Math.sin(t*2)*.025;
     // Las regiones son contiguas y excluyentes: la cola, el torso y las
     // cuatro patas se dibujan una sola vez y pueden moverse por separado.
     const corte=540, limites=[0,900,1200,1500,2048];

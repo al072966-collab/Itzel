@@ -16,11 +16,30 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.grabado) return;
-  const V = vestirNivel({ id: 'grabado', carpeta: 'talla', ver: 1 });
+  const V = vestirNivel({ id: 'grabado', carpeta: 'talla', ver: 1, manifiesto: window.GRABADO_TALLA_MANIFIESTO });
   const { spr, h1, TAM, IMG } = V;
+  const viruta = new Image();
+  viruta.onload = () => V.rehaz(); viruta.src = '../Roguelike/assets/talla/viruta-grabado-v1.png';
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'astillero-panorama-v1', suelo:'madera-grabada-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/talla/' + archivo + '.png';
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'grabado';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
 
   // el casco de un barco a medio hacer sobre su grada (los astilleros de Campeche), grabado en linóleo, al fondo
   V.cielo((c, f, antes) => {
+    if (principal(f) && paisajeListo()) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .10 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#1c1614'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(paisaje.fondo, 0, 0, 2172, 614, x, arriba, ancho, base - arriba);
+        c.drawImage(paisaje.fondo, 0, 614, 2172, 110, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore(); return;
+    }
     antes();
     const u = 340, off = (f.cam * .1) % u, base = Math.floor(f.cam * .1 / u);
     c.save(); c.globalAlpha = .7;
@@ -37,19 +56,31 @@
       FAUNA_ARTE.dib(c, 'gaviotaGrabado', t + i * .31, x, y, { w: 8 - (i % 2) * 1.5, ay: .5, fps: 5, seq: [0, 1, 3, 2, 3, 1] });
     }
     c.fillStyle = PAPEL; c.strokeStyle = TINTA; c.lineWidth = .5;
-    for (let i = 0; i < 14; i++) {                                        // virutas de madera rizadas
-      const w = VW + 40, x = ((h1(i, 51) * w - f.cam * .22 + t * (3 + h1(i, 52) * 3)) % w + w) % w - 20, y = ((h1(i, 53) * 180 + t * (5 + h1(i, 54) * 6)) % 180) + 10, r = t * 2 + i;
-      c.save(); c.translate(x, y); c.rotate(r); c.beginPath(); c.arc(0, 0, 2, .3, 5); c.stroke(); c.restore();
+    const virutaLista = principal(f) && viruta.complete && viruta.naturalWidth;
+    for (let i = 0; i < (virutaLista ? 7 : 14); i++) {                      // virutas de madera rizadas
+      const w = VW + 40, x = ((h1(i, 51) * w - f.cam * .22 + t * (3 + h1(i, 52) * 3)) % w + w) % w - 20;
+      const y = virutaLista ? 115 + ((h1(i, 53) * 55 + t * (5 + h1(i, 54) * 6)) % 55) : ((h1(i, 53) * 180 + t * (5 + h1(i, 54) * 6)) % 180) + 10;
+      c.save(); c.translate(x, y); c.rotate(t * 2 + i);
+      if (virutaLista) c.drawImage(viruta, 494, 446, 329, 312, -2.1, -2, 4.2, 4);
+      else { c.beginPath(); c.arc(0, 0, 2, .3, 5); c.stroke(); }
+      c.restore();
     }
     c.restore();
     const u = 340, off = (f.cam * .1) % u, base = Math.floor(f.cam * .1 / u);
-    for (let k = -1; k * u - off < VW + u; k++) {                         // martilleo: chispa seca junto al casco
+    for (let k = -1; !(principal(f) && paisajeListo()) && k * u - off < VW + u; k++) { // martilleo del telón anterior
       const i = base + k; if (h1(i, 2) < .25) continue;
       const x = k * u - off + 90 + h1(i, 5) * 80 + 30, ph = (t * 1.6 + h1(i, 6) * 5) % 2;
       if (ph < .5) { const a = 1 - ph / .5; c.save(); c.strokeStyle = '#c23b2e'; c.lineWidth = 1.2; c.lineCap = 'round'; c.globalAlpha = a; for (let q = 0; q < 6; q++) { const an = q * 1.05 + h1(i, q) * .6, r = 2 + ph * 22; c.beginPath(); c.moveTo(x + Math.cos(an) * 2, 140 + Math.sin(an) * 2); c.lineTo(x + Math.cos(an) * r, 140 + Math.sin(an) * r); c.stroke(); } c.restore(); }
     }
   });
+  let madera = null;
   V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!madera) { madera = ctx.createPattern(paisaje.suelo, 'repeat'); madera.setTransform(new DOMMatrix().scale(500 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = madera;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 5, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+    }
     for (const r of L.tops) for (let x = r.x0 + 14; x < r.x1 - 14; x += 32 + h1(x | 0, r.y) * 48) if (h1(x | 0, 101) > .62) spr(ctx, ['flor0', 'flor1', 'flor2', 'banco'][Math.floor(h1(x | 0, 102) * 4)], x, r.y + 1, { voltea: h1(x | 0, 103) < .5 });
     for (const o of L.deco) {
       const x = o.x, y = o.y + 1, v = h1(o.i, 7);

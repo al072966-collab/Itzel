@@ -147,41 +147,6 @@
   OBJ.miel.make = (g, en) => { const y = L.surfaceY(en.x + PAD, en.y ?? 0) * T; g.objs.push({ k: 'miel', x0: tx(en.x), x1: tx(en.x2 + 1), y }); };
 
   // =================================================================
-  //  BRAWBOT · La línea de ensamblaje — bandas que jalan para atrás y prensas que aplastan
-  // =================================================================
-  OBJ.prensaHidra = {
-    make(g, en) { const x = tx(en.x) + 8, piso = L.surfaceY(en.x + PAD, en.y ?? 0) * T; g.objs.push({ k: 'prensaHidra', x, piso, t: en.off || 0, per: en.per || 2.6, baja: 0 }); },
-    step(o, g, dt) {
-      o.t += dt; const m = o.t % o.per, golpe = m > o.per - .7 && m < o.per - .45, abajo = m >= o.per - .45;
-      o.baja = m < o.per - .9 ? Math.max(0, o.baja - dt * 2) : m < o.per - .7 ? .15 : golpe ? (m - (o.per - .7)) / .25 : 1;
-      if (abajo && o.baja >= 1 && !o.pego) { o.pego = true; g.shake = Math.max(g.shake || 0, .15); spawn(g, 10, o.x, o.piso, { v: 70, life: .4, s: 1.8, k: 'dust', cols: ['#c9a24a', '#ffffff'] }); }
-      if (m < .1) o.pego = false;
-      const p = g.p, cabeza = o.piso - 10 - (1 - o.baja) * 60;
-      if (o.baja > .6 && Math.abs(p.x - o.x) < 11 && p.y - p.h < cabeza + 6 && p.y > cabeza) MEC.hurt(g, p.x < o.x ? -1 : 1);
-    },
-    draw(c, o, f) {
-      const top = (f.y0 || 0) - 4, cab = o.piso - 10 - (1 - o.baja) * 60;
-      c.fillStyle = '#6a5a3a'; c.fillRect(o.x - 2.5, top, 5, cab - top); c.fillStyle = '#c9a24a'; c.fillRect(o.x - 1, top, 2, cab - top);
-      c.fillStyle = '#3a3026'; c.fillRect(o.x - 12, cab, 24, 10); c.fillStyle = '#c9a24a'; c.fillRect(o.x - 12, cab, 24, 2); c.fillRect(o.x - 12, cab + 8, 24, 2);
-      for (let k = -9; k <= 9; k += 6) { c.fillStyle = '#8a7a5a'; c.beginPath(); c.arc(o.x + k, cab + 5, 1.2, 0, TAU2); c.fill(); }
-      const m = o.t % o.per; if (m > o.per - 1.2 && m < o.per - .7 && Math.floor(f.t * 12) % 2) { c.fillStyle = '#ff5a3a'; c.fillRect(o.x - 3, o.piso - 2, 6, 2); }
-    },
-  };
-  OBJ.brawbotMira = {
-    step(o, g, dt) { o.j.t += dt; o.j.at += dt; o.j.face = g.p.x < o.j.x ? -1 : 1; },
-    draw(c, o, f) { dibuja(c, o.j, f); if (Math.abs(f.g.p.x - o.j.x) < 160) aviso(c, f.g, 'El BrawBot te espera al final de la línea', '#ffd27a'); },
-  };
-  PROLOGOS.brawbot = {
-    nombre: 'La línea de ensamblaje', lema: 'Las bandas jalan hacia atrás y las prensas aplastan: pasa cuando suban. La Gran Raspadora espera al final de la fábrica.', W: 112,
-    build(b) {
-      const BANDA = (v, rev) => ({ k: 'conveyor', look: 'belt', v, rev: rev ? 1 : 0 });
-      b.g(0, 16).P(4).g(17, 36).p(20, 10.6, 14, BANDA(46, true)).o('prensaHidra', 26, 0, { per: 2.4 }).o('prensaHidra', 31, 0, { per: 2.4, off: 1.2 });
-      b.p(39, 9, 2, { k: 'static' }).g(42, 62).p(44, 10.6, 16, BANDA(60, true)).o('prensaHidra', 49, 0, { per: 2.2 }).o('prensaHidra', 54, 0, { per: 2.2, off: .7 }).o('prensaHidra', 59, 0, { per: 2.2, off: 1.4 });
-      b.p(65, 9, 2, { k: 'static' }).p(69, 8, 2, { k: 'static' }).g(72, 92).p(74, 10.6, 16, BANDA(70, true)).o('prensaHidra', 78, 0, { per: 2 }).o('prensaHidra', 85, 0, { per: 2, off: 1 }).g(94, 111).Gl(106);
-      b.c(18, 34, 8).c(44, 60, 8).c(74, 90, 8);
-    },
-    inicio(g, def) { g.objs.push({ k: 'brawbotMira', j: falso('brawbot', def, { x: L.camMin + 101 * T, y: FLOOR, bolas: [], face: -1, ventanaT: 6.5 }) }); },
-  };
 
   // =================================================================
   //  JAGUAR · Acecho — se esconde en el zacatal; Fresita encima lo descubre
@@ -422,7 +387,6 @@
     pirata: { aviso: '¡Andanada de cañones!', paso(o, g, dt) { o.ft -= dt; if (o.ft <= 0) { o.ft = 1.3; tiraMira(g, g.p.x + (Math.random() - .5) * 90); } } },
     chaac: { aviso: '¡Ventarrón!', inicio(o) { o.viento = 1; }, paso(o, g, dt) { o.ft -= dt; if (o.ft <= 0) { o.ft = 3; o.viento = -o.viento; } const p = g.p; if (!p.plat) p.x += o.viento * 34 * dt; } },
     abeja: { aviso: '¡La reina derrama miel!', paso(o, g, dt) { o.ft -= dt; if (o.ft <= 0) { o.ft = 2.2; const x = o.x0 + 20 + Math.random() * (o.x1 - o.x0 - 40); g.objs.push({ k: 'miel', x0: x - 14, x1: x + 14, y: FLOOR, vida: 6 }); } } },
-    brawbot: { aviso: '¡Se prenden las bandas del piso!', paso(o, g, dt) { const p = g.p; if (p.on && !p.plat) p.x += (p.x < o.x ? 1 : -1) * 30 * dt; o.anim = (o.anim || 0) + dt; } },
     serpiente: { aviso: '¡Lluvia de fuego!', paso(o, g, dt) { o.ft -= dt; if (o.ft <= 0) { o.ft = 1; g.objs.push({ k: 'rayoChaac', x: g.p.x + (Math.random() - .5) * 100, t: .2, fuego: true }); } } },
     camazotz: { aviso: '¡Camazotz apaga la luz!', inicio(o, g) { g.objs.push({ k: 'apagon' }); } },
     hadas: { aviso: '¡Polvo de hadas: todo al revés!', paso(o, g, dt) { o.ft -= dt; g.invertido = Math.max(0, (g.invertido || 0) - dt); if (o.ft <= 0) { o.ft = 5; g.invertido = 2.4; ring(g, g.p.x, g.p.y - 8, '#ff9ad0', 30, .6); } } },

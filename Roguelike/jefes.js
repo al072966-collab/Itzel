@@ -106,10 +106,14 @@ function construirArena(def, tipo) {
       // noqueado nunca debajo de una plataforma: si algo le tapa el núcleo por arriba, se corre a un lugar libre
       if (o.stunT > 0 && o.st === 'ventana') despejar(o, g, dt);
       else if (o.st === 'ventana' && o.mode === 'alcance' && !o.conLagrima) desenterrar(o, g, dt);
-      // los jefes que caminan no se quedan parados sobre un hueco de la arena
-      if ((o.tipo === 'golem' || o.tipo === 'cocodrilo' || o.tipo === 'brawbot' || (o.tipo === 'jaguar' && o.y >= FLOOR - 2)) && !o.charging && !SOLID(o.x, FLOOR + 4)) {
-        let best = null; for (let d = 4; d < 300 && best === null; d += 4) for (const sg of [1, -1]) { const x = o.x + sg * d; if (best === null && x > o.x0 + 10 && x < o.x1 - 10 && SOLID(x - 8, FLOOR + 4) && SOLID(x + 8, FLOOR + 4)) best = x; }
-        if (best !== null) o.x += clamp(best - o.x, -150 * dt, 150 * dt);
+      // los jefes que caminan no se quedan parados sobre un hueco de la arena: sus dos lados (según lo ancho que sea el cuerpo) tienen que pisar suelo
+      if ((o.tipo === 'golem' || o.tipo === 'cocodrilo' || (o.tipo === 'jaguar' && o.y >= FLOOR - 2)) && !o.charging && !(o.tipo === 'cocodrilo' && o.sub > .6)) {
+        const m = { golem: 22, cocodrilo: 20, jaguar: 16 }[o.tipo], pisa = x => SOLID(x - m, FLOOR + 4) && SOLID(x + m, FLOOR + 4);
+        if (!pisa(o.x)) {
+          let best = null; for (let d = 2; d < 300 && best === null; d += 2) for (const sg of [1, -1]) { const x = o.x + sg * d; if (best === null && x > o.x0 + 10 && x < o.x1 - 10 && pisa(x)) best = x; }
+          // si el hueco queda cerca se corre de golpe (no puede perseguir a Itzel por el aire); si nació encima, camina hacia el suelo
+          if (best !== null) o.x += Math.abs(best - o.x) <= 40 ? best - o.x : clamp(best - o.x, -150 * dt, 150 * dt);
+        }
       }
       // ---------- golpe de Itzel al núcleo ----------
       const c = core(o);
@@ -233,7 +237,7 @@ function construirArena(def, tipo) {
     if (!f.st.pixel || typeof hardenCanvas !== 'function') { BODY[o.tipo](c, o, f); return; }
     // en los mundos de pixel el jefe también es de pixel: se dibuja aparte y se le quita el antialias
     if (o.tipo === 'hadas') { BODY[o.tipo](c, o, f); return; }
-    const S = f.S, bx = o.x - 70, by = (o.tipo === 'golem' || o.tipo === 'jaguar' || o.tipo === 'cocodrilo' || o.tipo === 'brawbot' ? FLOOR - 130 + (o.tipo === 'jaguar' ? (o.y - FLOOR) : 0) : o.y - 70), W = 140, H = 140, w = Math.round(W * S), h = Math.round(H * S);
+    const S = f.S, bx = o.x - 70, by = (o.tipo === 'golem' || o.tipo === 'jaguar' || o.tipo === 'cocodrilo' ? FLOOR - 130 + (o.tipo === 'jaguar' ? (o.y - FLOOR) : 0) : o.y - 70), W = 140, H = 140, w = Math.round(W * S), h = Math.round(H * S);
     if (o.tipo === 'serpiente') { BODY[o.tipo](c, o, f); return; }
     if (pxCv.width !== w || pxCv.height !== h) { pxCv.width = w; pxCv.height = h; }
     pxCx.setTransform(1, 0, 0, 1, 0, 0); pxCx.clearRect(0, 0, w, h); pxCx.setTransform(S, 0, 0, S, -bx * S, -by * S);

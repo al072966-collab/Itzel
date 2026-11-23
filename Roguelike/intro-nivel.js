@@ -30,8 +30,8 @@ const INTRO_NIVEL = (() => {
   const salta = () => { const q = new URLSearchParams(location.search); return [...quita].some(k => q.has(k)); };
   const esc = t => String(t == null ? '' : t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   // Símbolos de cada poder; el nenúfar usa además el arte del propio cenote.
-  const ICONOS = { bloque:'🧱', viento:'🌬️', nenufar:'🪷', avion:'🛩️', nube:'☁️', cristal:'💎', lapiz:'✏️', resorte:'🌀', asidero:'🫴', semilla:'🍃', reloj:'⌛', hackeo:'💻', portal:'🌀', congelar:'❄️', burbuja:'🫧', burbujaFlota:'🫧', cristalFlota:'💎', agua:'💧', aguja:'🪡', antorcha:'🔥', bengala:'🎆', cargar:'🤲', cocinar:'🍲', confetiFresita:'🎉', constelacion:'🌟', eco:'🔊', espadaFresita:'⚔️', estampa:'🖨️', estrellas:'⭐', farol:'🏮', glifo:'🟨', gravedad:'↕️', gubia:'🪵', interruptor:'🔀', jaranear:'🎵', ladrillo:'🧱', luz:'🔆', luzVitral:'🌈', moldear:'🏺', pescar:'🎣', planos:'📐', pulso:'🔲', rafaga:'💨', remolino:'🌪️', tempano:'🧊', torre:'🏰', valvula:'⚙️', vidrio:'🔷' };
-  const ARTE_PODER = { asidero:'personajes/asidero-anime/fresita.png', bloque:'muralla/bloque.png', nube:'tinta/nube0.png', cristal:'cristal/cristales0.png', resorte:'resortes/resorte0.png', semilla:'estero/hoja-ancha.png', reloj:'relojeria/reloj.png', glifo:'edzna/glifo0.png', gubia:'imprenta-estampas/gubias.png', ladrillo:'campeche-1-1/ladrillo.png', pulso:'neon/bloqueA1.png', vidrio:'catedral/vidrio0.png', luzVitral:'catedral/vidrio0.png', valvula:'uayamon-taller/valvula0.png', pescar:'fauna/pezRobaloAnzuelo.png', antorcha:'pozo-detalles/antorcha.png' };
+  const ICONOS = { paginas:'📜', bloque:'🧱', viento:'🌬️', nenufar:'🪷', avion:'🛩️', nube:'☁️', cristal:'💎', lapiz:'✏️', resorte:'🌀', asidero:'🫴', semilla:'🍃', reloj:'⌛', hackeo:'💻', portal:'🌀', congelar:'❄️', burbuja:'🫧', burbujaFlota:'🫧', cristalFlota:'💎', agua:'💧', aguja:'🪡', antorcha:'🔥', bengala:'🎆', cargar:'🤲', seda:'🕸️', cocinar:'🍲', confetiFresita:'🎉', constelacion:'🌟', eco:'🔊', espadaFresita:'⚔️', estampa:'🖨️', estrellas:'⭐', farol:'🏮', glifo:'🟨', gravedad:'↕️', gubia:'🪵', interruptor:'🔀', jaranear:'🎵', ladrillo:'🧱', luz:'🔆', luzVitral:'🌈', moldear:'🏺', pescar:'🎣', planos:'📐', pulso:'🔲', rafaga:'💨', remolino:'🌪️', tempano:'🧊', torre:'🏰', vidrio:'🔷' };
+  const ARTE_PODER = { asidero:'personajes/asidero-anime/fresita.png', bloque:'muralla/bloque.png', nube:'tinta/nube0.png', cristal:'cristal/cristales0.png', resorte:'resortes/resorte0.png', semilla:'estero/hoja-ancha.png', reloj:'relojeria/reloj.png', glifo:'edzna/glifo0.png', gubia:'imprenta-estampas/gubias.png', ladrillo:'campeche-1-1/ladrillo.png', pulso:'neon/bloqueA1.png', vidrio:'catedral/vidrio0.png', luzVitral:'catedral/vidrio0.png', pescar:'fauna/pezRobaloAnzuelo.png', antorcha:'pozo-detalles/antorcha.png' };
   const iconoPoder = (id, mundo) => {
     if (id === 'farol') return `<span class="iconoPoder faroFresita" aria-hidden="true"><svg viewBox="1150 120 850 650"><defs><linearGradient id="luzFaroIcono" x1="0" x2="1"><stop stop-color="#fffbd7" stop-opacity=".95"/><stop offset="1" stop-color="#ffeaa0" stop-opacity=".12"/></linearGradient></defs><image href="assets/personajes/fresita-estilos/bruma.webp" width="1775" height="887"/><path d="M1505 405 L1980 210 L1980 520 Z" fill="url(#luzFaroIcono)"/><path d="M1680 405 L1990 335 L1990 480 Z" fill="url(#luzFaroIcono)"/><circle cx="1505" cy="405" r="19" fill="#fffde7"/><circle cx="1680" cy="405" r="13" fill="#fffde7"/></svg></span>`;
     if (id === 'nenufar') return '<span class="iconoPoder nenufar" aria-hidden="true"><img src="assets/cenote/nenufar0.png" alt=""><img src="assets/cenote/flor-loto.png" alt=""></span>';
@@ -39,7 +39,7 @@ const INTRO_NIVEL = (() => {
     return `<span class="iconoPoder iconoIlustrado" aria-hidden="true"><span>${ICONOS[id] || '✦'}</span>${archivo ? `<img src="assets/${archivo}" alt="">` : ''}</span>`;
   };
   // Fondos originales de cada escenario, reducidos para la cabecera del diario.
-  const FONDOS = new Set('pixel ocaso acuarela paper biolum flat sumie neon bruma lowpoly codex oleo vitral cuaderno grabado gameboy anime nouveau deco cyber cinema vapor barro eco fuego agua hielo cielo hollin bits8 bits32 bits64 miniatura cabeza bolonchen torres chicanna imprenta posadas animas carnaval feria cocina pesca jarana vuelo templo planos abordaje bordado desfile'.split(' '));
+  const FONDOS = new Set('pixel ocaso acuarela paper biolum flat sumie neon bruma lowpoly codex oleo vitral cuaderno grabado gameboy anime nouveau deco cyber cinema barro eco fuego agua hielo cielo hollin bits8 bits32 bits64 miniatura cabeza torres chicanna imprenta posadas animas carnaval feria cocina pesca jarana vuelo templo planos abordaje bordado desfile'.split(' '));
   function fondoNivel(info) {
     const id = String(info.nivel || '').replace(/^(subida|bajada)_/, '');
     const mundo = info.poder && info.poder.mundo;
@@ -105,6 +105,16 @@ const INTRO_NIVEL = (() => {
       @media (max-width:720px){#introNivel.conDemo .cuerpo{grid-template-columns:1fr}}`;
     document.head.appendChild(s);
   }
+  // Calentamiento: cuando el juego ya cargó, se abre escondida la página que hospeda las demostraciones (mismos scripts) y se cierra a los pocos segundos.
+  // Así el navegador ya tiene todo bajado y compilado cuando el primer video lo necesita.
+  if (!salta()) addEventListener('load', () => setTimeout(() => {
+    if (document.getElementById('calientaDemos')) return;
+    const fr = document.createElement('iframe'); fr.id = 'calientaDemos'; fr.title = ''; fr.tabIndex = -1; fr.setAttribute('aria-hidden', 'true');
+    fr.style.cssText = 'position:fixed;left:0;top:0;width:320px;height:200px;border:0;opacity:0;pointer-events:none;z-index:-1';
+    fr.src = '../Estilos/index.html?v=demo-hojas-1&calienta=1'; document.body.appendChild(fr);
+    fr.addEventListener('load', () => setTimeout(() => fr.remove(), 4000));
+    setTimeout(() => { if (fr.isConnected) fr.remove(); }, 25000);
+  }, 2500));
   // la demostración se pide con anticipación, mientras se arma el nivel
   function precarga(poder, mundo, nivel) {
     if (!poder || salta()) return null; const k = poder + '|' + mundo + '|' + (nivel || ''); if (demos[k]) return k;
@@ -115,6 +125,18 @@ const INTRO_NIVEL = (() => {
     // Si el navegador retrasa la señal de la escena, no dejar el recuadro esperando para siempre.
     fr.addEventListener('load', () => { d.respaldo = setTimeout(() => { if (demos[k] === d && d.ok === null) { d.ok = true; ponDemo(); } }, 3500); });
     return k;
+  }
+  // espera a que la demostración pedida esté lista (o haya fallado, o pase el tiempo máximo)
+  function espera(k, ms) {
+    return new Promise(res => {
+      if (!k) return res();
+      const t0 = performance.now(), iv = setInterval(() => { const d = demos[k]; if (!d || d.ok !== null || performance.now() - t0 > ms) { clearInterval(iv); res(); } }, 60);
+    });
+  }
+  // una demostración pedida por adelantado que al final no se usa (la otra opción del camino): se quita para no gastar
+  function descarta(poder, mundo, nivel) {
+    const k = poder + '|' + mundo + '|' + (nivel || ''), d = demos[k]; if (!d || d.mostrando || (info0 && info0.demoClave === k)) return;
+    clearTimeout(d.respaldo); if (d.play) d.play.remove(); d.fr.remove(); delete demos[k];
   }
   addEventListener('message', e => {
     const m = e.data; if (!m || !m.introDemo) return;
@@ -136,6 +158,8 @@ const INTRO_NIVEL = (() => {
     };
     ubica();
     play.onclick = () => { d.fr.contentWindow.postMessage({ controlDemo: 'reproducir' }, '*'); play.hidden = true; };
+    // arranca sola, sin tener que darle clic
+    play.hidden = true; setTimeout(() => { try { d.fr.contentWindow.postMessage({ controlDemo: 'reproducir' }, '*'); } catch (x) { play.hidden = false; } }, 250);
   }
   // info = { etiqueta, titulo, lugar, epoca, lema, poder:{nombre, ayuda, id, mundo} }
   function mostrar(info, alSeguir) {
@@ -171,5 +195,5 @@ const INTRO_NIVEL = (() => {
     if (el) { const k = info0 && info0.demoClave, d = k && demos[k]; if (d) { d.mostrando = false; clearTimeout(d.respaldo); cancelAnimationFrame(d.raf); if (d.play) d.play.remove(); d.fr.remove(); delete demos[k]; } el.remove(); el = null; } cierra = null;
   }
   const epoca = id => EPOCAS[id] || '';
-  return { mostrar, precarga, epoca, EPOCAS, lugar: id => LUGARES[id] || '' };
+  return { mostrar, precarga, espera, descarta, epoca, EPOCAS, lugar: id => LUGARES[id] || '' };
 })();

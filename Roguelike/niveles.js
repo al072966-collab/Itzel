@@ -350,4 +350,3 @@ nivel('cinema', {
   },
 });
 // ---------------------------------------------------------------- 22
-// (el mundo de CGA ahora es «La fábrica de vapor», en vapor.js)

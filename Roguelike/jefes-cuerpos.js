@@ -29,14 +29,14 @@
   const hojasForgeJefes = Object.create(null);
   function hojaForgeJefe(id) {
     const cfg = FORGE_JEFES[id]; if (!cfg) return null;
-    if (!hojasForgeJefes[id]) { const img = new Image(); img.decoding = 'async'; img.src = '../Roguelike/assets/forge/jefes/' + cfg.archivo + (cfg.archivo.includes('/') ? '' : '/processed') + '/sheet-transparent.png'; hojasForgeJefes[id] = img; }
+    if (!hojasForgeJefes[id]) { const img = new Image(); img.decoding = 'async'; img.src = '../Roguelike/assets/forge/jefes/' + cfg.archivo + (cfg.archivo.includes('/') ? '' : '/processed') + '/sheet-transparent.webp'; hojasForgeJefes[id] = img; }
     return hojasForgeJefes[id];
   }
   function listoForgeJefe(id) { const img = hojaForgeJefe(id); return !!(img && img.complete && img.naturalWidth); }
   X.FORGE_READY = listoForgeJefe;
-  // La vista de cerca aprovecha los originales limpios, antes de reducirlos para el juego.
+  // Las hojas limpias conservan el detalle del arte principal para el juego.
   const camazotzNitido = new Image();
-  camazotzNitido.src = '../Roguelike/assets/forge/jefes/camazotz-v1/processed-v1/raw-sheet-clean.png';
+  camazotzNitido.src = '../Roguelike/assets/forge/jefes/camazotz-v1/processed-v1/raw-sheet-clean.webp';
   X.CAMAZOTZ_HD_READY = () => !!(camazotzNitido.complete && camazotzNitido.naturalWidth);
   const camazotzCajasOriginales = [[135,121,376,343], [676,183,479,262], [122,687,401,416], [711,694,409,401]];
   // Registro de las hojas originales: conserva la misma posición de las poses
@@ -45,7 +45,7 @@
   const hojasDetalleForge = Object.create(null);
   function hojaDetalleForge(id) {
     if (!DETALLE_FORGE[id]) return null;
-    if (!hojasDetalleForge[id]) { const im = new Image(); im.decoding = 'async'; const cfg = FORGE_JEFES[id]; im.src = '../Roguelike/assets/forge/jefes/' + cfg.archivo + (cfg.archivo.includes('/') ? '' : '/processed') + '/raw-sheet-clean.png'; hojasDetalleForge[id] = im; }
+    if (!hojasDetalleForge[id]) { const im = new Image(); im.decoding = 'async'; const cfg = FORGE_JEFES[id]; im.src = '../Roguelike/assets/forge/jefes/' + cfg.archivo + (cfg.archivo.includes('/') ? '' : '/processed') + '/raw-sheet-clean.webp'; hojasDetalleForge[id] = im; }
     const im = hojasDetalleForge[id]; return im.complete && im.naturalWidth ? im : null;
   }
   function dibujaForgeJefe(c, id, cuadro, x, y, maxW, maxH, ancla = 'centro') {
@@ -53,17 +53,17 @@
     if (!cfg || !cfg.cajas.length) return false;
     cuadro = Number.isFinite(cuadro) ? ((Math.floor(cuadro) % cfg.cajas.length) + cfg.cajas.length) % cfg.cajas.length : 0;
     const caja = cfg.cajas[cuadro];
-    if ((!img || !img.complete || !img.naturalWidth) && !(id === 'camazotz' && window.visorJefeNitido && X.CAMAZOTZ_HD_READY())) return false;
+    if ((!img || !img.complete || !img.naturalWidth) && !(id === 'camazotz' && X.CAMAZOTZ_HD_READY())) return false;
     // Todas las poses comparten escala; el tamaño del recorte no debe hacer
     // que el jefe crezca o se encoja al cambiar de estado.
     const anchoHoja = Math.max(...cfg.cajas.map(q => q[2]));
     const altoHoja = Math.max(...cfg.cajas.map(q => q[3]));
     const k = Math.min(maxW / anchoHoja, maxH / altoHoja), w = caja[2] * k, h = caja[3] * k;
     const dx = x - w / 2, dy = ancla === 'abajo' ? y - h : ancla === 'arriba' ? y : y - h / 2;
-    if (id === 'camazotz' && window.visorJefeNitido && camazotzNitido.complete && camazotzNitido.naturalWidth) {
+    if (id === 'camazotz' && camazotzNitido.complete && camazotzNitido.naturalWidth) {
       const fuente = camazotzCajasOriginales[cuadro]; c.drawImage(camazotzNitido, ...fuente, dx, dy, w, h);
     } else {
-      const detalle = window.visorJefeNitido && hojaDetalleForge(id), fuente = detalle && DETALLE_FORGE[id][cuadro];
+      const detalle = hojaDetalleForge(id), fuente = detalle && DETALLE_FORGE[id][cuadro];
       if (fuente) {
         const [sx, sy, sx2, sy2] = fuente.src, [ox, oy] = fuente.pos, [ow, oh] = fuente.size;
         c.save(); c.beginPath(); c.rect(dx, dy, w, h); c.clip();
@@ -77,8 +77,12 @@
     let cuadro = o.st === 'ataque' && o.atk === 'picada' && o.at > .8 && o.at < 2.1 ? 3 : o.st === 'ataque' && (o.atk === 'chillido' || o.atk === 'oscuridad') ? 2 : o.st === 'ventana' ? 0 : Math.floor(f.t * 8) % 3;
     c.save(); c.translate(o.x, o.y); dibujaForgeJefe(c, 'camazotz', cuadro, 0, 0, 76, 70); c.restore(); return true;
   };
+  const mythosAnimeAcciones = new Image();
+  mythosAnimeAcciones.src = '../Roguelike/assets/forge/jefes/mythos-anime-acciones-v1/sheet-transparent.png';
   const cabezaKukulkan = new Image();
   cabezaKukulkan.src = '../Roguelike/assets/jefes/kukulkan-mascaron.png';
+  const mandibulaAnime = new Image();
+  mandibulaAnime.src = '../Roguelike/assets/forge/jefes/kukulkan-anime-mandibula-v1/sheet-transparent.png';
   const cabezaCerrada = new Image();
   cabezaCerrada.src = '../Roguelike/assets/jefes/kukulkan-boca-cerrada.png';
   const cuerpoKukulkan = new Image();
@@ -86,8 +90,8 @@
   const cacheKukulkan = new WeakMap();
   const cabezasKukulkanPorEstilo = Object.create(null);
   function imagenKukulkan(pixel, abierta, estilo) {
-    const id = String(estilo && estilo.id || '').split('~')[0];
-    const ids = ['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','anime','nouveau','deco','cyber','cinema','vapor','barro','eco','fuego','agua','hielo','cielo','hollin','bits8','bits32','bits64','miniatura'];
+    const id = String(window.estiloArteDerivado || estilo && estilo.id || '').split('~')[0];
+    const ids = ['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','anime','nouveau','deco','cyber','cinema','barro','eco','fuego','agua','hielo','cielo','hollin','bits8','bits32','bits64','miniatura','bordado'];
     let original;
     if (ids.includes(id)) {
       if (!cabezasKukulkanPorEstilo[id]) {
@@ -286,7 +290,7 @@
     grabado:['#d9d0b9','#eee8d5','#cfc6ae','#171512','#25221e'],
     anime:['#369e89','#ffe1ab','#60b5a0','#174c4a','#f9ba67'],nouveau:['#6d8567','#e5d1a4','#879c79','#414f3e','#d3af6e'],
     deco:['#236e65','#e8d29a','#398f7e','#172e2b','#d9b54b'],cyber:['#343266','#fb68b7','#574898','#171935','#f455b3'],
-    cinema:['#4b7565','#ddc496','#709282','#273b37','#c5a36d'],vapor:['#806348','#d9b16b','#a27d50','#3e3028','#efb552'],
+    cinema:['#4b7565','#ddc496','#709282','#273b37','#c5a36d'],
     barro:['#66865b','#e6bc80','#86a879','#43583e','#d8a76c'],eco:['#568f80','#e8d7ab','#79ac9a','#365d55','#e3bd7a'],
     fuego:['#278956','#f7ce50','#40a769','#1a3524','#ee8355'],agua:['#2b6592','#d5eff0','#548eb2','#153d68','#b7e1e8'],
     hielo:['#487960','#e9d198','#b19a63','#304e3d','#d2aa6a'],cielo:['#a0804b','#ead5a6','#bd9b5d','#554021','#ead09a'],
@@ -306,11 +310,49 @@
   X.BODY.mythos = (c, o, f) => {
     const P = colores(o, { piedra: '#3f9a7a', oscura: '#0f3a34', clara: '#a8e6c8', tent: '#1f5a4e', vent: '#e8d8b0' }); // jade, concha y obsidiana, como las máscaras de Calakmul
     const t = f.t, open = o.st === 'ventana' || o.st === 'herido', stun = o.stunT > 0, AP=partesMascara(P,f); BL = blanco(o, t); LN = sh(AP.oscura, -.55);
+    // ilustración completa de la máscara para cada estilo (1024 × 1024, mismo encuadre): se mueve y se inclina entera
+    const cuerpoArte = typeof MASCARA_ESTILOS !== 'undefined' && MASCARA_ESTILOS.obtenerCuerpo && MASCARA_ESTILOS.obtenerCuerpo(f.st);
+    if (cuerpoArte) {
+      const k = .1155, flota = Math.sin(t * 1.7) * 1.1, ataca = o.st === 'ataque', inclina = Math.sin(t * 1.1) * .035 + (ataca ? Math.sin(t * 9) * .02 : 0), latido = open ? 1 + Math.sin(t * 8) * .012 : 1;
+      c.save(); c.translate(o.x, o.y + flota); c.rotate(inclina + (stun ? Math.sin(t * 6) * .25 : 0)); c.scale(latido, latido); comun(c, o);
+      c.imageSmoothingEnabled = !(f.st && f.st.pixel); c.imageSmoothingQuality = 'high'; if (BL) c.filter = 'brightness(3)';
+      const estilo = String(window.estiloArteDerivado || f.st && f.st.id || '').split('~')[0];
+      if (estilo === 'anime' && mythosAnimeAcciones.complete && mythosAnimeAcciones.naturalWidth) {
+        // El ojo y el cuerpo usan un mismo encuadre en todas las poses.
+        const hoja = mythosAnimeAcciones, tam = 150, x = -tam / 2, y = -58;
+        const pose = ataca ? (o.atk === 'tentaculo' ? (o.fx === 'golpe' ? 2 : 1) : o.atk === 'rayo' ? 3 : 1) : 0;
+        const sx = (pose % 2) * 256, sy = Math.floor(pose / 2) * 256, corte = .57;
+        c.drawImage(hoja, sx, sy, 256, 256 * corte, x, y, tam, tam * corte);
+        for (let i = 0; i < 18; i++) {
+          const a = corte + (1 - corte) * i / 18, b = corte + (1 - corte) * (i + 1) / 18;
+          const amplitud = ataca && o.atk === 'tentaculo' ? 2 : 1;
+          const dx = Math.sin(t * 3.4 - i * .32) * amplitud * (i + 1) / 18;
+          c.drawImage(hoja, sx, sy + 256 * a, 256, 256 * (b - a), x + dx, y + tam * a, tam, tam * (b - a) + .12);
+        }
+      } else {
+        // Ondular solo la parte inferior deja el ojo y la máscara registrados.
+        const w = cuerpoArte.naturalWidth, h = cuerpoArte.naturalHeight;
+        const dx = -515.5 * k, dy = -39 - 62 * k, lado = 1024 * k, corte = .57;
+        c.drawImage(cuerpoArte, 0, 0, w, h * corte, dx, dy, lado, lado * corte);
+        const franjas = 18, intensidad = ataca && o.atk === 'tentaculo' ? 2.5 : 1.25;
+        for (let i = 0; i < franjas; i++) {
+          const a = corte + (1 - corte) * i / franjas, b = corte + (1 - corte) * (i + 1) / franjas;
+          const desplaza = Math.sin(t * 3.4 - i * .32) * intensidad * (i + 1) / franjas;
+          c.drawImage(cuerpoArte, 0, h * a, w, h * (b - a), dx + desplaza, dy + lado * a, lado, lado * (b - a) + .12);
+        }
+      }
+      c.filter = 'none'; if (stun) estrellas(c, 0, -39, t, 15);
+      c.restore(); return;
+    }
     if (listoForgeJefe('mythos') && !(typeof MASCARA_ESTILOS !== 'undefined' && MASCARA_ESTILOS.obtener(f))) {
-      const cuadro = o.st === 'ventana' || o.st === 'herido' || o.st === 'muere' || stun ? 3 : o.st === 'ataque' ? (o.fx === 'golpe' || o.fx === 'rayo' ? 2 : 1) : o.st === 'entra' ? 1 : 0;
+      const cuadro = o.cineOjoCerrado ? 0 : o.st === 'ventana' || o.st === 'herido' || o.st === 'muere' || stun ? 3 : o.st === 'ataque' ? (o.fx === 'golpe' || o.fx === 'rayo' ? 2 : 1) : o.st === 'entra' ? 1 : 0;
       c.save(); c.translate(o.x, o.y + 2); if (stun) c.rotate(Math.sin(t * 6) * .25); comun(c, o);
       c.imageSmoothingEnabled = !(f.st && f.st.pixel); if (BL) c.filter = 'brightness(3)';
       dibujaForgeJefe(c, 'mythos', cuadro, 0, 0, 88, 92);
+      if (o.cineOjoCerrado) {
+        c.save(); c.fillStyle = C(P.piedra); c.beginPath(); c.ellipse(0, -1, 10, 5.2, 0, 0, TAU); c.fill();
+        c.strokeStyle = C(P.vent); c.lineWidth = 1; c.beginPath(); c.moveTo(-9, -1); c.quadraticCurveTo(0, 3.5, 9, -1); c.stroke(); c.restore();
+      }
       if (stun) estrellas(c, 0, -39, t, 15);
       c.restore(); return;
     }
@@ -394,10 +436,10 @@
   const venas = (q, k, br) => { q.beginPath(); q.moveTo(-10, -56 * k + br); q.lineTo(-4, -46 * k + br); q.lineTo(-10, -36 * k + br); q.lineTo(-6, -27 * k + br); q.moveTo(8, -58 * k + br); q.lineTo(12, -44 * k + br); q.lineTo(9, -34 * k + br); q.moveTo(-4, -46 * k + br); q.lineTo(3, -44 * k + br); };
   X.BODY.golem = (c, o, f) => {
     const P = colores(o, { roca: '#8d8573', oscura: '#3d352a', clara: '#d0c6a8', musgo: '#5f8f3c', musgo2: '#9ac25a' });
-    const t = f.t, H = o.hgt || 92, k = H / 92, salto = o.jump || 0, y0 = FLOOR - salto + Math.min(0, o.drop || 0), stun = o.stunT > 0, open = o.st === 'ventana' || o.st === 'herido';
+    const t = f.t, H = o.hgt || 92, k = H / 92, salto = o.jump || 0, y0 = FLOOR - salto + Math.min(0, o.drop || 0), stun = o.stunT > 0, open = (o.st === 'ventana' || o.st === 'herido') && !o.cineDormido;
     BL = blanco(o, t); LN = sh(P.oscura, -.55);
     if (listoForgeJefe('golem')) {
-      const cuadro = stun || open || o.st === 'muere' ? 0 : o.st === 'ataque' && o.atk === 'embestida' ? (o.charging || o.at >= .7 ? 3 : 1) : o.st === 'ataque' ? 2 : o.st === 'entra' ? 1 : 0;
+      const cuadro = o.cineDormido ? 3 : o.cineDespierta ? 1 : stun || open || o.st === 'muere' ? 0 : o.st === 'ataque' && o.atk === 'embestida' ? (o.charging || o.at >= .7 ? 3 : 1) : o.st === 'ataque' ? 2 : o.st === 'entra' ? 1 : 0;
       if (y0 < FLOOR + 1) { c.save(); c.translate(o.x, 0); sombraSuelo(c, 0, FLOOR + 1, 26, FLOOR - y0); c.restore(); }
       c.save(); c.translate(o.x, y0); c.scale(o.face || 1, 1); comun(c, o);
       c.imageSmoothingEnabled = !(f.st && f.st.pixel); if (BL) c.filter = 'brightness(3)';
@@ -557,15 +599,18 @@
     const fuego = o.atk === 'fuego' && o.st === 'ataque', boca = fuego ? .55 + Math.sin(t * 12) * .1 : o.atk === 'picada' && o.st === 'ataque' && o.at > .7 && o.at < 1.5 ? .5 : .07 + Math.sin(t * 2) * .04;
     const pixelCabeza = !!(f.st && (f.st.pixel || f.st.fixedS || f.st.base));
     const abierta = fuego || (o.st === 'ataque' && o.atk === 'picada' && o.at > .7 && o.at < 1.5) || (o.st !== 'ataque' && t % 5 < .35);
-    const imagen = imagenKukulkan(pixelCabeza, abierta, f.st);
-    if (!imagen && listoForgeJefe('serpiente')) {
-      const cuadro = stun || o.st === 'ventana' || o.st === 'herido' ? 1 : fuego ? 2 : o.st === 'muere' || o.st === 'ataque' && o.atk === 'picada' && o.at > .7 ? 3 : o.st === 'ataque' ? 1 : 0;
+    const idCabeza = String(window.estiloArteDerivado || f.st && f.st.id || '').split('~')[0];
+    if (idCabeza === 'anime' && mandibulaAnime.complete && mandibulaAnime.naturalWidth) {
+      const a = o.at || 0, picada = o.st === 'ataque' && o.atk === 'picada';
+      const activa = fuego ? a > .35 && a < 2.75 : picada && a > .7 && a < 1.5;
+      const q = !activa ? 0 : fuego ? [1,2,3,2][Math.floor(a * 7) % 4] : a < .85 ? 1 : a < 1.32 ? 2 : 3;
       c.save(); c.imageSmoothingEnabled = !pixelCabeza; if (BL) c.filter = 'brightness(3)';
-      dibujaForgeJefe(c, 'serpiente', cuadro, -11, 0, 36, 24);
+      c.drawImage(mandibulaAnime,(q%2)*256,Math.floor(q/2)*256,256,256,-39.5+(q%2?2.15:0),-26.5,55,54);
       c.restore();
       if (fuego) { c.save(); c.globalCompositeOperation = 'lighter'; glowDot(c, 5, -1, 6, '#ff9a2a', .55); c.restore(); }
-      c.restore(); if (stun) estrellas(c, h.x, h.y - 18, t, 10); return;
+      c.restore(); if (stun) estrellas(c,h.x,h.y-18,t,10); return;
     }
+    const imagen = imagenKukulkan(pixelCabeza, abierta, f.st);
     if (imagen) {
       // El mascarón sigue la orientación de la cabeza; el cuerpo sigue
       // articulado por sus segmentos y no se estira como una sola imagen.
@@ -578,6 +623,14 @@
       c.restore();
       if (stun) estrellas(c, h.x, h.y - 18, t, 10);
       return;
+    }
+    if (listoForgeJefe('serpiente')) {
+      const cuadro = stun || o.st === 'ventana' || o.st === 'herido' ? 1 : fuego ? 2 : o.st === 'muere' || o.st === 'ataque' && o.atk === 'picada' && o.at > .7 ? 3 : o.st === 'ataque' ? 1 : 0;
+      c.save(); c.imageSmoothingEnabled = !pixelCabeza; if (BL) c.filter = 'brightness(3)';
+      dibujaForgeJefe(c, 'serpiente', cuadro, -11, 0, 36, 24);
+      c.restore();
+      if (fuego) { c.save(); c.globalCompositeOperation = 'lighter'; glowDot(c, 5, -1, 6, '#ff9a2a', .55); c.restore(); }
+      c.restore(); if (stun) estrellas(c, h.x, h.y - 18, t, 10); return;
     }
     for (let k = 0; k < 6; k++) pluma(c, -5, -4, Math.PI + .5 + k * .22 + Math.sin(t * 6 + k) * .07, 14 + k * 1.8, 2.6, k % 2 ? P.pluma : P.pluma2, k % 3 ? P.oro : P.roja);
     for (let k = 0; k < 3; k++) pluma(c, -2, 3, Math.PI * .8 - k * .25 + Math.sin(t * 5 + k) * .08, 8 + k, 1.8, P.roja, null);
@@ -611,7 +664,8 @@
     const cr = o.crouch ? 3 : 0, run = o.st === 'ataque' && o.atk === 'garras' && o.at > .5, aire = o.y < FLOOR - 1.5;
     if (listoForgeJefe('jaguar') && o.st !== 'herido' && o.st !== 'muere' && o.st !== 'ventana') {
       let cuadro = Math.floor(t * (run ? 12 : 4)) % 2;
-      if (aire || o.crouch || o.st === 'ataque' && o.atk === 'acecho') cuadro = 2;
+      if (o.cineAcecho || o.crouch || o.cineAterriza || o.st === 'ataque' && o.atk === 'acecho') cuadro = 2;
+      else if (aire) cuadro = 1;
       if (o.st === 'ataque' && o.atk === 'rugido' && o.at > .25) cuadro = 3;
       c.save(); c.translate(o.x, o.y - 11); c.scale(o.face || 1, 1);
       if (stun) c.rotate(Math.sin(t * 7) * .08);
@@ -753,18 +807,20 @@
   X.BODY.cocodrilo = (c, o, f) => {
     const P = colores(o, { piel: '#4d6e3a', oscura: '#1d2c16', panza: '#d2c892', escudo: '#34492a', boca: '#c8606a', ojo: '#d8c040' }, .26);
     const t = f.t, stun = o.stunT > 0; BL = blanco(o, t); LN = sh(P.oscura, -.5);
-    if (listoForgeJefe('cocodrilo') && !(o.mordida > 0) && o.sub <= .7 && o.st !== 'herido' && o.st !== 'muere') {
-      let cuadro = Math.floor(t * 4) % 2;
+    if (listoForgeJefe('cocodrilo') && (!(o.mordida > 0) || o.cineAgua != null) && o.sub <= .7 && o.st !== 'herido' && o.st !== 'muere') {
+      const mordidaCine = o.cineAgua != null && o.mordida > 0;
+      let cuadro = mordidaCine ? 2 : Math.floor(t * 4) % 2;
       if (o.st === 'ventana' || o.st === 'entra') cuadro = 0;
       if (o.st === 'ataque' && o.atk === 'escupe' && o.at > .25) cuadro = 2;
       if (o.st === 'ataque' && o.atk === 'coletazo') cuadro = 3;
-      c.save(); c.translate(o.x, FLOOR + o.sub * 16); c.scale(o.face || 1, 1);
+      const m = mordidaCine ? clamp(o.mordida, 0, 1) : 1;
+      c.save(); c.translate(o.x, mordidaCine ? o.cineAgua + (1 - m) * 16 : FLOOR + o.sub * 16); c.scale(o.face || 1, mordidaCine ? .72 + .28 * m : 1);
       if (stun) c.rotate(Math.sin(t * 7) * .08);
-      dibujaForgeJefe(c, 'cocodrilo', cuadro, 0, -21, 62, 34);
+      dibujaForgeJefe(c, 'cocodrilo', cuadro, 0, mordidaCine ? 0 : -21, 62, 34);
       if (stun) estrellas(c, 0, -29, t, 8);
       c.restore(); return;
     }
-    if (o.mordida > 0) { // las mandíbulas salen del suelo
+    if (o.mordida > 0) { // respaldo vectorial para la mordida durante el juego
       const m = o.mordida; c.save(); c.translate(o.x, FLOOR);
       if (!BL) { c.fillStyle = ra(P.panza, .6); for (let k = 0; k < 8; k++) { const a = Math.PI + (k + .5) / 8 * Math.PI, r = 13 + m * 7; c.beginPath(); c.arc(Math.cos(a) * r, Math.sin(a) * r * .4 - m * 2, 1 + hs(k, 2) * 1.2, 0, TAU); c.fill(); } c.fillStyle = '#4a1218'; c.beginPath(); c.moveTo(-9, 0); c.lineTo(0, -42 * m); c.lineTo(9, 0); c.closePath(); c.fill(); }
       for (const d of [-1, 1]) {
@@ -902,7 +958,7 @@
       let cuadro = Math.floor(t * 4) % 2;
       if (tormenta && o.atk === 'rayos' && o.at > .2) cuadro = 2;
       if (tormenta && o.atk === 'aguacero') cuadro = 3;
-      if (tormenta && o.atk === 'ventarron') cuadro = 1;
+      if (tormenta && (o.atk === 'ventarron' || o.cineInhala)) cuadro = 1;
       c.save(); c.translate(o.x, o.y); if (stun) c.rotate(Math.sin(t * 6) * .12);
       if (BL) c.globalAlpha = .72;
       dibujaForgeJefe(c, 'chaac', cuadro, 0, 0, 68, 66);
@@ -970,14 +1026,17 @@
     const P = colores(o, { pelo: '#4e3852', oscura: '#1a1022', membrana: '#62284e', oreja: '#c8708e', obsidiana: '#1a1824', jade: '#3ac08a', hueso: '#2c1a30' }, .24);
     const t = f.t, stun = o.stunT > 0, quieto = o.st === 'ventana', picada = o.st === 'ataque' && o.atk === 'picada' && o.at > .8 && o.at < 2.1, chilla = o.st === 'ataque' && o.atk === 'chillido' && o.at > .4;
     BL = blanco(o, t); LN = sh(P.oscura, -.4);
-    if ((listoForgeJefe('camazotz') || (window.visorJefeNitido && X.CAMAZOTZ_HD_READY())) && o.st !== 'muere') {
+    if ((listoForgeJefe('camazotz') || X.CAMAZOTZ_HD_READY()) && o.st !== 'muere') {
       let cuadro = Math.floor(t * 8) % 3;
       if (picada) cuadro = 3;
-      else if (chilla || o.st === 'ataque' && o.atk === 'oscuridad') cuadro = 2;
+      else if (o.cineChilla || chilla || o.st === 'ataque' && o.atk === 'oscuridad') cuadro = 1;
+      else if (o.cineAlasCerradas) cuadro = 0;
+      else if (o.cineColgado) cuadro = 2;
       else if (quieto) cuadro = 0;
       c.save(); c.translate(o.x, o.y); if (stun) c.rotate(Math.sin(t * 6) * .2);
       if (BL) c.globalAlpha = .72;
       dibujaForgeJefe(c, 'camazotz', cuadro, 0, 0, 76, 70);
+      if (o.cineChilla) { c.globalCompositeOperation = 'lighter'; glowDot(c, 0, -8, 3 + Math.sin(t * 36) * .6, '#ff5a4a', .55); }
       c.restore(); return;
     }
     c.save(); c.translate(o.x, o.y); if (stun) c.rotate(Math.sin(t * 6) * .25); comun(c, o);
@@ -1024,7 +1083,13 @@
   // =====================================================================
   X.BODY.abeja = (c, o, f) => {
     const P = colores(o, { oro: '#f2b01a', ambar: '#c8780e', oscura: '#2a1a0a', ala: '#e2f4ff', pelo: '#ffd77a', polen: '#ffe04a', miel: '#e8960f', barro: '#a8683a' }, .22);
-    const t = f.t, stun = o.stunT > 0, cansada = o.st === 'ventana'; BL = blanco(o, t); LN = sh(P.oscura, -.3);
+    const t = f.t, stun = o.stunT > 0, cansada = o.st === 'ventana' || !!o.cineDormida; BL = blanco(o, t); LN = sh(P.oscura, -.3);
+    if (listoForgeJefe('abeja')) {
+      const cuadro = o.cineDormida ? 3 : o.cineDespierta ? 1 : o.atk === 'aguijon' ? 2 : o.st === 'ventana' || stun ? 3 : o.st === 'ataque' ? Math.floor(t * 12) % 2 : Math.floor(t * 12) % 2;
+      c.save(); c.translate(o.x, o.y + (o.cineDormida ? 3 : o.cineDespierta ? Math.sin(t * 32) * 1.2 : 0)); c.scale(o.face || 1, 1); if (stun) c.rotate(Math.sin(t * 6) * .2); comun(c, o);
+      c.imageSmoothingEnabled = !(f.st && f.st.pixel); if (BL) c.filter = 'brightness(3)'; if (o.cineDespierta && Math.sin(t * 40) > 0) c.filter = 'brightness(1.8)';
+      dibujaForgeJefe(c, 'abeja', cuadro, 0, o.cineDormida ? 2 : 0, 70, 66); c.restore(); return;
+    }
     c.save(); c.translate(o.x, o.y); c.scale(o.face, 1); if (stun) c.rotate(Math.sin(t * 6) * .3); comun(c, o);
     const clavada = o.st === 'ataque' && o.atk === 'aguijon' && o.at > .9 && o.at < 2.1; if (clavada) c.rotate(.5);
     // alas que zumban, con estela

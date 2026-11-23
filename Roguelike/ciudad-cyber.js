@@ -2,10 +2,25 @@
 // Bandas de la ciudad: acabados nuevos sin alterar el funcionamiento.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.cyber) return;
-  const V = vestirNivel({ id: 'cyber', carpeta: 'ciudad-cyber', ver: 1 });
+  const V = vestirNivel({ id: 'cyber', carpeta: 'ciudad-cyber', ver: 1, manifiesto: window.CIUDAD_CYBER_MANIFIESTO });
   const { spr, h1 } = V;
+  const panorama = new Image();
+  panorama.onload = () => V.rehaz(); panorama.src = '../Roguelike/assets/ciudad-cyber/sonda-panorama-v1.png';
+  const muroSonda = new Image();
+  muroSonda.onload = () => V.rehaz(); muroSonda.src = '../Roguelike/assets/ciudad-cyber/muro-sonda-v1.png';
   // telón: fachadas coloniales de la ciudad futurista, lejos y con bruma violeta (no compiten con lo jugable)
   V.cielo((c, f, antes) => {
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    if (id === 'cyber' && panorama.complete && panorama.naturalWidth) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .08 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#100b1f'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(panorama, 0, 0, 2172, 570, x, arriba, ancho, base - arriba);
+        c.drawImage(panorama, 0, 570, 2172, 154, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore(); return;
+    }
     antes();
     const u = 170, off = (f.cam * .12) % u, base = Math.floor(f.cam * .12 / u);
     const L2 = ['f_casa0', 'f_arcada', 'f_casa1', 'f_casaMuro', 'f_garita'];
@@ -37,7 +52,14 @@
   V.terreno(ctx => {
     if (V.listo('panel')) {   // placa oscura de la lámina bajo el piso y el filo de neón alternando cian y magenta
       if (!panel) { panel = ctx.createPattern(V.IMG.panel, 'repeat'); panel.setTransform(new DOMMatrix().scale(V.TAM.panel.w / V.IMG.panel.naturalWidth)); }
-      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.globalAlpha = .35; ctx.fillStyle = panel; ctx.fillRect(0, 0, L.ww, VH + 40); ctx.globalAlpha = 1;
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
+      const id = typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id;
+      if (id === 'cyber' && muroSonda.complete && muroSonda.naturalWidth) {
+        const metal = ctx.createPattern(muroSonda, 'repeat');
+        metal.setTransform(new DOMMatrix().scale(150 / muroSonda.naturalWidth));
+        ctx.globalAlpha = 1; ctx.fillStyle = metal;
+      } else { ctx.globalAlpha = .35; ctx.fillStyle = panel; }
+      ctx.fillRect(0, 0, L.ww, VH + 40); ctx.globalAlpha = 1;
       if (V.listo('neonCian')) { const w = V.TAM.neonCian.w; for (const r of L.tops) for (let x = r.x0, j = 0; x < r.x1; x += w, j++) spr(ctx, (Math.floor(r.x0 / 16) + j) % 2 ? 'neonMagenta' : 'neonCian', x, r.y - .5, { ax: 0, ay: 0 }); }
       ctx.restore();
       // charcos de neón: el filo del piso se refleja hacia abajo en cian y magenta, como en pavimento mojado

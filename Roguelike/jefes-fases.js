@@ -24,7 +24,8 @@ const PROLOGOS = {};
     const st = curStyle(), base = NIVELES[st.id], P = PROLOGOS[tipo];
     $('loadName').textContent = P.nombre;
     setTimeout(() => {
-      const def = Object.assign({}, base, { id: 'prologo-' + tipo, nombre: P.nombre, lema: P.lema, W: P.W, meta: P.meta || null, fauna: P.fauna || base.fauna, foe: P.foe || base.foe });
+      // mismo id que el nivel del mundo: así se viste con el arte actual de su mapa (antes salía el telón viejo del estilo)
+      const def = Object.assign({}, base, { id: base.id, prologo: tipo, nombre: P.nombre, lema: P.lema, W: P.W, meta: P.meta || null, fauna: P.fauna || base.fauna, foe: P.foe || base.foe });
       const b = Constructor(P.W); P.build(b, base); setLevel(buildLevelFromRows(b.rows()));
       CUR = makeGame(); MEC.init(CUR, def, b.ents); CUR.def = def; CUR.isPrologo = tipo; COOP.init(CUR);
       if (P.inicio) P.inicio(CUR, base);

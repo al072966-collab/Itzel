@@ -101,9 +101,6 @@ const DISENOS_BORRADOS = [
  "sumie:Negativo",
  "sumie:Sello rojo",
  "sumie:Solo pincel",
- "vapor:Cobre y verdín",
- "vapor:Contraluz de caldera",
- "vapor:Plano de ingeniera",
  "vitral:Plomo dorado",
  "vitral:Rosetón",
  "vitral:Translúcido"

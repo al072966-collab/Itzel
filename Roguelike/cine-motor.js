@@ -314,7 +314,7 @@ const CINE = (() => {
     const ids = lista();
     showScreen(`<div class="title cines"><img class="hstitch" alt="Cinemáticas" src="${stitched('Cinemáticas', 8)}">
       <p class="sub">${MENU_TODAS ? 'Todas disponibles mientras se prueba el juego' : 'Las que ya les salieron se pueden volver a ver'}</p>
-      <div class="logro-lista">${ids.map(id => { const d = REG[id], ok = enMenu(id); return `<div class="logro panel ${ok ? 'ok' : ''}"><img src="${ico(ok ? 'feather' : 'moon', 5)}"><div><b>${ok ? d.nombre : 'Sin descubrir'}</b><span>${ok ? d.desc : 'Sigan jugando para encontrarla.'}</span>${ok ? `<button class="patch verde cine-ver" data-id="${id}" style="padding:6px 16px;font-size:14px;margin:8px 0 0">Ver</button>` : ''}</div></div>`; }).join('')}</div>
+      <div class="logro-lista">${ids.map(id => { const d = REG[id], ok = enMenu(id); return `<div class="logro panel ${ok ? 'ok' : ''}"><img src="${ico(ok ? (window.ICONO_CINE && ICONO_CINE(id)) || 'feather' : 'moon', 5)}"><div><b>${ok ? d.nombre : 'Sin descubrir'}</b><span>${ok ? d.desc : 'Sigan jugando para encontrarla.'}</span>${ok ? `<button class="patch verde cine-ver" data-id="${id}" style="padding:6px 16px;font-size:14px;margin:8px 0 0">Ver</button>` : ''}</div></div>`; }).join('')}</div>
       <button class="patch volver-esquina" id="cvVolver">Volver</button></div>`);
     document.querySelectorAll('.cine-ver').forEach(b => b.onclick = () => play(b.dataset.id, { repeticion: true, alTerminar: () => { title(); pantalla(); } }));
     $('cvVolver').onclick = menuPrincipal;

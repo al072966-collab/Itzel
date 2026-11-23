@@ -38,7 +38,6 @@ const VENTAJAS = (() => {
     deco: [['metal', 'lugar', 'la tramoya del teatro']],
     cyber: [['metal', 'lugar', 'las plataformas'], ['agua', 'lugar', 'el Golfo']],
     cinema: [['piedra', 'lugar', 'los mascarones de Chicanná'], ['selva', 'lugar', 'la selva del Río Bec']],
-    vapor: [['metal', 'lugar', 'las máquinas de la hacienda'], ['fuego', 'lugar', 'las calderas']],
     barro: [['piedra', 'arte', 'el barro de Tepakán']],
     eco: [['piedra', 'lugar', 'la maqueta de la ciudad']],
     fuego: [['fuego', 'lugar', 'la ciudad en llamas']],
@@ -55,7 +54,6 @@ const VENTAJAS = (() => {
     animas: [['noche', 'lugar', 'la noche de ánimas']],
     feria: [['metal', 'lugar', 'los juegos de la feria']],
   };
-  TIERRAS.uayamon_selva = TIERRAS.uayamon_taller = TIERRAS.vapor;
   // lo que el poder de Fresita debilita
   const LUZ = { tags: ['noche'], frase: 'la luz de Fresita' }, VIENTO = { tags: ['aire'], frase: 'el viento de Fresita' };
   const PODER = { agua: { tags: ['fuego'], frase: 'el agua de Fresita' }, tempano: { tags: ['fuego'], frase: 'el hielo de Fresita' }, hackeo: { tags: ['metal'], frase: 'el hackeo de Fresita' }, luz: LUZ, farol: LUZ, antorcha: LUZ, bengala: LUZ, viento: VIENTO, rafaga: VIENTO, remolino: VIENTO };
@@ -70,7 +68,6 @@ const VENTAJAS = (() => {
     chaac: { es: ['aire'], fuerte: ['agua', 'aire'], debil: ['fuego'], a: 'Con agua y viento de sobra sus nubes crecen', d: 'El fuego le evapora la lluvia' },
     camazotz: { es: ['noche'], fuerte: ['noche'], debil: ['luz'], a: 'En lo oscuro no necesita ver', d: 'La luz lo deslumbra' },
     abeja: { es: ['selva'], fuerte: ['selva'], debil: ['aire', 'frio'], a: 'Entre flores y selva el enjambre está en casa', d: 'El viento y el frío le desarman el enjambre' },
-    brawbot: { es: ['metal', 'fuego'], fuerte: ['metal', 'fuego'], debil: ['agua'], a: 'Entre fierros y calderas trabaja a todo vapor', d: 'El agua le apaga las calderas' },
   };
   const tierras = id => TIERRAS[id] || [];
   function mira(es, fuerte, debil, id) {

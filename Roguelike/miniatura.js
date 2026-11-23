@@ -17,6 +17,23 @@
     i.onload = () => { if (--faltan === 0) for (const c of [...CACHE.keys()]) if (String(c).includes(ID)) CACHE.delete(c); }; // lo que se pintó antes de que llegaran las fotos
     i.src = `${RUTA}${k}-calakmul.jpg`;
   }
+  const MACRO = {};
+  for (const [nombre, archivo] of Object.entries({ pasto:'pasto-macro-v1', hongos:'hongos-macro-v1', hoja:'hoja-plataforma-v1', seca:'hoja-seca-macro-v1', rama:'rama-macro-v1' })) {
+    const im = MACRO[nombre] = new Image(); im.decoding = 'async';
+    im.onload = () => { for (const c of [...CACHE.keys()]) if (String(c).includes(ID)) CACHE.delete(c); };
+    im.src = '../Roguelike/assets/macro-detalles/' + archivo + '.png';
+  }
+  const macroListo = n => MACRO[n] && MACRO[n].complete && MACRO[n].naturalWidth;
+  window.MINIATURA_MACRO_LISTO = () => ['pasto','hongos','hoja','seca'].every(macroListo);
+  function macroPieza(c, n, x, y, w, h, voltea = false) {
+    const im = MACRO[n]; if (!macroListo(n)) return false;
+    c.save(); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; c.translate(x, y); if (voltea) c.scale(-1, 1);
+    const recortes = { pasto:[11,16,1290,1168], hongos:[76,49,1124,1101], seca:[35,58,2103,605], rama:[68,295,2037,198] };
+    const r = recortes[n];
+    if (r) c.drawImage(im, r[0], r[1], r[2], r[3], -w / 2, -h, w, h);
+    else c.drawImage(im, -w / 2, -h, w, h);
+    c.restore(); return true;
+  }
   const listo = () => faltan === 0;
   const R = (i, s) => hash1(Math.round(i * 10), s);
   const patron = (ctx, img, k, dy = 0) => { const p = ctx.createPattern(img, 'repeat'); p.setTransform(new DOMMatrix().translate(0, dy).scale(k, k)); return p; };
@@ -168,12 +185,14 @@
     c.drawImage(sprite('tallo', 10, 90, x => { x.strokeStyle = '#4a5a2a'; x.lineWidth = 2.2; x.beginPath(); x.moveTo(5, 0); x.quadraticCurveTo(8, 42, 3, 90); x.stroke(); x.strokeStyle = 'rgba(190,210,130,.5)'; x.lineWidth = .5; x.beginPath(); x.moveTo(4.4, 0); x.quadraticCurveTo(7.4, 42, 2.4, 90); x.stroke(); }, 3), cx - 5, y + 2, 10, 90);
     const W = w + 12, H = 12, sx = lerp(.3, 1, k), sy = lerp(.55, 1, k);
     c.save(); c.translate(cx, y + 3); c.scale(sx, sy); c.rotate(Math.sin(f.t * 1.4 + pl.x) * .012 + (1 - k) * .3);
-    c.drawImage(sprite('hoja' + w, W, H + 1, x => hoja(x, W, H, '#4c8a34')), -W / 2, -H / 2 + 1.4, W, H + 1);
+    if (macroListo('hoja')) c.drawImage(MACRO.hoja, 0, 140, 2172, 470, -W / 2, -H / 2 + 1.4, W, H + 1);
+    else c.drawImage(sprite('hoja' + w, W, H + 1, x => hoja(x, W, H, '#4c8a34')), -W / 2, -H / 2 + 1.4, W, H + 1);
     c.restore();
   };
 
   // ---------------- detalles de escala, pintados en el terreno ----------------
   function hojaSeca(ctx, x, y, w, rot, s) {
+    if (macroPieza(ctx, 'seca', x, y + 1, w * 2, w * .65, s < .5)) return;
     ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(1, .42);
     const col = ['#8a5a2a', '#a06c34', '#6a4422', '#b08a48'][(s * 4) | 0], g = ctx.createLinearGradient(0, -w * .4, 0, w * .4); g.addColorStop(0, shade(col, .22)); g.addColorStop(1, shade(col, -.38));
     ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(-w, 0); ctx.bezierCurveTo(-w * .4, -w * .62, w * .5, -w * .5, w, 0); ctx.bezierCurveTo(w * .5, w * .55, -w * .4, w * .6, -w, 0); ctx.fill();
@@ -186,6 +205,7 @@
     ctx.strokeStyle = 'rgba(236,250,200,.35)'; ctx.lineWidth = .3; ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x, y - h * .6, x + inc * .96, y - h * .96); ctx.stroke();
   }
   function hongo(ctx, x, y, h, s) {
+    if (macroPieza(ctx, 'hongos', x, y + 1, h * 1.2, h * 1.15, s < .5)) return;
     const r = h * .62, g = ctx.createLinearGradient(x - 3, 0, x + 3, 0); g.addColorStop(0, '#e6d6b8'); g.addColorStop(1, '#a08c6c');
     ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(x - 1.8, y); ctx.quadraticCurveTo(x - 1, y - h * .5, x - 1.2, y - h * .86); ctx.lineTo(x + 1.2, y - h * .86); ctx.quadraticCurveTo(x + 1, y - h * .5, x + 1.8, y); ctx.fill();
     const q = ctx.createRadialGradient(x - r * .3, y - h - r * .1, 1, x, y - h * .78, r * 1.1); q.addColorStop(0, s < .5 ? '#d8824a' : '#c8a868'); q.addColorStop(1, s < .5 ? '#6a2e16' : '#6a5230');
@@ -215,7 +235,8 @@
       // pasto enorme a media distancia, desenfocado
       strip(ctx, f, 'medio' + Math.round(rango), .55, (x, w) => {
         x.filter = `blur(${2.4 * f.S}px)`;
-        for (let i = 0; i < w / 16; i++) brizna(x, i * 16 + R(i, 31) * 16, 210, 70 + R(i, 32) * 100, (R(i, 33) - .5) * 44, 3 + R(i, 34) * 4, ['#3a5a2c', '#2c4a26', '#4a6a34'][(R(i, 35) * 3) | 0]);
+        if (macroListo('pasto')) { for (let i = 0; i < w / 75 + 1; i++) macroPieza(x, 'pasto', i * 75 + R(i, 31) * 20, 212, 92, 110 + R(i, 32) * 35, i % 2 === 0); }
+        else for (let i = 0; i < w / 16; i++) brizna(x, i * 16 + R(i, 31) * 16, 210, 70 + R(i, 32) * 100, (R(i, 33) - .5) * 44, 3 + R(i, 34) * 4, ['#3a5a2c', '#2c4a26', '#4a6a34'][(R(i, 35) * 3) | 0]);
         x.filter = 'none';
       });
     },
@@ -240,18 +261,19 @@
         for (let x = a + 1; x < b; x += 1.6) { if (noise1(x * .035, 11) < .5) continue; ctx.fillStyle = ['#3a5a26', '#4f7030', '#6a8a3e', '#2c4a22'][(R(x, 12) * 4) | 0]; ctx.globalAlpha = .75; ctx.beginPath(); ctx.ellipse(x, t.y + R(x, 13) * 3, 1.5 + R(x, 14) * 1.8, 1 + R(x, 15), 0, 0, TAU); ctx.fill(); }
         ctx.globalAlpha = 1;
         for (let x = a + 6; x < b - 6; x += 15 + R(x, 16) * 34) hojaSeca(ctx, x, t.y + 1.2 + R(x, 17) * 2, 7 + R(x, 18) * 9, (R(x, 19) - .5) * .5, R(x, 20));
-        for (let x = a + 20; x < b - 16; x += 70 + R(x, 24) * 90) { const l = 14 + R(x, 25) * 18; ctx.strokeStyle = '#3a2614'; ctx.lineWidth = 2.1; ctx.beginPath(); ctx.moveTo(x - l, t.y + 2); ctx.quadraticCurveTo(x, t.y - 1.4, x + l, t.y + 1.2); ctx.stroke(); ctx.strokeStyle = 'rgba(190,150,100,.5)'; ctx.lineWidth = .5; ctx.stroke(); }
+        for (let x = a + 20; x < b - 16; x += 70 + R(x, 24) * 90) { const l = 14 + R(x, 25) * 18; if (macroPieza(ctx, 'rama', x, t.y + 2, l * 2, 4, R(x, 26) < .5)) continue; ctx.strokeStyle = '#3a2614'; ctx.lineWidth = 2.1; ctx.beginPath(); ctx.moveTo(x - l, t.y + 2); ctx.quadraticCurveTo(x, t.y - 1.4, x + l, t.y + 1.2); ctx.stroke(); ctx.strokeStyle = 'rgba(190,150,100,.5)'; ctx.lineWidth = .5; ctx.stroke(); }
       }
       for (const o of L.deco) {
         const x = o.x, y = o.y + 1;
-        if (o.k === 'T') { for (let i = 0; i < 9; i++) brizna(ctx, x - 16 + i * 4 + R(o.i, i) * 3, y, 42 + R(o.i, i + 9) * 64, (R(o.i, i + 19) - .5) * 30, 1.6 + R(o.i, i + 29) * 1.8, ['#4f7a30', '#3a6428', '#688a3a'][i % 3]); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.ellipse(x + 2, y - 34, 1.3, 1.9, 0, 0, TAU); ctx.fill(); }
+        if (o.k === 'T' && macroPieza(ctx, 'pasto', x, y, 58, 72, o.i % 2 === 1)) { /* apoyado en el terreno */ }
+        else if (o.k === 'T') { for (let i = 0; i < 9; i++) brizna(ctx, x - 16 + i * 4 + R(o.i, i) * 3, y, 42 + R(o.i, i + 9) * 64, (R(o.i, i + 19) - .5) * 30, 1.6 + R(o.i, i + 29) * 1.8, ['#4f7a30', '#3a6428', '#688a3a'][i % 3]); ctx.fillStyle = 'rgba(255,255,255,.85)'; ctx.beginPath(); ctx.ellipse(x + 2, y - 34, 1.3, 1.9, 0, 0, TAU); ctx.fill(); }
         else if (o.k === 'f') { hongo(ctx, x - 3, y, 16 + R(o.i, 41) * 6, R(o.i, 42)); hongo(ctx, x + 6, y, 10 + R(o.i, 43) * 5, R(o.i, 42)); }
         else if (o.k === 'r') piedrita(ctx, x, y, 13 + R(o.i, 44) * 9, 9 + R(o.i, 45) * 5);
       }
     },
     // briznas muy cerca de la cámara y viñeta: la profundidad de una foto macro
     over(ctx, f) {
-      const c = cached(f, 'cerca', 1000, VH, x => { x.filter = `blur(${3.6 * f.S}px)`; for (let i = 0; i < 16; i++) brizna(x, 40 + i * 64 + R(i, 51) * 40, VH + 8, 26 + R(i, 52) * 34, (R(i, 53) - .5) * 26, 5 + R(i, 54) * 6, '#1c3018'); x.filter = 'none'; });
+      const c = cached(f, 'cerca', 1000, VH, x => { x.filter = `blur(${3.6 * f.S}px)`; if (macroListo('pasto')) { for (let i = 0; i < 12; i++) macroPieza(x, 'pasto', 40 + i * 85, VH + 8, 82, 50 + R(i, 52) * 20, i % 2 === 0); } else for (let i = 0; i < 16; i++) brizna(x, 40 + i * 64 + R(i, 51) * 40, VH + 8, 26 + R(i, 52) * 34, (R(i, 53) - .5) * 26, 5 + R(i, 54) * 6, '#1c3018'); x.filter = 'none'; });
       const o = wrap(f.cam * 1.35, 1000), S = f.S; ctx.drawImage(c, o * S, 0, Math.min(1000 - o, VW) * S, VH * S, 0, 0, Math.min(1000 - o, VW), VH);
       if (1000 - o < VW) ctx.drawImage(c, 0, 0, (VW - (1000 - o)) * S, VH * S, 1000 - o, 0, VW - (1000 - o), VH);
       screenLayer(ctx, f, 'viñeta', x => { const g = x.createRadialGradient(VW / 2, VH * .46, 130, VW / 2, VH * .5, 300); g.addColorStop(0, 'rgba(0,0,0,0)'); g.addColorStop(1, 'rgba(6,18,10,.5)'); x.fillStyle = g; x.fillRect(0, 0, VW, VH); });
@@ -262,19 +284,46 @@
   window.MINIATURA_ARTE = { relleno: ctx => listo() ? patron(ctx, IM.muro, .74) : '#4f6232' };
 
   nivel(ID, {
-    nombre: 'Calakmul en miniatura', lema: 'Las hojas se abren con Fresita cerca, y ella puede cargarte.',
-    foe: 'hormiga', fauna: ['hormiga', 'saltarina', 'avispaMini', 'rinoceronte', 'alacranMini'], power: 'cargar', plat: { k: 'bloom', look: 'hojaMini' }, W: 120,
+    nombre: 'Calakmul, afuera de la pirámide', lema: 'Fresita amarra hilos de seda en las ramitas: columpia a Itzel sobre los barrancos.',
+    foe: 'hormiga', fauna: ['hormiga', 'saltarina', 'avispaMini', 'rinoceronte', 'alacranMini'], power: 'seda', plat: { k: 'bloom', look: 'hojaMini' }, W: 264,
     skin: { plat: '#4c8a34', plat2: '#7fb24a', line: '#23361c', accent: '#ffe070', foe: { main: '#8a3c16', dark: '#2a1006', light: '#d8b890', accent: '#ffe070', eye: '#111111' } },
+    // A esta escala, una zanja entre raíces es un barranco: de 7 a 14 losetas, imposibles de brincar.
+    // Se cruzan columpiándose del hilo de seda (poder-seda.js) amarrado a las ramitas de arriba.
     build(b) {
-      b.g(0, 13).P(3).d('T', 7).d('f', 11).e(10, undefined, 'hormiga');
-      b.p(16, 9, 3).p(21, 8, 3).c(16, 23, 6);
-      b.g(25, 40).isl(33, 36, 7).e(34, 7, 'saltarina').d('r', 28).d('f', 38).c(26, 31, 9).e(30, undefined, 'hormiga');
-      b.g(41, 52, 4).c(42, 51, 2).d('T', 47).d('f', 43).e(49, 4, 'alacranMini');
-      b.p(56, 6, 3).c(53, 61, 3).e(58, 3, 'avispaMini');
-      b.g(62, 76, 9).e(68, 9, 'rinoceronte').d('T', 64).d('f', 73).c(63, 75, 7);
-      b.p(79, 9, 3).p(84, 8, 3).p(89, 9, 3).c(78, 91, 6).e(84, 4, 'avispaMini');
-      b.g(92, 105).e(97, undefined, 'hormiga').h(100, 9).isl(102, 104, 6).e(103, 6, 'saltarina').d('r', 94);
-      b.g(106, 119).Gl(114).d('T', 109).d('f', 117).e(110, undefined, 'alacranMini');
+      // I · el primer columpio, con canisteles marcando el arco
+      b.g(0, 14).P(3).d('T', 7).d('f', 11).e(10, undefined, 'hormiga');
+      b.o('ramita', 18, 4).c(16, 20, 8);
+      // II · arrieras y la primera avispa que cruza el barranco
+      b.g(22, 36).d('r', 25).d('T', 33).e(28, undefined, 'hormiga').isl(30, 32, 7).e(31, 7, 'saltarina').c(29, 33, 6);
+      b.o('ramita', 40, 3).e(33, 5, 'avispaMini').c(38, 42, 9);
+      // III · hojas que se abren con Fresita cerca y el alacrán abajo
+      b.g(45, 56).d('f', 46).d('T', 55).e(52, undefined, 'alacranMini').p(48, 8, 3).p(52, 6, 3).c(52, 54, 4);
+      // IV · dos columpios seguidos: se suelta uno y se agarra el otro en el aire (hoja de descanso a la mitad)
+      b.o('ramita', 60, 4).p(63, 9, 2).o('ramita', 67, 4).c(59, 61, 9).c(66, 68, 9);
+      // V · tierra alta con el escarabajo rinoceronte
+      b.g(71, 86, 9).d('T', 73).d('r', 80).e(78, 9, 'rinoceronte').c(74, 84, 7);
+      // VI · el barranco más hondo, con avispas
+      b.o('ramita', 91, 2).e(100, 5, 'avispaMini').c(89, 93, 8);
+      // VII · arrieras, saltarina y una isla de piedra
+      b.g(96, 110).d('f', 98).e(100, undefined, 'hormiga').isl(103, 105, 7).e(104, 7, 'saltarina').c(103, 105, 6).d('T', 108);
+      // VIII · el último columpio del primer tramo
+      b.o('ramita', 114, 4).c(112, 116, 9);
+      // (2026-11-21, «el nivel es muy corto»: de aquí en adelante, seis tramos más)
+      // IX · la columna de arrieras: van en fila por el sendero; un tronco caído en medio
+      b.g(118, 142).d('T', 120).d('r', 122).e(124, undefined, 'hormiga').e(127, undefined, 'hormiga').e(130, undefined, 'hormiga').isl(134, 137, 9).c(134, 137, 8).d('f', 140);
+      // X · el barranco de los tres columpios (con una hoja de descanso que abre Fresita)
+      b.o('ramita', 147, 3).o('ramita', 154, 3).p(157, 9, 2).o('ramita', 161, 3).e(143, 6, 'avispaMini').c(146, 148, 8).c(153, 155, 8).c(160, 162, 8);
+      // XI · la escalera de hojas hasta la raíz alta
+      b.g(165, 172).d('T', 167).p(173, 9, 2).p(176, 7, 2).p(173, 5, 2).e(175, 4, 'avispaMini').c(173, 174, 8).c(176, 177, 6);
+      b.g(178, 192, 3).d('T', 181).d('f', 187).e(185, 3, 'saltarina').c(182, 190, 2);
+      // XII · el columpio de bajada: se salta de la raíz y se agarra la ramita en plena caída
+      b.o('ramita', 199, 4).c(196, 202, 9);
+      b.g(205, 214, 7).e(210, 7, 'saltarina').d('r', 213).c(206, 212, 5);
+      // XIII · el escarabajo rinoceronte y el alacrán entre piedras
+      b.g(215, 229).d('r', 217).d('T', 223).e(221, undefined, 'rinoceronte').e(226, undefined, 'alacranMini').c(218, 228, 9);
+      // XIV · el último barranco: dos columpios hacia la orilla alta, y la meta
+      b.o('ramita', 233, 3).o('ramita', 240, 3).e(247, 7, 'avispaMini').c(232, 234, 8).c(239, 241, 8);
+      b.g(244, 263, 9).d('T', 247).Gl(256).e(251, 9, 'hormiga').d('f', 260).c(246, 250, 7);
     },
   });
   if (typeof MUNDOS !== 'undefined') MUNDOS.push(ID);
@@ -294,6 +343,8 @@
   carrera.src = '../Roguelike/assets/forge/itzel/miniatura-correr-v1/sheet-transparent.png';
   const acciones = new Image();
   acciones.src = '../Roguelike/assets/forge/itzel/miniatura-acciones-v1/processed-v1/sheet-transparent.png';
+  const reposo = imgPerezosa('../Roguelike/assets/forge/itzel/miniatura-idle-piedra-v1/sheet-transparent.png');
+  const estadosReposo = new WeakMap();
   const estadoHerida = new WeakMap();
   const anterior = STYLE_MAP.miniatura.player;
   function heridaActiva(p, f) {
@@ -312,6 +363,22 @@
   }
   function itzelMacro(c, p, f) {
     const herida = heridaActiva(p, f);
+    const t = Number.isFinite(f?.t) ? f.t : 0, g = f?.g;
+    let r = estadosReposo.get(p);
+    if (!r) { r = { t, quieto: 0 }; estadosReposo.set(p, r); }
+    const dt = Math.max(0, Math.min(.05, t - r.t)); r.t = t;
+    const quieta = g && g.p === p && p.on !== false && Math.abs(p.vx || 0) < 3 && Math.abs(p.vy || 0) < 3 && !p.crouch && !p.pared && !(p.dash > 0) && !(p.inv > 0) && !herida && !(p.sq > .1) && !g.win && !(g.env && g.env.swim);
+    r.quieto = quieta ? r.quieto + dt : 0;
+    const fase = r.quieto - 2.5, ciclo = fase >= 0 ? fase % 8 : -1;
+    if (ciclo >= 0 && ciclo < 1.6) {
+      reposo.pide();
+      if (reposo.complete && reposo.naturalWidth === 1024 && reposo.naturalHeight === 512) {
+        const q = Math.min(7, Math.floor(ciclo / .2)), lado = 21 * 256 / 201;
+        c.save(); c.translate(p.x, p.y); c.scale((p.face || 1) < 0 ? -1 : 1, 1); c.imageSmoothingEnabled = true;
+        c.drawImage(reposo, (q % 4) * 256, Math.floor(q / 4) * 256, 256, 256, -lado / 2, -229 * lado / 256, lado, lado);
+        c.restore(); return;
+      }
+    }
     if (acciones.complete && acciones.naturalWidth && herida) { dibujaAccion(c, p, 3); return; }
     if (acciones.complete && acciones.naturalWidth && p.on === false) { dibujaAccion(c, p, (p.vy || 0) < 0 ? 1 : 2); return; }
     if (!sprite.complete || !sprite.naturalWidth) return anterior(c, p, f);

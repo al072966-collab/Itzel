@@ -32,6 +32,7 @@ const AVISOS = (() => {
   const pinta = (titulo, texto, icono) => {
     const el = document.createElement('div'); el.className = 'aviso';
     el.innerHTML = `<img src="${ico(icono, 5)}"><div><small>${titulo}</small><b>${texto}</b></div>`;
+    if (window.AUDIO_ARCHIVOS) AUDIO_ARCHIVOS.efecto(/logro/i.test(titulo) ? 'logro desbloqueado.mp3' : 'notificacion.mp3');
     caja.appendChild(el); setTimeout(() => el.classList.add('sale'), 3800); setTimeout(() => el.remove(), 4400);
   };
   // varios del mismo tipo salen juntos en un solo aviso
@@ -80,7 +81,6 @@ const LOGROS = [
   { id: 'ruptura', icon: 'jade', nombre: 'La Ruptura, sellada', desc: 'Venzan las 10 formas de la Ruptura, hasta la de los tentáculos.', meta: 10, valor: s => s.rupturaFormas || 0 },
   { id: 'jefes', icon: 'jade', nombre: 'Ni uno se escapa', desc: `Venzan a los ${N_JEFES} jefes.`, meta: N_JEFES, valor: s => Object.keys(s.jefes).filter(k => JEFES[k]).length },
   { id: 'veloces', icon: 'speed', nombre: 'Veloces', desc: 'Terminen una partida en menos de 20 minutos.', meta: 1, valor: s => s.veloces || 0 },
-  { id: 'maquinista', icon: 'wind', nombre: 'Maquinista', desc: 'Fresita abre 15 válvulas de vapor.', meta: 15, valor: s => s.valvulas || 0 },
   { id: 'anomalias', icon: 'rings', nombre: 'Cazadores de anomalías', desc: 'Atrapen 20 anomalías distintas.', meta: 20, valor: s => s.anomalias || 0 },
   { id: 'enciclopedista', icon: 'feather', nombre: 'Enciclopedista', desc: 'Descubran 60 cosas de la enciclopedia.', meta: 60, valor: () => ENCI.cuantos() },
   { id: 'otravez', icon: 'moon', nombre: 'Una más', desc: 'Pierdan una partida… y vuelvan a intentarlo.', meta: 1, valor: s => s.derrotas || 0 },
@@ -125,7 +125,6 @@ GANCHOS.en('victory', _victory => function () {
   if (RUN.time < 20 * 60) PROG.s.veloces = 1;
   sumaPartida(); revisaLogros();
 });
-if (MEC.POW.valvula) { const abre = MEC.POW.valvula.click; MEC.POW.valvula.click = (g, x, y) => { const ok = abre(g, x, y); if (ok && g === CUR) { PROG.s.valvulas = (PROG.s.valvulas || 0) + 1; revisaLogros(); } return ok; }; }
 
 // ---------------------------------------------------------------------
 //  PANTALLAS DEL MENÚ
@@ -147,8 +146,8 @@ function menuPrincipal() {
     <p class="sub">Hay aventuras que empiezan en Campeche</p>
     <div class="menu-lista panel">
       <button class="opcion" id="mJugar"><img src="${ico('heart', 5)}"><b>Jugar</b><span>Cuatro mundos al azar de ${MUNDOS.length}</span></button>
-      <button class="opcion" id="mLogros"><img src="${ico('cup', 5)}"><b>Logros</b><span>${logros} de ${LOGROS.length} desbloqueados</span></button>
-      <button class="opcion" id="mEnci"><img src="assets/menu-final/libro-enciclopedia.svg?v=1" alt=""><b>Enciclopedia</b><span>Mundos, enemigos, poderes y jefes</span></button>
+      <button class="opcion" id="mLogros"><img src="${ico('trofeo', 5)}"><b>Logros</b><span>${logros} de ${LOGROS.length} desbloqueados</span></button>
+      <button class="opcion" id="mEnci"><img src="${ico('libro', 5)}" alt=""><b>Enciclopedia</b><span>Mundos, enemigos, poderes y jefes</span></button>
     </div></div>`);
   if (!window.enApertura) BORDADO.teje(document.querySelector('.title .logo'));
   $('mJugar').onclick = pantallaControles; $('mLogros').onclick = pantallaLogros; $('mEnci').onclick = abrirEnci;

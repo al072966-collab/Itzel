@@ -101,6 +101,12 @@ window.hazFresita = D => {
   function arma(c, fr, f, s) {
     const t = f.t || 0, dt = s.dt, vx = s.vx, vy = s.vy, feliz = s.gira;
     const vel = suave(s, 'vel', clamp(Math.hypot(vx, vy) / 190, 0, 1), 6), sube = suave(s, 'sub', clamp(vy / 190, -1, 1), 6), mareada = (fr.daze || 0) > 0 || s.mareo > 0, presa = !!fr.atrapada;
+    // En reposo, Fresita mira su patita y la saluda; se suspende al moverse,
+    // usar el poder, girar, estar atrapada o mareada.
+    const esperando = f.g && f.g.fre === fr && Math.hypot(vx, vy) < 4 && !presa && !mareada && !feliz && !(fr.cool > 0);
+    s.esperaSaludo = esperando ? (s.esperaSaludo || 0) + dt : 0;
+    const faseSaludo = s.esperaSaludo > 3 ? (s.esperaSaludo - 3) % 8.5 : -1;
+    const saludo = faseSaludo >= 0 && faseSaludo < 2.6 ? Math.sin(Math.PI * faseSaludo / 2.6) ** 2 : 0;
     const nervios = suave(s, 'ner', presa ? 1 : 0, 12); // la agarró un bicho: tiembla, se retuerce, patalea y no parpadea
     if ((fr.cool || 0) > s.cool + .05) s.boca = .42; s.cool = fr.cool || 0; s.boca = Math.max(0, s.boca - dt);
     const salto = muelle(s, 'sal', s.boca > 0 ? 1 : 0, 170, 15);
@@ -115,12 +121,12 @@ window.hazFresita = D => {
       mueve(e, m.n.length, 1, u => Math.sin(t * 2.3 + k * 2.3 - u * 2.1) * .018 * (1 + u) * flojas + lado * (sopla * .036 + sube * -.012 - salto * .022 - nervios * .03) + nervios * Math.sin(t * 19 + k * 3 - u * 2) * .05 + (mareada ? lado * .045 : 0), 74, 8, 18, dt);
     }
     const rama = n => malla(c, T, n, M[n], tira(M[n], s.g[n].th, 1));
-    const pata = n => { const [x, y, d, pega] = PATAS[n], a = muelle(s, 'p' + n, Math.sin(t * 2.2 + d) * .1 * (1 - vel) * (1 - nervios) + vel * pega * (1 - nervios) - salto * .16 + nervios * Math.sin(t * 21 + d * 1.7) * .5, 70, 11); c.save(); gira(c, x, y, a); pon(c, T, n); c.restore(); };
+    const pata = n => { const [x, y, d, pega] = PATAS[n], a = muelle(s, 'p' + n, Math.sin(t * 2.2 + d) * .1 * (1 - vel) * (1 - nervios) + (n === 'pdn' ? saludo * (.42 + .16 * Math.sin(t * 7)) : 0) + vel * pega * (1 - nervios) - salto * .16 + nervios * Math.sin(t * 21 + d * 1.7) * .5, 70, 11); c.save(); gira(c, x, y, a); pon(c, T, n); c.restore(); };
     // ---- de atrás hacia adelante
     rama('g6'); rama('g5'); pata('pdf'); pata('ptf');
     malla(c, T, 'cola', M.cola, tira(M.cola, s.cola.th, fijosC));
     pon(c, T, 'cuerpo');
-    gira(c, CUELLO[0], CUELLO[1], muelle(s, 'cab', Math.sin(t * 1.5) * .018 - sube * .09 - salto * .05, 60, 10));
+    gira(c, CUELLO[0], CUELLO[1], muelle(s, 'cab', Math.sin(t * 1.5) * .018 - saludo * .09 - sube * .09 - salto * .05, 60, 10));
     pon(c, T, 'cabeza');
     s.ojo -= dt; if (s.ojo < -.13) s.ojo = 1.4 + Math.random() * 3.4;
     if (T.q.parpados && ((s.ojo < 0 && !presa) || mareada || feliz)) pon(c, T, 'parpados');
@@ -149,11 +155,42 @@ window.hazFresita = D => {
 // Ilustraciones originales de Fresita para cada técnica. La versión de
 // cielo anime conserva el títere anterior con sus animaciones completas.
 (() => {
-  const ids=['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','nouveau','deco','cyber','cinema','vapor','barro','eco','fuego','agua','hielo','cielo','hollin','bits8','bits32','bits64','miniatura','bordado'];
+  const hojasReposo = {
+    nouveau: imgPerezosa('../Roguelike/assets/forge/fresita/nouveau-idle-cola-v1/sheet-transparent.png'),
+    acuarela: imgPerezosa('../Roguelike/assets/forge/fresita/acuarela-idle-burbuja-v2/sheet-transparent.png'),
+    paper: imgPerezosa('../Roguelike/assets/forge/fresita/paper-idle-branquias-v1/sheet-transparent.png'),
+    bruma: imgPerezosa('../Roguelike/assets/forge/fresita/bruma-idle-mirar-v2/sheet-transparent.png'),
+    biolum: imgPerezosa('../Roguelike/assets/forge/fresita/biolum-idle-destellos-v1/sheet-transparent.png'),
+    barro: imgPerezosa('../Roguelike/assets/forge/fresita/barro-idle-contoneo-v1/sheet-transparent.png'),
+    lowpoly: imgPerezosa('../Roguelike/assets/forge/fresita/lowpoly-idle-curiosa-v1/sheet-transparent.png'),
+    neon: imgPerezosa('../Roguelike/assets/forge/fresita/neon-idle-ritmo-v2/sheet-transparent.png'),
+    fuego: imgPerezosa('../Roguelike/assets/forge/fresita/fuego-idle-mejilla-v1/sheet-transparent.png'),
+    hielo: imgPerezosa('../Roguelike/assets/forge/fresita/hielo-idle-abanico-v1/sheet-transparent.png'),
+    agua: imgPerezosa('../Roguelike/assets/forge/fresita/agua-idle-estirar-v1/sheet-transparent.png'),
+    cuaderno: imgPerezosa('../Roguelike/assets/forge/fresita/cuaderno-idle-estornudo-v1/sheet-transparent.png'),
+    bordado: imgPerezosa('../Roguelike/assets/forge/fresita/bordado-idle-hilo-v1/sheet-transparent.png'),
+    grabado: imgPerezosa('../Roguelike/assets/forge/fresita/grabado-idle-rascar-v1/sheet-transparent.png'),
+    oleo: imgPerezosa('../Roguelike/assets/forge/fresita/oleo-idle-pincelada-v1/sheet-transparent.png'),
+    vitral: imgPerezosa('../Roguelike/assets/forge/fresita/vitral-idle-destello-v1/sheet-transparent.png'),
+    deco: imgPerezosa('../Roguelike/assets/forge/fresita/deco-idle-engranaje-v1/sheet-transparent.png'),
+    eco: imgPerezosa('../Roguelike/assets/forge/fresita/eco-idle-mariposa-v2/sheet-transparent.png'),
+    cyber: imgPerezosa('../Roguelike/assets/forge/fresita/cyber-idle-pez-v1/sheet-transparent.png'),
+    cinema: imgPerezosa('../Roguelike/assets/forge/fresita/cinema-idle-curiosa-v2/sheet-transparent.png'),
+    hollin: imgPerezosa('../Roguelike/assets/forge/fresita/hollin-idle-sacudir-v1/sheet-transparent.png'),
+    sumie: imgPerezosa('../Roguelike/assets/forge/fresita/sumie-idle-respirar-v1/sheet-transparent.png'),
+    bits8: imgPerezosa('../Roguelike/assets/forge/fresita/bits8-idle-estrella-v2/sheet-transparent.png'),
+    bits32: imgPerezosa('../Roguelike/assets/forge/fresita/bits32-idle-escondite-v2/sheet-transparent.png'),
+    bits64: imgPerezosa('../Roguelike/assets/forge/fresita/bits64-idle-mejilla-v1/sheet-transparent.png'),
+    flat: imgPerezosa('../Roguelike/assets/forge/fresita/flat-idle-corazon-v1/sheet-transparent.png'),
+    codex: imgPerezosa('../Roguelike/assets/forge/fresita/codex-idle-branquias-v1/sheet-transparent.png'),
+    cielo: imgPerezosa('../Roguelike/assets/forge/fresita/cielo-idle-estrella-v1/sheet-transparent.png'),
+    miniatura: imgPerezosa('../Roguelike/assets/forge/fresita/miniatura-idle-cola-v1/sheet-transparent.png')
+  };
+  const ids=['pixel','ocaso','acuarela','paper','biolum','flat','sumie','neon','bruma','lowpoly','codex','oleo','vitral','cuaderno','grabado','nouveau','deco','cyber','cinema','barro','eco','fuego','agua','hielo','cielo','hollin','bits8','bits32','bits64','miniatura','bordado'];
   const disponibles=new Set(ids), imagenes=Object.create(null), envolturas=new WeakMap();
   function imagen(id){
     if(!disponibles.has(id)) return null;
-    if(!imagenes[id]){const nuevos=new Set(['eco','bits32','bits64','bits8','acuarela','fuego','deco','nouveau','bordado','biolum','bruma','cielo','hollin','agua','codex','cuaderno','cyber','flat','grabado','lowpoly','oleo','hielo','paper','barro','cinema','miniatura','vapor','neon','sumie','vitral']);imagenes[id]=imgPerezosa(nuevos.has(id)?'../Roguelike/assets/personajes/fresita-nuevas/'+id+'.png':'../Roguelike/assets/personajes/fresita-estilos/'+id+'.png');}
+    if(!imagenes[id]){const nuevos=new Set(['eco','bits32','bits64','bits8','acuarela','fuego','deco','nouveau','bordado','biolum','bruma','cielo','hollin','agua','codex','cuaderno','cyber','flat','grabado','lowpoly','oleo','hielo','paper','barro','cinema','miniatura','neon','sumie','vitral']);imagenes[id]=imgPerezosa(nuevos.has(id)?'../Roguelike/assets/personajes/fresita-nuevas/'+id+'.png':'../Roguelike/assets/personajes/fresita-estilos/'+id+'.png');}
     const im=imagenes[id];return im.complete&&im.naturalWidth?im:null;
   }
   // lo que siente la ilustración (como el títere): hacia dónde va, sus vueltas cuando la llevan en círculos y el mareo después
@@ -162,7 +199,7 @@ window.hazFresita = D => {
     let s=ESTADOS.get(fr); const ahora=performance.now()/1000;
     if(!s){s={x:fr.x,y:fr.y,tt:ahora,cara:fr.face||1,vista:fr.face||1,ac:0,rot:0,rumbo:0,gira:false,sentido:1,quieto:0,mareo:0,tGira:0,chispas:[],tc:0};ESTADOS.set(fr,s);}
     const dt=Math.min(.1,Math.max(0,ahora-s.tt)); s.tt=ahora; if(!dt)return s;
-    const vx=(fr.x-s.x)/dt, vy=(fr.y-s.y)/dt; s.x=fr.x; s.y=fr.y; s.ac*=Math.exp(-dt*.35);
+    const vx=(fr.x-s.x)/dt, vy=(fr.y-s.y)/dt; s.velReposo=Math.hypot(vx,vy); s.x=fr.x; s.y=fr.y; s.ac*=Math.exp(-dt*.35);
     // mira hacia donde se mueve de verdad (mouse, mando o lo que la lleve); quieta, hacia donde la pide el juego
     if(Math.abs(vx)>16)s.cara=Math.sign(vx); else if(Math.hypot(vx,vy)<8&&fr.face)s.cara=fr.face;
     const libre=!fr.atrapada&&!((fr.daze||0)>0), a=Math.atan2(vy,vx);
@@ -190,6 +227,22 @@ window.hazFresita = D => {
     const pixel=!!(f.st&&(f.st.pixel||f.st.fixedS));
     const nueva=id!=='pixel'&&id!=='ocaso';
     const s=siente(fr,f), v=s.vista, giro=(v<0?-1:1)*Math.max(.28,Math.abs(v));
+    // En la enciclopedia se conserva el diseño de referencia; las hojas
+    // completas de idle se reproducen durante la partida.
+    if(hojasReposo[id]&&!(f&&f.enciclopedia)){
+      const idle=hojasReposo[id]; idle.pide();
+      const ahora=Number.isFinite(f.t)?f.t:0, dt=Math.max(0,Math.min(.05,ahora-(s.idleT??ahora))); s.idleT=ahora;
+      const desplazamiento=Math.hypot(fr.x-(s.idleX??fr.x),fr.y-(s.idleY??fr.y));s.idleX=fr.x;s.idleY=fr.y;
+      const quieta=f.g&&f.g.fre===fr&&desplazamiento<Math.max(.07,dt*4)&&!fr.atrapada&&!(fr.daze>0)&&!(fr.cool>0)&&!s.gira&&!(s.mareo>0)&&!f.g.win&&!(id==='bruma'&&f.g.haz);
+      s.idleTiempo=quieta?(s.idleTiempo||0)+dt:0;
+      const fase=s.idleTiempo-3, ciclo=fase>=0?fase%8.5:-1;
+      if(ciclo>=0&&ciclo<1.6&&idle.complete&&idle.naturalWidth===1024&&idle.naturalHeight===512){
+        const q=Math.min(7,Math.floor(ciclo/.2)),lado=22*256/(id==='hielo'?204:id==='bits32'?159:id==='bits64'?202:id==='flat'?197:id==='codex'?204:id==='cielo'?199:id==='miniatura'?207:217);
+        c.save();c.translate(fr.x,fr.y);c.rotate(s.rot);c.scale(-giro,1);c.imageSmoothingEnabled=!pixel;
+        const ajuste=id==='bits8'?([180,200,205,209,209,202,181,180][q]-180)*lado/256:id==='flat'?8*lado/256:id==='codex'?4*lado/256:0;
+        c.drawImage(idle,(q%4)*256,Math.floor(q/4)*256,256,256,-lado/2,-lado/2-.7-ajuste,lado,lado);c.restore();return;
+      }
+    }
     c.save(); chispasYMareo(c,s,fr,t,pixel); c.restore();
     c.save();c.translate(fr.x,fr.y+Math.sin(t*2)*.45);c.rotate(s.rot);c.scale(nueva?-giro:giro,1);
     c.imageSmoothingEnabled=!pixel;
@@ -211,9 +264,20 @@ window.hazFresita = D => {
     c.restore();
   }
   // Ocaso en siluetas: la Fresita dorada de ocho poses de flotación (tools/fresita-ocaso.py). Mira a la derecha en la hoja.
+  const idleOcaso = imgPerezosa('../Roguelike/assets/forge/fresita/ocaso-idle-cola-v1/sheet-transparent.png');
   const FLOTA={n:8,w:320,h:190,fps:1000/140}, hojaFlota=imgPerezosa('../Roguelike/assets/personajes/fresita-ocaso/flotacion.png?v=1');
   function dibujaFlota(c,fr,f){
     const t=f.t||0, ancho=26, alto=ancho*FLOTA.h/FLOTA.w, s=siente(fr,f), v=s.vista, giro=(v<0?-1:1)*Math.max(.28,Math.abs(v)), q=Math.floor(t*FLOTA.fps)%FLOTA.n;
+    const ahora=Number.isFinite(f.t)?f.t:0, dt=Math.max(0,Math.min(.05,ahora-(s.idleT??ahora))); s.idleT=ahora;
+    const desplazamiento=Math.hypot(fr.x-(s.idleX??fr.x),fr.y-(s.idleY??fr.y));s.idleX=fr.x;s.idleY=fr.y;
+    const quieta=f.g&&f.g.fre===fr&&desplazamiento<Math.max(.07,dt*4)&&!fr.atrapada&&!(fr.daze>0)&&!(fr.cool>0)&&!s.gira&&!(s.mareo>0)&&!f.g.win;
+    s.idleTiempo=quieta?(s.idleTiempo||0)+dt:0;
+    const fase=s.idleTiempo-3, ciclo=fase>=0?fase%8.5:-1;
+    if(ciclo>=0&&ciclo<1.6&&idleOcaso.complete&&idleOcaso.naturalWidth===1024&&idleOcaso.naturalHeight===512){
+      const cuadro=Math.min(7,Math.floor(ciclo/.2)), lado=26*256/220;
+      c.save();c.translate(fr.x,fr.y);c.rotate(s.rot);c.scale(giro,1);c.imageSmoothingEnabled=true;
+      c.drawImage(idleOcaso,(cuadro%4)*256,Math.floor(cuadro/4)*256,256,256,-lado/2,-lado/2,lado,lado);c.restore();return;
+    }
     c.save(); chispasYMareo(c,s,fr,t,false); c.restore();
     c.save(); c.translate(fr.x,fr.y+Math.sin(t*2)*.45); c.rotate(s.rot); c.scale(giro,1); c.imageSmoothingEnabled=true; c.imageSmoothingQuality='high';
     c.drawImage(hojaFlota,q*FLOTA.w,0,FLOTA.w,FLOTA.h,-ancho*.5,-alto*.55,ancho,alto);
@@ -237,12 +301,26 @@ window.hazFresita = D => {
 // Fresita elegida para el mundo de pixel art de 16 bits.
 (() => {
   const sprite = imgPerezosa('../Roguelike/assets/personajes/fresita-pixel16.png');
+  const idle = imgPerezosa('../Roguelike/assets/forge/fresita/pixel-idle-bostezo-v1/sheet-transparent.png');
+  const reposos = new WeakMap();
   const anterior=STYLE_MAP.pixel.fresita;
   let base=null, animada=null;
   function dibujar(c,fr,f){
     const derivado=String(window.estiloArteDerivado||'').split('~')[0];
     if((derivado&&derivado!=='pixel')||!sprite.complete||!sprite.naturalWidth)return anterior(c,fr,f);
     const t=f.t||0,ancho=25,alto=ancho*sprite.naturalHeight/sprite.naturalWidth;
+    let estado=reposos.get(fr);
+    if(!estado){estado={t,x:fr.x,y:fr.y,quieto:0};reposos.set(fr,estado);}
+    const dt=Math.max(0,Math.min(.05,t-estado.t)), desplazamiento=Math.hypot(fr.x-estado.x,fr.y-estado.y);
+    estado.t=t;estado.x=fr.x;estado.y=fr.y;
+    const quieta=f.g&&f.g.fre===fr&&desplazamiento<.07&&!fr.atrapada&&!(fr.daze>0)&&!(fr.cool>0)&&!fr.feliz&&!f.g.win;
+    estado.quieto=quieta?estado.quieto+dt:0;
+    const fase=estado.quieto-3,ciclo=fase>=0?fase%8.5:-1;
+    if(ciclo>=0&&ciclo<1.6&&idle.complete&&idle.naturalWidth===1024&&idle.naturalHeight===512){
+      const cuadro=Math.min(7,Math.floor(ciclo/.2)),lado=25*256/216;
+      c.save();c.translate(fr.x,fr.y);c.scale((fr.face||1)>0?-1:1,1);c.imageSmoothingEnabled=false;
+      c.drawImage(idle,(cuadro%4)*256,Math.floor(cuadro/4)*256,256,256,-lado/2,-lado/2,lado,lado);c.restore();return;
+    }
     c.save();c.translate(fr.x,fr.y+Math.sin(t*2)*.45);
     // La referencia mira a la izquierda; se invierte cuando avanza a la derecha.
     c.scale((fr.face||1)>0?-1:1,1);c.imageSmoothingEnabled=false;

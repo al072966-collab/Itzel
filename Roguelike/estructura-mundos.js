@@ -21,6 +21,12 @@
   for (const id of Object.keys(ESTRUCTURA)) {
     const r = ESTRUCTURA[id].reglas; if (r) PIEZAS.REGLAS[id] = Object.assign(PIEZAS.REGLAS[id] || {}, r);
   }
+  // Aluxes de los Chenes termina en el Paseo de las Ánimas: su orden es una historia, no se revuelve por piezas
+  PIEZAS.REGLAS.bruma = Object.assign(PIEZAS.REGLAS.bruma || {}, { fijo: true });
+  // El cuaderno no lleva plataformas generadas (ni cadenas de saltos): solo las líneas de lápiz que dibujó el nivel
+  PIEZAS.REGLAS.cuaderno = Object.assign(PIEZAS.REGLAS.cuaderno || {}, { sinCadenas: true });
+  // Campeche 1-1 se arma alrededor del poder (el foso de ladrillos y la balanza): si las piezas se revuelven puede salir sin ellos
+  PIEZAS.REGLAS.bits8 = Object.assign(PIEZAS.REGLAS.bits8 || {}, { fijo: true });
   const antes = PIEZAS.nivel;
   PIEZAS.nivel = function (def) {
     const e = def && ESTRUCTURA[def.id];

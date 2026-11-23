@@ -56,6 +56,13 @@ window.hazItzel = D => {
   }
   function arma(c, p, f, s) {
     const t = f.t || 0, g = f.g, dt = s.dt, env = g && g.env, vx = p.vx || 0, vy = p.vy || 0, sp = Math.abs(vx), dash = p.dash > 0, nada = !!(env && env.swim), aire = p.on === false && !nada, gana = !!(g && g.win), agacha = !!p.crouch;
+    // Secuencia larga de espera para la Itzel principal. Se dibuja con
+    // el mismo títere a cada cuadro, sin sustituir su cara ni su ropa.
+    const puedeEsperar = D === (TITERES_DATOS.itzelCorto || TITERES_DATOS.itzel) && g && (g.p === p || f.enciclopedia) && p.on !== false && sp < 3 && Math.abs(vy) < 3 && !dash && !nada && !gana && !agacha && !(p.inv > 0) && !(p.sq > .1);
+    s.esperaFalda = puedeEsperar ? (s.esperaFalda || 0) + dt : 0;
+    const faseEspera = s.esperaFalda > 1.2 ? (s.esperaFalda - 1.2) % 16 : -1;
+    const gesto = (inicio, fin) => faseEspera >= inicio && faseEspera < fin ? Math.sin(Math.PI * (faseEspera - inicio) / (fin - inicio)) ** 2 : 0;
+    const gestoFalda = gesto(0, 3.0), cambiaPeso = gesto(4.1, 6.8), estiraIdle = gesto(8, 10.8), mira = gesto(12, 14.6);
     // poses que se mezclan
     if ((p.inv || 0) > s.inv + .2) s.herida = .55; s.inv = p.inv || 0; s.herida = Math.max(0, s.herida - dt);
     const corre = suave(s, 'kc', !aire && !nada ? clamp(sp / 118, 0, 1) : 0, 13), kAire = suave(s, 'ka', aire ? 1 : 0, 14), sube = suave(s, 'ks', clamp(-vy / 330, -1, 1), 10), kNada = suave(s, 'kn', nada ? 1 : 0, 6), kDash = suave(s, 'kd', dash ? 1 : 0, 24), kHer = suave(s, 'kh', s.herida > 0 ? 1 : 0, 18), kAg = suave(s, 'kg', agacha ? 1 : 0, 12), kGana = suave(s, 'kw', gana ? 1 : 0, 7);
@@ -63,9 +70,9 @@ window.hazItzel = D => {
     const lleva = suave(s, 'lv', clamp(sp / 140, 0, 1), 8);
     // ---- pies: dónde está cada uno, respecto a donde pisa en reposo
     const pn = paso(s.fase, 104 * corre, 70 * corre), pf = paso((s.fase + .5) % 1, 104 * corre, 70 * corre), sb = sube > 0 ? 1 : 0, K = 1 - corre, nadaP = Math.sin(t * 8) * 90 * kNada;
-    const piN = [TOB_N[0] + G.quieto + corre * 48 + pn[0] + kAire * K * (sb ? 170 : 70) + kDash * 165 - kAg * 40 + kNada * 130 + nadaP, TOB_N[1] + pn[1] - kAire * K * (sb ? 210 : 70) - kDash * 110 - kNada * 90];
-    const piF = [TOB_F[0] - corre * 14 + pf[0] + kAire * K * (sb ? -110 : -150) - kDash * 190 + kAg * 60 - kNada * 150 - nadaP, TOB_F[1] + pf[1] - kAire * K * (sb ? 90 : 130) - kDash * 60 - kNada * 60];
-    const inclN = pn[2] * corre + kAire * K * (sb ? -.2 : .5) - kDash * .3, inclF = pf[2] * corre + kAire * K * .45 + kDash * .3;
+    const piN = [TOB_N[0] + G.quieto + cambiaPeso * 25 + corre * 48 + pn[0] + kAire * K * (sb ? 170 : 70) + kDash * 165 - kAg * 40 + kNada * 130 + nadaP, TOB_N[1] + pn[1] - kAire * K * (sb ? 210 : 70) - kDash * 110 - kNada * 90];
+    const piF = [TOB_F[0] - cambiaPeso * 12 - corre * 14 + pf[0] + kAire * K * (sb ? -110 : -150) - kDash * 190 + kAg * 60 - kNada * 150 - nadaP, TOB_F[1] + pf[1] - kAire * K * (sb ? 90 : 130) - kDash * 60 - kNada * 60];
+    const inclN = cambiaPeso * .08 + pn[2] * corre + kAire * K * (sb ? -.2 : .5) - kDash * .3, inclF = pf[2] * corre + kAire * K * .45 + kDash * .3;
     // ---- tronco
     const cae = suave(s, 'kl', !aire ? Math.max(0, p.sq || 0) : 0, 22), bote = (11 + Math.cos(ph * 2) * 7) * corre + resp * 3 * (1 - corre) + cae * 190 + kAg * 118 - (gana ? Math.abs(Math.sin(t * 7)) * 90 : 0); // lo más bajo es al pisar y lo más alto cuando el pie pasa bajo el cuerpo
     const inclina = muelle(s, 'inc', corre * .075 + kDash * .36 + kAire * (sube > 0 ? -.05 : .07) + kNada * .5 + kAg * .28 - kHer * .34, 90, 12), balanceo = Math.cos(ph) * .018 * corre + mece * .012 * (1 - corre);
@@ -76,6 +83,7 @@ window.hazItzel = D => {
     if (kAire > .01) { const u = (sube + 1) / 2, ale = Math.sin(t * 11) * .06 * (1 - u); bN = lerp(bN, lerp(.6, .36, u) + ale, kAire); bF = lerp(bF, lerp(-.66, -.95, u) - ale, kAire); cN = lerp(cN, lerp(-.7, -.8, u), kAire); cF = lerp(cF, lerp(-.72, -.85, u), kAire); }
     if (kNada > .01) { const br = Math.sin(t * 4.4); bN = lerp(bN, 1.3 + br * .9, kNada); bF = lerp(bF, -1.3 + br * .9, kNada); }
     bN = lerp(bN, 1, kDash); bF = lerp(bF, .9, kDash); bN = lerp(bN, 1.3, kHer); bF = lerp(bF, -1.3, kHer); bN = lerp(bN, 2.3 + Math.sin(t * 8) * .22, kGana); bF = lerp(bF, -2.3 - Math.sin(t * 8) * .22, kGana);
+    bN -= gestoFalda * .40 + estiraIdle * .28; cN += gestoFalda * .35 - estiraIdle * .20; bF += gestoFalda * .12 + estiraIdle * .22; cF -= estiraIdle * .16;
     bN = muelle(s, 'bn', bN, 90, 16); bF = muelle(s, 'bf', bF, 90, 16); cN = muelle(s, 'cn', cN, 70, 14); cF = muelle(s, 'cf', cF, 70, 14); // el brazo cuelga: llega un poco tarde y se asienta
     // ---- falda
     // la falda en el aire: al subir la tela se queda abajo y se cierra contra las piernas; al caer se infla como paraguas;
@@ -94,7 +102,7 @@ window.hazItzel = D => {
 
     // -------------------- dibujo --------------------
     // ---- trenza: pesa. Cada tramo tiene un resorte suave hacia su forma y sigue al de arriba con retraso, así la onda baja por el pelo
-    const lean = inclina + balanceo, cabeza = -inclina * .5 + kHer * .2 + (Math.sin(t * .9) * .022 + Math.sin(t * .37 + 1) * .02) * (1 - corre) + Math.cos(ph * 2) * .01 * corre + (kAire * (sube > 0 ? -.08 : .08)) + cae * .16;
+    const lean = inclina + balanceo + cambiaPeso * .025 - estiraIdle * .015, cabeza = gestoFalda * .10 + mira * .11 - estiraIdle * .035 - inclina * .5 + kHer * .2 + (Math.sin(t * .9) * .022 + Math.sin(t * .37 + 1) * .02) * (1 - corre) + Math.cos(ph * 2) * .01 * corre + (kAire * (sube > 0 ? -.08 : .08)) + cae * .16;
     const local = vx * (p.face || 1), acX = dt ? clamp((local - s.pvx) / dt, -2600, 2600) : 0; s.pvx = local;
     if ((p.face || 1) !== s.cara) { s.cara = p.face || 1; if (TRENZA) for (let i = 0; i < s.tv.length; i++) s.tv[i] -= .22; for (const k of MECHONES) { const e = s.pelo[k]; for (let i = 0; i < e.tv.length; i++) e.tv[i] -= .5; } } // al voltearse, el pelo tarda en alcanzarla
     const sc = Math.sin(lean), cc = Math.cos(lean), sh = Math.sin(cabeza), ch = Math.cos(cabeza);
@@ -114,7 +122,7 @@ window.hazItzel = D => {
     // brazo de atrás
     c.save(); gira(c, CAD[0], CAD[1], lean); brazo(c, 'brazoF', HOMBRO_F, bF, cF); c.restore();
     // forro, piernas y falda: la tela de adelante cae sobre las piernas
-    const ola = u => [vuelo * u * u + Math.sin(ph - .6 - u * 2.4) * u * u * 13 * corre + Math.sin(t * (2.2 + kAire * 6) - u * 3.4) * u * u * (5 + aleteo), 1 + abre * u + Math.sin(t * (1.9 + kAire * 9) - u * 4) * u * (.008 + kAire * .025 + infla * .035)];
+    const ola = u => [(vuelo + gestoFalda * 30 * Math.sin(t * 2.2)) * u * u + Math.sin(ph - .6 - u * 2.4) * u * u * 13 * corre + Math.sin(t * (2.2 + kAire * 6) - u * 3.4) * u * u * (5 + aleteo), 1 + abre * u + Math.sin(t * (1.9 + kAire * 9) - u * 4) * u * (.008 + kAire * .025 + infla * .035)];
     c.save(); gira(c, CINTURA[0], CINTURA[1], inclina * .45 + balanceo * .5); renglones(c, T, 'faldaAtras', CINTURA[0], CINTURA[1], G.orilla, 8, ola, largo); c.restore();
     c.save(); c.translate(0, -bote); pierna(c, 'piernaF', 'pieF', CAD_F, ROD_F, TOB_F, piF, bote, inclF, 'F'); pierna(c, 'piernaN', 'pieN', CAD_N, ROD_N, TOB_N, piN, bote, inclN, 'N'); c.restore();
     c.save(); gira(c, CINTURA[0], CINTURA[1], inclina * .45 + balanceo * .5); renglones(c, T, 'falda', CINTURA[0], CINTURA[1], G.orilla, 18, ola, largo); c.restore();
@@ -676,31 +684,7 @@ window.TITERE_MUNDOS = new Set(['anime']);
   GANCHOS.en('aplicaElegido', previo => function (id,k=0){const nombre=previo(id,k);instalar(id);return nombre;});
 })();
 
-// Itzel de Vapor y engranajes, con gafas y flores.
-(() => {
-  const sprite = imgPerezosa('../Roguelike/assets/personajes/itzel-vapor-opcion3.png');
-  const anterior = STYLE_MAP.vapor.player;
-  function itzelVapor(c, p, f) {
-    if (!sprite.complete || !sprite.naturalWidth) return anterior(c, p, f);
-    const corre = p.on && Math.abs(p.vx || 0) > 25;
-    if (corre) return anterior(c, p, f);
-    const paso = corre ? Math.sin(p.run || 0) : 0;
-    const aire = !p.on, bote = corre ? -Math.abs(paso)*.5 : Math.sin((f.t||0)*2)*.1;
-    const sx=140, sy=70, sw=735, sh=1410, corte=1180, mitad=380;
-    const escala=21/sh, x=-sw*escala/2, y=-21;
-    c.save(); c.translate(p.x,p.y); c.scale((p.face||1)<0?-1:1,1);
-    c.imageSmoothingEnabled=true;
-    // Torso y piernas proceden de regiones separadas para evitar duplicados.
-    c.drawImage(sprite,sx,sy,sw,corte,x,y+bote,sw*escala,corte*escala);
-    const dx=aire?.7:paso*.85, h=(sh-corte)*escala;
-    c.drawImage(sprite,sx,sy+corte,mitad,sh-corte,x-dx,y+corte*escala+bote+(aire?-.4:Math.max(0,paso)*-.4),mitad*escala,h);
-    c.drawImage(sprite,sx+mitad,sy+corte,sw-mitad,sh-corte,x+mitad*escala+dx,y+corte*escala+bote+(aire?-.2:Math.min(0,paso)*.4),(sw-mitad)*escala,h);
-    c.restore();
-  }
-  function instalar(id) { if(id==='vapor'&&STYLE_MAP.vapor) STYLE_MAP.vapor.player=itzelVapor; }
-  instalar('vapor');
-  GANCHOS.en('aplicaElegido', previo => function (id,k=0){const nombre=previo(id,k);instalar(id);return nombre;});
-})();
+;
 
 // Itzel propia del Diorama 2.5D, con acabado de maqueta.
 (() => {
@@ -819,9 +803,12 @@ window.TITERE_MUNDOS = new Set(['anime']);
       // La oreja queda del mismo negro que la cara; no añade otra pieza.
       x.fillStyle='#000000';x.beginPath();x.moveTo(350,410);x.lineTo(485,410);x.lineTo(485,520);x.lineTo(350,520);x.closePath();x.fill();
       // Uniformar el negro de la silueta evita que se vea un parche oscuro.
-      const datos=x.getImageData(0,0,limpia.width,limpia.height);
-      for(let i=0;i<datos.data.length;i+=4) if(datos.data[i+3]>0&&datos.data[i]<35&&datos.data[i+1]<35&&datos.data[i+2]<35) datos.data[i]=datos.data[i+1]=datos.data[i+2]=0;
-      x.putImageData(datos,0,0);
+      // (con la página abierta como archivo local el navegador no deja leer los píxeles de una imagen: sin este paso se ve igual de bien y no truena)
+      try {
+        const datos=x.getImageData(0,0,limpia.width,limpia.height);
+        for(let i=0;i<datos.data.length;i+=4) if(datos.data[i+3]>0&&datos.data[i]<35&&datos.data[i+1]<35&&datos.data[i+2]<35) datos.data[i]=datos.data[i+1]=datos.data[i+2]=0;
+        x.putImageData(datos,0,0);
+      } catch (e) { /* lienzo manchado: se queda sin uniformar el negro */ }
     }
     return limpia;
   }

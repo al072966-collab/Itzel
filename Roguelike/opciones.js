@@ -66,8 +66,8 @@
     showScreen(`<div class="title opciones"><img class="hstitch" alt="Sonido" src="${stitched('Sonido', 8)}"><p class="sub">Ajusta el sonido sin salir de la partida</p><div class="op-lista panel">
       ${volumen('musica', 'musica', 'Música', 'Volumen de las canciones del juego.', 0)}
       ${volumen('efectos', 'sonido', 'Sonidos del juego', 'Saltos, pasos, botones y poderes.')}
-      ${volumen('enemigos', 'sonido', 'Enemigos y jefes', 'Golpes, avisos y ataques; se combina con el volumen de sonidos.')}
-      ${volumen('ambiente', 'sonido', 'Ambiente', 'Agua y sonidos del entorno.')}
+      ${volumen('enemigos', 'o_enemigos', 'Enemigos y jefes', 'Golpes, avisos y ataques; se combina con el volumen de sonidos.')}
+      ${volumen('ambiente', 'o_ambiente', 'Ambiente', 'Agua y sonidos del entorno.')}
       </div><button class="patch" id="sonidoVolver">Volver</button></div>`);
     conectarVolumen(); $('sonidoVolver').onclick = volver;
   }
@@ -84,13 +84,13 @@
         ${fila('jugadores', 'control', 'Jugadores', 'Con dos personas, una es Itzel (teclado o primer control) y la otra es Fresita (mouse o segundo control). Al terminar un mundo cada una escoge el camino y, si no coinciden, decide una moneda.' + (enPartida && RUN && RUN.jugadores !== jug() ? ' <i>Se aplica desde la siguiente partida.</i>' : ''), [[1, 'Una persona'], [2, 'Dos personas']], jug())}
         ${volumen('musica', 'musica', 'Música', 'Volumen de las canciones del juego.', 0)}
         ${volumen('efectos', 'sonido', 'Sonidos del juego', 'Saltos, pasos, botones y poderes.')}
-        ${volumen('enemigos', 'sonido', 'Enemigos y jefes', 'Golpes, avisos y ataques; se combina con el volumen de sonidos.')}
-        ${volumen('ambiente', 'sonido', 'Ambiente', 'Agua y sonidos del entorno.')}
+        ${volumen('enemigos', 'o_enemigos', 'Enemigos y jefes', 'Golpes, avisos y ataques; se combina con el volumen de sonidos.')}
+        ${volumen('ambiente', 'o_ambiente', 'Ambiente', 'Agua y sonidos del entorno.')}
         ${fila('pantalla', 'pantalla', 'Pantalla completa', 'El juego ocupa toda la pantalla (también con F11).', [[true, 'Sí'], [false, 'No']], !!document.fullscreenElement)}
-        ${fila('sacudida', 'sacudida', 'Sacudida de la pantalla', 'Los golpes fuertes y los jefes sacuden la vista. Apágala si te marea.', [[true, 'Sí'], [false, 'No']], O.sacudida)}
+        ${fila('sacudida', 'o_sacudida', 'Sacudida de la pantalla', 'Los golpes fuertes y los jefes sacuden la vista. Apágala si te marea.', [[true, 'Sí'], [false, 'No']], O.sacudida)}
         ${fila('cine', 'claqueta', 'Cinemáticas de la historia', 'La entrada y las presentaciones de los jefes. Siempre se pueden volver a ver en Menú › Cinemáticas.', [['ver', 'Verlas'], ['saltar', 'Saltarlas']], O.cine)}
         ${fila('tarjetas', 'tarjeta', 'Tarjetas de descubrimiento', 'Sale una tarjetita en la esquina cuando encuentran algo nuevo.', [[true, 'Sí'], [false, 'No']], O.tarjetas)}
-        ${fila('vibracion', 'control', 'Vibración del control', 'El control vibra cuando Itzel recibe un golpe.', [[true, 'Sí'], [false, 'No']], O.vibracion)}
+        ${fila('vibracion', 'o_vibracion', 'Vibración del control', 'El control vibra cuando Itzel recibe un golpe.', [[true, 'Sí'], [false, 'No']], O.vibracion)}
       </div>
       <div class="op-control panel"><img src="${ico('control', 6)}"><div>
         <b>${n.length ? (n.length > 1 ? `${n.length} controles conectados` : 'Control conectado') : 'Con control'}</b>
@@ -141,20 +141,6 @@
   // ---------------------------------------------------------------------
   //  PANTALLA: CRÉDITOS (pasan solos; con el mouse encima se detienen)
   // ---------------------------------------------------------------------
-  const VAPOR = [
-    ['Steampunk Inspired Tiles', 'AR (Anton Revin)', 'CC0'],
-    ['Steampunk Level Tileset Mega Pack', 'KnoblePersona', 'CC-BY 3.0'],
-    ['Steampunk Turrets', 'mauriku', 'CC-BY 3.0'],
-    ['Cog Sheet y Cog Sheet 2', 'Bluce', 'CC-BY-SA 3.0'],
-    ['Robot Sprite BrawlBot', 'wuhu', 'CC0'],
-    ['Mechanical Spider', 'Umplix', 'CC0'],
-    ['Drone 48x48px', 'NettySvit', 'CC0'],
-    ['Steam monster', 'Blarumyrran', 'CC0'],
-    ['Animated Coins', 'Clint Bellanger', 'CC-BY 3.0'],
-    ['Bevouliin Free Game Obstacle Spikes', 'bevouliin.com', 'CC0'],
-    ['Industrial Parallax Background', 'Luis Zuno (ansimuz)', 'CC0'],
-    ['2D Explosion Animations Frame by Frame', 'Sinestesia', 'CC0'],
-  ];
   function pantallaCreditos(volver = menuPrincipal) {
     if (typeof paraVistas === 'function') paraVistas();
     showScreen(`<div class="creditos"><div class="cr-marco"><div class="cr-rollo">
@@ -162,20 +148,14 @@
       <p class="cr-chico">Un juego de</p><h2>David Cervantes Malfavon</h2>
       <p>Proyecto final · 7.º semestre de ITS<br>Universidad Autónoma de Campeche</p>
       <img class="cr-flor" src="${ico('flor', 4)}">
-      <h3>Idea, diseño y dirección de arte</h3><p>David Cervantes Malfavon</p>
+      <h3>Idea, diseño y dirección de arte</h3><p>David Cervantes Malfavon<br><small>con ayuda de ChatGPT</small></p>
       <h3>Programación</h3><p>David Cervantes Malfavon<br><small>con ayuda de Claude (Anthropic)</small></p>
-      <h3>Arte de referencia y la Ruptura de la pirámide</h3><p>David Cervantes Malfavon</p>
       <h3>Personajes</h3><p>Itzel · Fresita, la ajolote rosa<br>los ajolotes azul, naranja y violeta</p>
       <img class="cr-flor" src="${ico('flor', 4)}">
-      <h3>Tipografías</h3><p>Alegreya y Alegreya Sans<br><small>Huerta Tipográfica (Juan Pablo del Peral) · SIL Open Font License</small></p>
-      <h3>Fotografía de «Calakmul en miniatura»</h3><p>Calakmul, de xiquinhosilva (Wikimedia Commons), CC BY 4.0. Recortada y adaptada como fondo y texturas.</p>
-      <h3>El mundo «Vapor y engranajes»</h3><p><small>Recursos de OpenGameArt.org, adaptados para el juego (recortes, recoloreado a latón y cobre, animaciones reconstruidas)</small></p>
-      <ul>${VAPOR.map(([pack, autor, lic]) => `<li><b>${pack}</b><span>${autor} · ${lic}</span></li>`).join('')}</ul>
-      <p><small>CC-BY: se menciona al autor. CC-BY-SA: las imágenes derivadas de los engranajes se comparten bajo la misma licencia. CC0: dominio público; el crédito es por cortesía.</small></p>
+      <h3>Música</h3><p>David Cervantes Malfavon<br><small>con ayuda de Epidemic Sound</small></p>
+      <h3>Efectos de sonido y voces</h3><p>David Cervantes Malfavon<br><small>con ayuda de ElevenLabs</small></p>
       <img class="cr-flor" src="${ico('flor', 4)}">
-      <h3>Imágenes reales de la enciclopedia</h3><p>De Wikimedia Commons, con licencias libres y reducidas de tamaño.<br>El autor, la licencia y el enlace de cada una están al pie de la imagen, dentro del libro.</p>
-      <h3>Inspirado en</h3><p>Campeche: su muralla y sus baluartes, el malecón, Lorencillo y los piratas,<br>Calakmul, el Mayab, Chaac, Kukulkán, el Popol Vuh, la abeja melipona<br>y las fiestas de su gente.</p>
-      <h2 class="cr-fin">¡Gracias por jugar!</h2>
+      <img class="cr-gracias" alt="Gracias por jugar" src="${stitched('Gracias por jugar', 8)}">
     </div></div><button class="patch volver-esquina" id="crVolver">Volver</button></div>`);
     $('crVolver').onclick = volver;
   }

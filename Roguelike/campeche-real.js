@@ -13,7 +13,7 @@ const CAMPECHE = (() => {
   const MUNDOS = {
     pixel: { nombre: 'La muralla en obra', lugar: 'Las murallas de Campeche', lema: 'La ciudad levanta su muralla: ladrillos que se desmoronan y cangrejos del malecón.',
       dato: 'Después del ataque pirata de 1685, Campeche se encerró en un recinto amurallado. El último baluarte, el de Santiago, se terminó en 1704.' },
-    ocaso: { nombre: 'Atardecer en Seybaplaya', lugar: 'Seybaplaya', espejo: true, lema: 'De derecha a izquierda, hacia el poniente donde se mete el sol: hamacas de pescador que te avientan alto y murciélagos que salen con la tarde.',
+    ocaso: { nombre: 'Atardecer en Seybaplaya', lugar: 'Seybaplaya', lema: 'Hamacas de pescador que te avientan alto y murciélagos que salen con la tarde.',
       dato: 'Seybaplaya es una comunidad costera de Campeche y uno de sus puertos pesqueros. Su costa mira al poniente, por lo que desde la orilla se puede ver el atardecer sobre el mar. Las hamacas y los saltos del nivel imaginan un recorrido por ese paisaje.' },
     acuarela: { nombre: 'Los cenotes de Miguel Colorado', lugar: 'Miguel Colorado, Champotón', lema: 'Nenúfares que se hunden y ranas que brincan en el Cenote Azul.',
       dato: 'En el ejido Miguel Colorado hay tres cenotes: el Azul, el de Los Patos y el K41. El Azul mide unos 250 metros de diámetro.' },
@@ -51,11 +51,9 @@ const CAMPECHE = (() => {
       dato: 'El pescador Rudesindo Cantarell vio una mancha de chapopote en el mar y avisó a Pemex. El yacimiento gigante de la Sonda de Campeche lleva su nombre.' },
     cinema: { nombre: 'Las bocas de Chicanná', lugar: 'Chicanná, ruta Río Bec', lema: 'Portales con boca de serpiente, rocas que flotan, babosas que saltan y muros imposibles.',
       dato: 'Chicanná quiere decir «casa de la boca de la serpiente». Se entra a uno de sus edificios por las fauces de un enorme mascarón de Itzamná.' },
-    vapor: { nombre: 'La hacienda Uayamón', lugar: 'Hacienda Uayamón', lema: 'Rejillas de vapor y máquinas raspadoras de henequén.',
-      dato: 'Uayamón empezó como rancho ganadero, los piratas la saquearon en 1685 y luego creció con el henequén. En 1913 destruyeron las calderas de sus máquinas raspadoras.' },
     barro: { nombre: 'Los alfareros de Tepakán', lugar: 'Tepakán, Calkiní', lema: 'Puentes que se estiran, pilares que suben y grumos que te persiguen en el taller.',
       dato: 'La alfarería de Tepakán es una herencia maya que pasa de generación en generación. Son famosos sus silbatos de barro de colores para el Día de Muertos.' },
-    eco: { nombre: 'La maqueta de la ciudad', lugar: 'Museo de la Ciudad, Baluarte de San Carlos', lema: 'Camina entre islas de maqueta. Deja tu eco en los círculos para que los puentes no se apaguen.',
+    eco: { nombre: 'La maqueta de la ciudad', lugar: 'Museo de la Ciudad, Baluarte de San Carlos', lema: 'Itzel y Fresita se encogieron dentro de la maqueta de Campeche del museo. Junten las tres piezas que le faltan y llévenlas a la Catedral; Fresita deja ecos de Itzel para pisar las placas de los puentes.',
       dato: 'El Baluarte de San Carlos formó parte de las defensas de la ciudad amurallada. En su interior está el Museo de la Ciudad, donde fotografías y maquetas cuentan cómo fue cambiando Campeche. El nivel imagina que Itzel camina dentro de una de esas maquetas.' },
     fuego: { nombre: 'La toma de 1685', lugar: 'Ciudad de Campeche', lema: 'Lorencillo y Grammont entraron a la ciudad: apaga las brasas para cruzar.',
       dato: 'En 1685 Lorencillo y Grammont tomaron Campeche con cerca de mil hombres. Permanecieron varios días, saquearon la villa y atacaron y quemaron ranchos cercanos. El ataque mostró lo vulnerable que era la ciudad y fue uno de los motivos para construir sus murallas.' },
@@ -73,16 +71,16 @@ const CAMPECHE = (() => {
       dato: 'El Baluarte de la Soledad fue parte de la muralla que defendía Campeche de los ataques por mar. Hoy alberga el Museo de Arquitectura Maya, donde se exhiben piezas de distintos sitios de la región. Las losas que aparecen con la luz son una idea fantástica del nivel.' },
     bits64: { nombre: 'La selva de Calakmul', lugar: 'Reserva de la Biosfera de Calakmul', lema: 'Flores que solo abren con Fresita cerca, y ella puede cargarte.',
       dato: 'Calakmul fue una de las grandes ciudades mayas. Su selva es hogar de jaguares, y al atardecer miles de murciélagos salen de una cueva llamada el Volcán de los Murciélagos.' },
-    miniatura: { nombre: 'Calakmul en miniatura', lugar: 'Calakmul, visto desde el suelo', lema: 'Fresita e Itzel se encogieron: cada piedra es un edificio y los bichos son de su tamaño. Las hojas se abren con Fresita cerca, y ella puede cargarte.',
+    miniatura: { nombre: 'Calakmul, afuera de la pirámide', lugar: 'Calakmul, al pie de la pirámide', lema: 'Afuera de la pirámide, entre raíces y hojarasca. Fresita e Itzel se encogieron: cada piedra es un edificio y los bichos son de su tamaño. Fresita amarra hilos de seda en las ramitas y Itzel se columpia sobre los barrancos.',
       dato: 'Las piedras y la hojarasca de este mundo salen de una foto real de Calakmul. Este mundo es un cuento: nadie se encoge, pero las hormigas arrieras de verdad cortan hojas y las cargan hasta su nido.' },
     // otros géneros y fiestas
-    templo: { nombre: 'La defensa de Campeche', lugar: 'Ciudad de Campeche', lema: 'Cinco oleadas de piratas rumbo a la Catedral, con Grammont y Lorencillo al frente. Fresita arma las defensas; Itzel junta la pólvora y apaga los incendios.',
+    templo: { nombre: 'La defensa de Campeche', lugar: 'Ciudad de Campeche', lema: 'Tres oleadas de piratas rumbo a la Catedral, con Grammont y Lorencillo al frente. Fresita arma las defensas; Itzel junta la pólvora y apaga los incendios.',
       dato: 'En 1685 Lorencillo y Grammont tomaron y saquearon Campeche con cerca de mil hombres; también atacaron ranchos cercanos. Después se construyeron murallas para proteger la ciudad. Este nivel imagina que Itzel y Fresita ayudan a defenderla.' },
-    vuelo: { nombre: 'Vuelo sobre Edzná', lugar: 'El cielo de Campeche', lema: 'Itzel pilotea la canoa de estrellas; Fresita dispara. Al final espera el alacrán.',
+    vuelo: { nombre: 'Vuelo sobre Edzná', lugar: 'El cielo de Campeche', lema: 'Itzel pilotea la canoa de estrellas por tres tramos del cielo maya; Fresita dispara. Unan las constelaciones para que caiga una lluvia de estrellas. Al final espera Sinan Ek, el alacrán.',
       dato: 'Edzná fue una ciudad maya construida en un valle donde el manejo del agua era fundamental. Sus habitantes usaron canales y una represa para captar, guardar y distribuir el agua de lluvia. La canoa de estrellas del nivel es una manera imaginaria de volar sobre ese lugar.' },
-    cocina: { nombre: 'La cocina del mercado', lugar: 'Mercado de Campeche', lema: 'Pan de cazón, panuchos y agua de chaya: Itzel prepara, Fresita cocina y sirve.',
+    cocina: { nombre: 'La cocina del mercado', lugar: 'Mercado Pedro Sáinz de Baranda, Campeche', lema: 'Pan de cazón, panuchos, salbutes y agua de chaya: Itzel prepara, Fresita cocina, sirve y espanta al gato del mercado. Sirve rápido y hay propina.',
       dato: 'El pan de cazón es un platillo tradicional de Campeche, aunque no lleva pan. Se prepara con tortillas apiladas, frijol y cazón, y se cubre con salsa de tomate. En el nivel, Itzel y Fresita lo preparan junto con otros pedidos del mercado.' },
-    pesca: { nombre: 'Pesca en el malecón', lugar: 'Malecón de Campeche', lema: 'Itzel pesca desde el malecón y Fresita, abajo del agua, le lleva los peces del pedido del mercado.',
+    pesca: { nombre: 'Pesca en el malecón', lugar: 'Malecón de Campeche', lema: 'Itzel pesca desde el malecón y Fresita, abajo del agua, le lleva los peces y camarones del pedido del mercado. Si pica, a jalar contra el pez.',
       dato: 'La pesca es una actividad importante para las comunidades de la costa campechana. Las capturas se desembarcan en puertos como Isla Arena, Campeche, Seybaplaya, Champotón e Isla Aguada. El nivel imagina que Itzel y Fresita reúnen los peces para un pedido del mercado.' },
     jarana: { nombre: 'La vaquería de la jarana', lugar: 'Plaza principal de Campeche, frente a la Catedral', lema: 'Itzel mantiene la botella en equilibrio durante la vaquería y Fresita le ayuda.',
       dato: 'La jarana se baila en las vaquerías de Campeche y otros lugares de la península de Yucatán.' },
@@ -121,8 +119,6 @@ const CAMPECHE = (() => {
       dato: 'Cerca de Conhuás, en Calakmul, miles de murciélagos salen de una cueva al atardecer como la fumarola de un volcán.' },
     abeja: { nombre: 'Xunán Kab, la abeja reina', carta: 'XUNÁN KAB', menu: 'Entrada de Xunán Kab', lema: 'Manda su enjambre, tira miel pegajosa y clava el aguijón.',
       dato: 'Xunán Kab es la abeja melipona, sin aguijón de verdad: los mayas la han cuidado por siglos para sacar su miel.' },
-    brawbot: { nombre: 'La Gran Raspadora de Uayamón', carta: 'LA GRAN RASPADORA', menu: 'Entrada de la Gran Raspadora', lema: 'La máquina de la hacienda: golpes, ondas de choque y calderas al rojo.',
-      dato: 'Las máquinas raspadoras sacaban la fibra del henequén. En Uayamón funcionaban con calderas.' },
     ruptura: { nombre: 'La Ruptura de Edzná', carta: 'LA RUPTURA', menu: 'Entrada de la Ruptura', lema: 'Todos los lugares de Campeche fundidos en uno, con un núcleo que late.',
       dato: 'Edzná fue una gran ciudad maya en el valle de Campeche. Su pirámide de los Cinco Pisos mide 31.5 metros.' },
   };
@@ -166,7 +162,7 @@ const CAMPECHE = (() => {
     relojcucu: 'Concha del apuntador', tele: 'Boca de serpiente', camara: 'Cámara de la plataforma', laser: 'Puerta láser de la plataforma',
     respiro: 'Coral de Cayos Arcas', prensa: 'Prensa de la imprenta', estela: 'Estela de Edzná', obsidiana: 'Espejo de obsidiana',
   };
-  const PODERES = { cristal: 'Pilar de estalactita', gubia: 'Azuela del astillero', lapiz: 'Lápiz de Catherwood', vidrio: 'Vitral de la Catedral', farol: 'Faro de Seybaplaya', hackeo: 'Hackeo de la plataforma', valvula: 'Válvula de caldera', portal: 'Boca de serpiente', moldear: 'Barro de Tepakán' };
+  const PODERES = { cristal: 'Pilar de estalactita', gubia: 'Azuela del astillero', lapiz: 'Lápiz de Catherwood', vidrio: 'Vitral de la Catedral', farol: 'Faro de Seybaplaya', hackeo: 'Hackeo de la plataforma', portal: 'Boca de serpiente', moldear: 'Barro de Tepakán' };
 
   function aplicar() {
     if (typeof NIVELES !== 'undefined') for (const id in MUNDOS) if (NIVELES[id]) Object.assign(NIVELES[id], MUNDOS[id]);

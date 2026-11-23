@@ -7,6 +7,8 @@ const MASCARON_MODELOS = (() => {
   arteSolar.src = '../Roguelike/assets/jefes/mascaron-solar.png';
   const arteLateral = new Image();
   arteLateral.src = '../Roguelike/assets/jefes/mascaron-solar-lateral.png';
+  const accionesAnime = new Image();
+  accionesAnime.src = '../Roguelike/assets/forge/jefes/mascaron-anime-acciones-v1/sheet-transparent.png';
   const versionesPixel = new WeakMap();
   function versionPixel(imagen) {
     if (versionesPixel.has(imagen)) return versionesPixel.get(imagen);
@@ -93,7 +95,7 @@ const MASCARON_MODELOS = (() => {
     const W=1145,H=1374, balance=o.charging ? -.045 : Math.sin(t*1.7)*.008;
     const pixel = !!(estilo && (estilo.pixel || estilo.fixedS || estilo.base));
     const propio=typeof MASCARON_ESTILOS!=='undefined' && MASCARON_ESTILOS.obtener(estilo);
-    if (o.charging && arteLateral.complete && arteLateral.naturalWidth) { solarCarrera(c,t,pixel,propio && propio.lateral); return; }
+    // La embestida conserva el mismo mascarón y las mismas proporciones.
     const imagen = propio ? propio.frente : (pixel ? (versionPixel(arteSolar) || arteSolar) : arteSolar);
     const andando = o.charging || (o.st === 'ataque' && o.atk !== 'pisoton');
     const andar = andando ? Math.sin(t * (o.charging ? 11 : 4.4)) : 0;
@@ -107,21 +109,25 @@ const MASCARON_MODELOS = (() => {
     };
     const orden=['piernaI','piernaD','brazoI','brazoD','cabeza'];
     const trazar=poly=>{c.beginPath();poly.forEach(([x,y],i)=>i?c.lineTo(x,y):c.moveTo(x,y));c.closePath();};
-    const pieza=(id,px,py,giro=0)=>{
-      c.save();c.translate(px,py);c.rotate(giro);c.translate(-px,-py);
+    const pieza=(id,px,py,giro=0,descenso=0)=>{
+      c.save();c.translate(0,descenso);c.translate(px,py);c.rotate(giro);c.translate(-px,-py);
       if(id!=='cuerpo'){trazar(regiones[id]);c.clip();}
       const fin=id==='cuerpo'?orden.length:orden.indexOf(id);
       for(let i=0;i<fin;i++){c.beginPath();c.rect(-20,-20,W+40,H+40);const poly=regiones[orden[i]];poly.forEach(([x,y],j)=>j?c.lineTo(x,y):c.moveTo(x,y));c.closePath();c.clip('evenodd');}
       c.drawImage(imagen,0,0,W,H);c.restore();
     };
     c.save(); c.imageSmoothingEnabled=!pixel; c.translate(-40,-101); c.scale(80/W,101/H); c.translate(W/2,H);c.rotate(balance);c.translate(-W/2,-H);
-    const lanzamiento=o.st==='ataque'&&o.atk==='rocas' ? Math.sin(Math.min(1,(o.at||0)/.65)*Math.PI)*.28 : 0;
-    pieza('piernaI',420,870,-andar*.075);
-    pieza('piernaD',720,870,andar*.075);
-    pieza('brazoI',330,555,-.03*Math.sin(t*2)-andar*.04);
-    pieza('brazoD',815,555,.03*Math.sin(t*2)+lanzamiento+andar*.04);
-    pieza('cabeza',570,480,Math.sin(t*1.4)*.008);
-    pieza('cuerpo',570,780,0);
+    const lanzamiento=o.st==='ataque'&&o.atk==='rocas' ? Math.sin(Math.PI*((o.at||0)%.6)/.6)*.28 : 0;
+    const pisoton=o.st==='ataque'&&o.atk==='pisoton' ? Math.sin(Math.PI*Math.min(1,Math.max(0,((o.at||0)-.15)/.85)))*.22 : 0;
+    // Las piezas conservan su tamaño al arrodillarse; el torso y la
+    // cabeza bajan hasta la altura que utiliza el núcleo del combate.
+    const agacha=Math.max(0,Math.min(1,(92-(o.hgt||92))/52)), descenso=agacha*52*H/101;
+    pieza('piernaI',420,870,-andar*.075-agacha*.12);
+    pieza('piernaD',720,870,andar*.075+agacha*.12);
+    pieza('brazoI',330,555,-.03*Math.sin(t*2)-andar*.04-pisoton,descenso);
+    pieza('brazoD',815,555,.03*Math.sin(t*2)+lanzamiento+andar*.04+pisoton,descenso);
+    pieza('cabeza',570,480,Math.sin(t*1.4)*.008,descenso);
+    pieza('cuerpo',570,780,0,descenso);
     c.restore();
     if (abierto) { c.save();c.globalAlpha=.2+.08*Math.sin(t*7);c.strokeStyle='#9ffff1';c.lineWidth=.8;c.beginPath();c.arc(0,-89,6.5,0,Math.PI*2);c.stroke();c.restore(); }
   }
@@ -139,18 +145,41 @@ const MASCARON_MODELOS = (() => {
   function pintar(c,o,f,n) {
     const t=f.t||0, id=Math.max(1,Math.min(10,+n||1)), H=o.hgt||92, k=H/92, abierto=o.st==='ventana'||o.st==='herido', salto=o.jump||0, y=JEFES_EXT.FLOOR-salto+Math.min(0,o.drop||0);
     const paso=(o.charging?Math.sin(t*16)*4:Math.sin(t*3)*1.3), golpe=o.st==='ataque'&&o.atk==='rocas'?Math.sin(Math.min(1,o.at||0)*Math.PI)*9:0, pis=o.st==='ataque'&&o.atk==='pisoton'?Math.max(0,Math.sin((o.at||0)*4))*3:0;
-    c.save();c.translate(o.x,y);c.scale(o.face||1,1);c.scale(k,k);c.translate(0,-pis);c.lineJoin='round';
+    c.save();c.translate(o.x,y);c.scale(o.face||1,1);c.translate(0,-pis);c.lineJoin='round';
+    c.beginPath();c.rect(-100,-160,200,160);c.clip();
+    // Reacción de golpe alrededor de la cabeza; sin deformar el arte.
+    if(o.st==='herido'||o.flash>0){const a=o.at||0;c.translate(0,-90);c.rotate(.07*Math.sin(a*18)*Math.exp(-a*3.5));c.translate(0,90);}
+    if(o.flash>0&&Math.sin(t*40)>0)c.filter='brightness(2)';
+    if(o.st==='muere')c.globalAlpha*=Math.max(0,1-(o.at||0)/2.4);
     c.fillStyle='rgba(95,72,48,.10)';c.beginPath();c.ellipse(0,0,25,2,0,0,Math.PI*2);c.fill();
+    if (id === 1 && f.st && String(f.st.id || '').split('~')[0] === 'anime' && o.st === 'ataque' && accionesAnime.complete && accionesAnime.naturalWidth) {
+      const a=o.at||0, q=o.atk==='pisoton'&&a>.22&&a<1.05?1:o.atk==='rocas'&&a>.35&&a<2.15?2:-1;
+      if(q>=0){
+        const lado=152, base=q===2?209:213, ajusteX=q===2?4:0;
+        c.imageSmoothingEnabled=true;
+        // El torso acompaña el esfuerzo y los pies conservan su apoyo.
+        const sx=(q%2)*256,sy=Math.floor(q/2)*256,bandas=24;
+        for(let i=0;i<bandas;i++){
+          const u=i/bandas,v=(i+1)/bandas,torso=Math.max(0,Math.min(1,(.78-u)*4));
+          const dx=Math.sin(t*(q===2?5:3)+u*2)*.7*torso;
+          c.drawImage(accionesAnime,sx,sy+u*256,256,256/bandas,-lado/2-ajusteX+dx,-base*lado/256+u*lado,lado,(v-u)*lado+.06);
+        }
+        c.restore();return;
+      }
+    }
     if (id === 1) { solar(c,t,o,abierto,paso,golpe,f.st); c.restore(); return; }
     const baja=id===2||id===8, flot=id===5, alto=id===3||id===7, roca=id===6, ceiba=id===9, ancho=id===4||id===10;
-    if (ceiba) {c.strokeStyle='#67513a';c.lineWidth=4;for(const s of [-1,1]){c.beginPath();c.moveTo(s*8,-60);c.quadraticCurveTo(s*35,-78,s*29,-100);c.moveTo(s*21,-83);c.lineTo(s*35,-91);c.moveTo(s*6,-20);c.quadraticCurveTo(s*18,-4,s*30,0);c.stroke();}}
+    const descenso=Math.max(0,92-H);
     if (baja) {
       bloque(c,-29,-42+paso,15,40,tonos.sombra);bloque(c,14,-42-paso,15,40,tonos.medio);bloque(c,-31,-10+paso,18,10,tonos.claro,false);bloque(c,13,-10-paso,18,10,tonos.claro,false);
+      c.save();c.translate(0,descenso);
       piedra(c,-28,-67,56,42,tonos.medio); for(let i=0;i<3;i++)bloque(c,-22+i*16,-75-i%2*4,12,14,tonos.claro,false);
-      rostro(c,2,-55,34,29,t,abierto,true); if(id===8){c.strokeStyle='#66824b';c.lineWidth=3;for(let i=0;i<3;i++){c.beginPath();c.moveTo(-25+i*9,-58);c.quadraticCurveTo(-18+i*9,-42,-25+i*9,-28);c.stroke();}}
+      rostro(c,2,-55,34,29,t,abierto,true); if(id===8){c.strokeStyle='#66824b';c.lineWidth=3;for(let i=0;i<3;i++){c.beginPath();c.moveTo(-25+i*9,-58);c.quadraticCurveTo(-18+i*9,-42,-25+i*9,-28);c.stroke();}} c.restore();
     } else {
       const torsoY=alto?-69:-64, torsoH=alto?47:40, cuerpoW=ancho?46:roca?49:35, hueco=flot?3:0;
       bloque(c,-20,-19+paso,16,18,tonos.sombra);bloque(c,4,-19-paso,16,18,tonos.medio);bloque(c,-22,-6+paso,19,6,tonos.claro,false);bloque(c,4,-6-paso,19,6,tonos.claro,false);
+      c.save();c.translate(0,descenso);
+    if (ceiba) {c.strokeStyle='#67513a';c.lineWidth=4;for(const s of [-1,1]){c.beginPath();c.moveTo(s*8,-60);c.quadraticCurveTo(s*35,-78,s*29,-100);c.moveTo(s*21,-83);c.lineTo(s*35,-91);c.moveTo(s*6,-20);c.quadraticCurveTo(s*18,-4,s*30,0);c.stroke();}}
       if(roca){piedra(c,-26,torsoY-5,52,52,tonos.sombra);piedra(c,-21,torsoY,42,43,tonos.medio);} else if(flot){for(let j=0;j<2;j++)for(let i=0;i<3;i++)bloque(c,-19+i*14+(i===1?Math.sin(t*2)*2:0),torsoY+j*20+(j?2:-2),11,17,(i+j)%2?tonos.claro:tonos.medio,false);} else {bloque(c,-cuerpoW/2,torsoY,cuerpoW,torsoH,tonos.medio,false);glifo(c,0,torsoY+torsoH*.58,1.05);}
       const armY=torsoY+4, brazo=ancho?17:13;
       for(const s of [-1,1]){const x=s<0?-cuerpoW/2-brazo+2:cuerpoW/2-2, ay=armY+(s>0?-golpe:golpe*.3); bloque(c,x,ay,brazo,16,tonos.claro);bloque(c,x+(s<0?-2:1),ay+17+hueco,brazo+2,id===10?23:18,tonos.medio); if(id===10)bloque(c,x+(s<0?-4:0),ay+30,brazo+7,14,tonos.claro,false);}
@@ -161,6 +190,7 @@ const MASCARON_MODELOS = (() => {
       rostro(c,0,alto?-90:-87,alto?23:30,alto?27:25,t,abierto,false);
       if(id===7){rect(c,-5,-63,10,33,tonos.rojo);glifo(c,0,-49,.5);}
       if(roca||ceiba){c.fillStyle=tonos.musgo;for(let i=0;i<6;i++){c.beginPath();c.ellipse(-22+i*8,-64+(i%2)*3,5,2,0,0,Math.PI*2);c.fill();}}
+      c.restore();
     }
     c.restore();
   }

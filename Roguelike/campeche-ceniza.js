@@ -2,12 +2,35 @@
 // Siluetas de ceniza: el sigilo y sus avisos siguen siendo los originales.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.hollin) return;
-  const V = vestirNivel({ id: 'hollin', carpeta: 'campeche-ceniza', ver: 1 });
+  const V = vestirNivel({ id: 'hollin', carpeta: 'campeche-ceniza', ver: 1, manifiesto: window.CAMPECHE_CENIZA_MANIFIESTO });
   const { spr } = V;
+  const TELON_CENIZA = {};
+  for (const [n, archivo] of Object.entries({ cielo:'cielo-ceniza-v1', ciudad:'ciudad-ceniza-v1', postes:'postes-ceniza-v1', antena:'antena-ceniza-v1', arbusto:'arbusto-escondite-v1', suelo:'suelo-ceniza-v1' })) {
+    const im = TELON_CENIZA[n] = new Image(); im.decoding = 'async'; im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/campeche-ceniza/' + archivo + '.png';
+  }
+  const cenizaPrincipal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'hollin';
+  const cenizaListo = () => Object.values(TELON_CENIZA).every(i => i.complete && i.naturalWidth);
+  function telonCeniza(c, f) {
+    const im = TELON_CENIZA.cielo, H = f.H || VH, sw = Math.min(im.naturalWidth, im.naturalHeight * VW / H);
+    const max = Math.max(0, im.naturalWidth - sw), sx = max * (.5 + .35 * Math.sin((f.cam || 0) * .0007));
+    c.save(); c.imageSmoothingEnabled = true; c.filter = 'brightness(1.65) saturate(.65)';
+    c.drawImage(im, sx, 0, sw, im.naturalHeight, 0, 0, VW, H); c.filter = 'none';
+    const fila = (img, rec, w, h, base, par) => {
+      const off = (((f.cam || 0) * par) % w + w) % w;
+      for (let x = -off - w; x < VW + w; x += w) c.drawImage(img, ...rec, x, base - h, w, h);
+    };
+    fila(TELON_CENIZA.ciudad, [0,301,2172,281], 550, 71, 181, .08);
+    const ax = 330 - ((f.cam || 0) * .1 % 700);
+    c.drawImage(TELON_CENIZA.antena, 175,19,372,2139, ax - 13, 49, 26, 139);
+    fila(TELON_CENIZA.postes, [27,40,2118,634], 260, 78, 205, .22);
+    c.restore();
+  }
   // La hoja Forge se dibuja con el recorte y la escala de ENEMIGOS_ASSETS.
   // La cuerda dinámica permanece en FX.aranaCeniza como señal de altura.
   // telón: la ciudad quemada lejos, con bruma fría, y humo que pasa despacio
   V.cielo((c, f, antes) => {
+    if (cenizaPrincipal(f) && cenizaListo()) { telonCeniza(c, f); return; }
     antes();
     const unit = 230, off = (f.cam * .1) % unit, base = Math.floor(f.cam * .1 / unit);
     const L2 = ['f_casa0', 'f_casa1', 'f_iglesia', 'f_casa2', 'f_casa3', 'f_fuerte', 'f_casa4'];
@@ -32,7 +55,25 @@
   });
   // suelo: el adoquín de la lámina como borde de cada calle; adornos de la ciudad quemada (siguen siendo solo decoración)
   V.terreno(ctx => {
-    if (V.listo('adoquin')) {
+    const id = typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id;
+    if (id === 'hollin' && cenizaListo()) {
+      const img = TELON_CENIZA.suelo, ancho = 160, alto = 52;
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
+      for (const r of L.tops) {
+        ctx.save(); ctx.beginPath(); ctx.rect(r.x0, r.y, r.x1 - r.x0, alto); ctx.clip();
+        for (let x = r.x0; x < r.x1; x += ancho) {
+          const sh = img.naturalHeight - 24, corte = 40;
+          ctx.drawImage(img, 0, 24, img.naturalWidth, sh * corte / alto, x, r.y, ancho, corte);
+          for (let q = corte; q < alto; q += 1) {
+            ctx.globalAlpha = (alto - q) / (alto - corte);
+            ctx.drawImage(img, 0, 24 + sh * q / alto, img.naturalWidth, sh / alto + .1, x, r.y + q, ancho, 1.1);
+          }
+          ctx.globalAlpha = 1;
+        }
+        ctx.restore();
+      }
+      ctx.restore();
+    } else if (V.listo('adoquin')) {
       const w = V.TAM.adoquin.w;
       ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.globalAlpha = .55;
       for (const r of L.tops) for (let x = r.x0; x < r.x1; x += w) spr(ctx, 'adoquin', x, r.y + 1, { ax: 0, ay: 0 });
@@ -44,6 +85,19 @@
       else if (o.k === 'f') spr(ctx, ['coche0', 'barril', 'caja', 'banca', 'jarron', 'carreta', 'coche1', 'camion'][i % 8], x, y, { voltea: v < .5, alfa: .75 });
       else if (o.k === 'r') spr(ctx, ['ruinaArco', 'escombro0', 'ruinaMuro', 'escombro1', 'barrera', 'columna', 'reja', 'ruinaCasa'][i % 8], x, y, { alfa: .75 });
     }
+  });
+  // Solo cambia la imagen del escondite; sus límites y detección siguen en OBJ.escondite.step.
+  V.obj('escondite', (c, o, f, sk, antes) => {
+    if (!cenizaPrincipal(f) || !cenizaListo() || (o.kind === 'auto' && !V.listo('coche0'))) return antes(c, o, f, sk);
+    const w = o.x1 - o.x0;
+    c.save(); c.imageSmoothingEnabled = true;
+    if (o.kind === 'auto') c.drawImage(V.IMG.coche0, o.x0, o.y - 17, w, 17);
+    else c.drawImage(TELON_CENIZA.arbusto, 25, 50, 2125, 620, o.x0, o.y - 20, w, 20);
+    if (f.g.hidden && f.g.p.x > o.x0 && f.g.p.x < o.x1) {
+      c.fillStyle = 'rgba(255,255,255,.7)'; c.font = 'bold 5px "Alegreya Sans", sans-serif'; c.textAlign = 'center';
+      c.fillText('oculta', (o.x0 + o.x1) / 2, o.y - 22);
+    }
+    c.restore();
   });
   function ojo(c, x, y, r = .65) { c.save(); c.fillStyle = '#ff3030'; c.shadowColor = '#ff3030'; c.shadowBlur = 2; c.beginPath(); c.arc(x, y, r, 0, Math.PI * 2); c.fill(); c.restore(); }
   V.fd('perro', (c, e, t, s, antes) => {

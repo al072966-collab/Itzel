@@ -103,6 +103,10 @@
   const mid2 = W => W >> 1;
 
   // ---------------- el nivel de cada mundo ----------------
+  // David decidió (2026-11-20) quitar las subidas y bajadas: solo se queda la de Calakmul en miniatura.
+  // La versión con los 58 niveles está en fuera-del-juego/niveles/niveles-verticales-completo.js;
+  // para regresar uno basta con agregar su id aquí.
+  const QUEDAN = new Set(['subida_miniatura']);
   const MUNDOS = Object.keys(STYLE_MAP).filter(k => NIVELES[k] && NIVELES[k].build && !NIVELES[k].modo && !NIVELES[k].escenarioUayamon && !['agua', 'nouveau', 'paper'].includes(k) && !k.startsWith('uayamon'));
   const cristal = (ctx, j, q) => { const x = q.c * T, y = q.r * T; if (window.PIEZAS_SUBIDA && PIEZAS_SUBIDA.burbuja(ctx, j, q, x, y, j.t)) return; const a = q.t < 1 && Math.sin(j.t * 30) > 0 ? .4 : 1; ctx.globalAlpha = a; const gr = ctx.createLinearGradient(x, y, x + 32, y + 12); gr.addColorStop(0, 'rgba(255,240,250,.95)'); gr.addColorStop(1, 'rgba(255,170,220,.8)'); ctx.fillStyle = gr; ctx.beginPath(); ctx.ellipse(x + 16, y + 6, 16, 6.4, 0, 0, TAU); ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = .6; ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(x + 10, y + 3.6, 4, 1.4, -.3, 0, TAU); ctx.fill(); ctx.globalAlpha = 1; };
   const semilla = (k, sube) => typeof RUN === 'object' && RUN ? ((RUN.seed * 2654435761) ^ (RUN.world * 40503) ^ (RUN.idx * 9973) ^ (sube ? 17 : 91) ^ k.length * 131) >>> 0 : (sube ? 77 : 99);
@@ -111,6 +115,11 @@
     const R = C && C.reglas, w = (R && R.suelo && R.suelo[0]) || base.foe, v = (R && R.aire && R.aire.find(k => k !== w)) || (R && R.aire && R.aire[0]) || base.foe;
     for (const sube of [true, false]) {
       const id = (sube ? 'subida_' : 'bajada_') + m;
+      if (!QUEDAN.has(id)) continue;
+      const propio = id === 'subida_miniatura' ? {
+        nombre: 'Escalando Calakmul', lugar: 'La Gran Pirámide de Calakmul (Estructura II)', independiente: true,
+        lema: 'Itzel y Fresita, del tamaño de una hormiga, escalan la Gran Pirámide de Calakmul: cada escalón es un muro y cada grieta un barranco. Fresita pone burbujas para apoyarse.',
+        dato: 'La Estructura II de Calakmul es una de las pirámides mayas más grandes que existen. Desde su cima se ve la selva entera y, a lo lejos, otras ciudades mayas.' } : {};
       nivelPropio(id, m, {
         nombre: `${base.nombre}, hacia ${sube ? 'arriba' : 'abajo'}`, lugar: base.lugar, dato: base.dato,
         lema: sube ? `Aquí el camino sube: plataformas, escaleras de troncos y los bichos de este mundo, cada vez más alto. Fresita pone burbujas para apoyarse.`
@@ -146,6 +155,7 @@
         },
         ayudas: [{ id: 'bub', cuando: j => { const p = j.p, c0 = Math.floor(p.x / T); for (let r = Math.floor(p.y / T) - 9; r <= Math.floor(p.y / T) + 9; r++) for (let c = c0 - 9; c <= c0 + 9; c++) if (j.at(c, r) === 'b') return true; return false; }, txt: 'Un hueco enorme: Fresita, clic sobre el círculo punteado pone una burbuja donde Itzel se apoya.' },
           { id: 'v', cuando: j => j.t > 1, txt: sube ? 'Hacia arriba: ↑ en las escaleras; en la pared, brinca para saltar de pared. Clic: burbuja de apoyo.' : 'Hacia abajo: ↓ en las escaleras. Una caída larga lastima: clic pone una burbuja de apoyo.' }],
+        ...propio,
       });
     }
   }

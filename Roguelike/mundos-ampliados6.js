@@ -230,7 +230,7 @@
   PK.balanza = (pl, g, d) => {
     if (!pl.otra) { pl.otra = g.plats.find(q => q !== pl && q.k === 'balanza' && q.par === pl.par) || null; pl.guia = !pl.otra || pl.x < pl.otra.x; }
     const o = pl.otra; if (!o || !pl.guia) return;
-    const lim = 56, v = pl.stood ? 46 : o.stood ? -46 : 0;
+    const lim = pl.lim || 56, v = pl.stood ? 46 : o.stood ? -46 : 0;
     if (v) { const nd = clamp((pl.y - pl.y0) + v * d, -lim, lim); pl.y = pl.y0 + nd; o.y = o.y0 - nd; }
   };
   LOOK.balanza = (c, pl, f) => {
@@ -252,19 +252,28 @@
     b.isl(60, 62, 10).isl(65, 67, 8).isl(70, 72, 10);
     b.p(63, 8, 2, { y0: 0 }).p(68, 6, 2).c(60, 72, 5);
     b.g(75, 91).e(79, undefined, 'topon').d('T', 88);
-    b.p(82, 7, 3, BAL(1)).p(87, 7, 3, BAL(1)).c(82, 90, 5);
-    // III · un puente de plataformas permanentes y una ruta alta opcional.
-    b.isl(93, 95, 10).isl(98, 100, 9).isl(103, 105, 10);
+    b.p(82, 7, 3, { ...BAL(1), lim: 16 }).p(87, 7, 3, { ...BAL(1), lim: 16 }).c(82, 84, 5).c(88, 90, 5);
+    // el doblón de aquí está muy alto: un ladrillo en el piso (canistel de piedra) sube a la plataforma, y otro entre las dos plataformas lleva hasta él
+    b.c(80, 80, 9).c(86, 86, 5);
+    // III · el foso del puente roto: sin ladrillos no se cruza (el foso es más ancho que un salto).
+    // Fresita convierte en ladrillo cada canistel suelto; duran 5 s, así que se van poniendo al cruzar.
     b.g(108, 123).e(114, undefined, 'cangrejo').h(120, 9);
-    b.c(93, 105, 6).c(110, 117, 8).e(104, 4, 'halcon');
+    b.c(94, 94, 10).c(98, 98, 10).c(102, 102, 10).c(106, 106, 10).c(110, 117, 8).e(104, 4, 'halcon');
     b.isl(125, 127, 10).isl(130, 132, 8).isl(135, 137, 7).isl(140, 142, 9);
     b.c(125, 142, 4).e(134, 3, 'halcon');
     b.g(145, 159).e(151, undefined, 'topon').c(147, 156, 8).d('T', 157);
-    // IV · balanza opcional sobre un camino de regreso y llegada al castillo.
-    b.isl(161, 163, 10).isl(166, 168, 10).isl(171, 173, 10);
-    b.p(161, 7, 3, BAL(2)).p(169, 7, 3, BAL(2)).c(161, 173, 5);
+    // IV · la balanza obligatoria: la torre de enfrente es muy alta para un salto. Pisar la balanza de la izquierda
+    // hace subir la de la derecha; bájate, y desde la que subió se alcanza la torre.
+    // (esta balanza sube y baja solo 24 px: pisa la izquierda medio segundo, salta a la derecha y de ahí a la torre)
+    b.p(160, 11, 3, { ...BAL(2), lim: 24 }).p(164, 11, 3, { ...BAL(2), lim: 24 }).g(168, 175, 6).c(164, 166, 9).c(168, 175, 5);
     b.g(176, 189).e(179, undefined, 'chapulin').e(183, undefined, 'tortuga').Gl(186).d('T', 181);
   });
+  // los canisteles del foso son de piedra: grises, no se recogen (no valen nada) y solo sirven para volverse ladrillo; reaparecen al deshacerse
+  // los bichos del cielo se ven más grandes (cielo-mayas.js): sus cajas de golpe crecen igual, solo en este nivel
+  const iniCielo = MEC.init;
+  MEC.init = function (g, def) { const r = iniCielo.apply(this, arguments); return r; };   // (el tamaño de los bichos del cielo ahora lo da la regla general de tamanos-enemigos.js)
+  const iniBits8 = MEC.init;
+  MEC.init = function (g, def) { const r = iniBits8.apply(this, arguments); if (def && def.id === 'bits8') for (const c of g.coins) if (Math.round(c.y) === 168 || ((Math.round(c.y) === 152 || Math.round(c.y) === 88) && !g.coins.some(q => q !== c && Math.round(q.y) === Math.round(c.y) && Math.abs(q.x - c.x) < 20))) c.piedra = true; return r; };   // el foso y los dos peldaños sueltos del doblón
   NIVELES.bits8.fauna = ['chapulin', 'topon', 'halcon', 'cangrejo'];
-  NIVELES.bits8.lema = 'Escalones de muralla, elevadores y balanzas. Fresita puede convertir canisteles en ladrillos para crear atajos.';
+  NIVELES.bits8.lema = 'Escalones de muralla, elevadores y balanzas. Fresita convierte canisteles en ladrillos: sin ellos no cruzas el foso, y pisar una balanza sube la otra.';
 })();

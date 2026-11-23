@@ -175,13 +175,13 @@ const DATOS_CAMPECHE = (() => {
   const niveles = {
     pixel:'muralla', ocaso:'costa', acuarela:'cenotes', paper:'calle59', biolum:'petenes', flat:'costa', sumie:'tinte', neon:'muralla',
     bruma:'aluxes', lowpoly:'cuevas', codex:'edzna', oleo:'muralla', vitral:'catedral', cuaderno:'chenes', grabado:'astillero',
-    anime:'centro', nouveau:'centro', deco:'centro', cyber:'costa', cinema:'riobec', vapor:'hacienda', barro:'artes',
+    anime:'centro', nouveau:'centro', deco:'centro', cyber:'costa', cinema:'riobec', barro:'artes',
     eco:'muralla', fuego:'muralla', agua:'arcas', hielo:'centro', cielo:'edzna', hollin:'ceniza', bits8:'centro', bits32:'muralla', bits64:'calakmul',
     templo:'muralla', vuelo:'edzna', cocina:'comida', imprenta:'centro', posadas:'centro', animas:'muertos', carnaval:'fiesta', desfile:'fiesta', feria:'centro',
-    jarana:'fiesta', pesca:'costa', planos:'muralla', bordado:'artes', cabeza:'costa', bolonchen:'cuevas', torres:'catedral',
+    jarana:'fiesta', pesca:'costa', planos:'muralla', bordado:'artes', cabeza:'costa', torres:'catedral',
     chicanna:'riobec', abordaje:'astillero', miniatura:'calakmul', uayamon_selva:'hacienda', uayamon_taller:'hacienda',
   };
-  const jefes = { mythos:'calakmul', golem:'edzna', serpiente:'riobec', jaguar:'calakmul', hadas:'chenes', cocodrilo:'costa', pirata:'astillero', chaac:'chenes', camazotz:'calakmul', abeja:'petenes', brawbot:'hacienda', ruptura:'edzna' };
+  const jefes = { mythos:'calakmul', golem:'edzna', serpiente:'riobec', jaguar:'calakmul', hadas:'chenes', cocodrilo:'costa', pirata:'astillero', chaac:'chenes', camazotz:'calakmul', abeja:'petenes', ruptura:'edzna' };
   const memoria = Object.create(null), CLAVE = 'itzel-datos-curiosos-v1';
   let guardado = {};
   try { const v = JSON.parse(localStorage.getItem(CLAVE) || '{}'); if (v && typeof v === 'object' && !Array.isArray(v)) guardado = v; } catch (_) {}

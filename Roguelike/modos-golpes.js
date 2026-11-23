@@ -24,6 +24,13 @@ MODOS.golpes = (() => {
   const caminar = {}, atacar = {}; for (const tipo of ['grumete', 'bucanero', 'contramaestre', 'pistolero']) { caminar[tipo] = hojaForge('caminar-' + tipo); atacar[tipo] = hojaForge('atacar-' + tipo); }
   fondo.src = '../Roguelike/assets/abordaje-nuevo/astillero.png'; piratasArte.src = '../Roguelike/assets/abordaje-nuevo/piratas.png'; barrilArte.src = '../Roguelike/assets/abordaje-nuevo/barril.png'; pistolaArte.src = '../Roguelike/assets/abordaje-nuevo/pistola.png'; corazonArte.src = '../Roguelike/assets/abordaje-nuevo/corazon.png';
   const suena = n => { if (typeof SONIDO !== 'undefined' && SONIDO.fx) SONIDO.fx(n); };
+  // sonidos del abordaje (ElevenLabs): la voz de cada pirata al recibir un golpe, el filo de la espada y el disparo de pistola
+  const archivo = (n, f = 1) => { if (window.AUDIO_ARCHIVOS && AUDIO_ARCHIVOS.efectoEnemigo) { AUDIO_ARCHIVOS.efectoEnemigo('abordaje/' + n + '.mp3', f); return true; } return false; };
+  const VOCES = { grumete: 2, bucanero: 1, pistolero: 2, contramaestre: 3 };
+  let libreVoz = 0;
+  // la voz suena cuando el pirata aparece en pantalla (no al pegarle); si salen varios juntos, una tras otra
+  const voz = q => { if (!VOCES[q.tipo]) return; const ahora = performance.now(), cuando = Math.max(ahora, libreVoz); libreVoz = cuando + 650; const n = q.tipo + '-' + (1 + Math.floor(Math.random() * VOCES[q.tipo])); setTimeout(() => { if (STATE === 'play') archivo(n, q.E.jefe ? 1 : .9); }, cuando - ahora); };
+  const disparoSfx = () => { if (!archivo('disparo', .85)) suena('impulso'); };
   // Cada oficio tiene ritmo, vida y daño propios (en corazones completos).
   const TIPOS = {
     grumete: { vida: 3, vel: 65, daño: 1, alto: 22, ancho: 9, nombre: 'Grumete veloz', listo: .3, recarga: .32, agresividad: 5 },
@@ -123,7 +130,7 @@ MODOS.golpes = (() => {
     if (pres && p.golpe <= .12 && p.patada <= 0) {
       p.golpe = .26; p.disparoAnim = j.balas > 0 ? .24 : 0;
       if (j.balas > 0) {
-        j.balas--; j.disparos.push({ x: p.x + p.face * 12, y: p.y, dir: p.face, vida: 1.5 }); suena('impulso');
+        j.balas--; j.disparos.push({ x: p.x + p.face * 12, y: p.y, dir: p.face, vida: 1.5 }); disparoSfx();
       } else {
         suena('salto');
         for (const q of j.piratas) if (q.est !== 'huye' && (q.x - p.x) * p.face > -4 && Math.abs(q.x - p.x) < 30 && Math.abs(q.y - p.y) < 12) {
@@ -163,6 +170,7 @@ MODOS.golpes = (() => {
     j.balasPiratas = j.balasPiratas.filter(b => b.vida > 0 && b.x > j.cam - 25 && b.x < j.cam + VW + 25);
     // los piratas: se acercan a un lado de Itzel, avisan y pegan
     for (const q of j.piratas) {
+      if (!q.salio && q.est !== 'huye' && q.x > j.cam + 6 && q.x < j.cam + VW - 6) { q.salio = true; voz(q); }
       q.mueve = false; q.t += dt; q.ataca = Math.max(0, (q.ataca || 0) - dt); q.golpe = Math.max(0, q.golpe - dt); q.atonta = Math.max(0, q.atonta - dt); q.burbuja = Math.max(0, q.burbuja - dt); q.duerme = Math.max(0, q.duerme - dt);
       if (q.est === 'huye') { q.mueve = true; q.x += q.face * 120 * dt; q.run += dt * 16; continue; }
       if (q.atonta > 0 || q.burbuja > 0 || q.duerme > 0) { q.guardia = false; continue; }
@@ -181,7 +189,7 @@ MODOS.golpes = (() => {
           q.punteria -= dt;
           if (q.punteria <= 0) {
             j.balasPiratas.push({ x: q.x + q.face * 10, y: q.y, dir: q.face, daño: E.daño, vida: 2 });
-            q.ataca = .32; q.recargaTiro = E.recarga; suena('impulso');
+            q.ataca = .32; q.recargaTiro = E.recarga; disparoSfx();
           }
           continue;
         }
@@ -196,7 +204,7 @@ MODOS.golpes = (() => {
       }
       if (q.prepCarga > 0) { q.prepCarga -= dt; if (q.prepCarga <= 0) q.carga = .8; continue; }
       if (E.jefe && q.carga > 0) { q.mueve = true; q.carga -= dt; q.x = clamp(q.x + q.face * 190 * dt, j.cam + 16, j.cam + VW - 16); q.run += dt * 20; if (Math.abs(q.x - p.x) < 18 && Math.abs(q.y - p.y) < 10 && j.inv <= 0) { if (dañoModo(j, E.daño)) { p.herida = .45; suena('herida'); p.x += q.face * 30; } } continue; }
-      if (q.prep > 0) { q.prep -= dt; if (q.prep <= 0) { q.ataca = .32; if (Math.abs(q.x - p.x) < (E.jefe ? 42 : 32) && Math.abs(q.y - p.y) < 12 && dañoModo(j, E.daño)) { p.herida = .45; suena('herida'); p.x -= lado * 18; } q.descansa = E.recarga; } continue; }
+      if (q.prep > 0) { q.prep -= dt; if (q.prep <= 0) { q.ataca = .32; archivo('espada', .85); if (Math.abs(q.x - p.x) < (E.jefe ? 42 : 32) && Math.abs(q.y - p.y) < 12 && dañoModo(j, E.daño)) { p.herida = .45; suena('herida'); p.x -= lado * 18; } q.descansa = E.recarga; } continue; }
       q.descansa = Math.max(0, (q.descansa || 0) - dt); if (q.descansa > 0) continue;
       const ddx = tx - q.x, ddy = ty - q.y, d = Math.hypot(ddx, ddy);
       if (E.jefe && Math.abs(q.y - p.y) < 8 && Math.abs(q.x - p.x) > 60 && q.t > 2 && Math.random() < dt * .8) { q.prepCarga = .85; q.face = q.x < p.x ? 1 : -1; q.prep = 0; continue; }

@@ -27,12 +27,20 @@
     try {
       CINE.play(id, { repeticion: true, mundo: typeof STYLE_MAP !== 'undefined' ? STYLE_MAP[mundo] : undefined, alTerminar() {} });
       const t0 = performance.now(); while (performance.now() - t0 < 60000 && !CINE.ir(0)) await espera(100);
+      // Las entradas de jefe construyen el prólogo de forma asíncrona. Que
+      // el motor acepte ir(0) no significa que ya exista la escena: esperar
+      // a su primer cuadro evita exportar la misma placa de carga repetida.
+      if (id.startsWith('jefe-')) {
+        while (performance.now() - t0 < 60000 && (!window.__jefe || !window.__jefe.construido || window.__jefe.t0C == null)) await espera(100);
+        if (!window.__jefe || !window.__jefe.construido || window.__jefe.t0C == null) throw new Error('La entrada del jefe no terminó de prepararse');
+      }
       CINE.pausa(true);
-      const dur = Math.min(CINE.dur || 0, hasta), cv = document.getElementById('cine'), W = 480, H = Math.round(W * cv.height / cv.width);
+      const inicio = id.startsWith('jefe-') ? window.__jefe.t0C : 0;
+      const dur = Math.min((CINE.dur || 0) - inicio, hasta), cv = document.getElementById('cine'), W = 480, H = Math.round(W * cv.height / cv.width);
       const mini = document.createElement('canvas'); mini.width = W; mini.height = H; const mx = mini.getContext('2d');
       let sig = desde, n = 0;
       for (let t = 0; t <= dur + 1e-6; t += 1 / 30) {
-        CINE.ir(t, false);
+        CINE.ir(inicio + t, false);
         if (t + 1e-6 >= sig) {
           mx.drawImage(cv, 0, 0, W, H); const src = mini.toDataURL('image/jpeg', .84), k = fotos.length; fotos.push({ src, t: sig });
           const f = document.createElement('figure'); f.style.margin = '0';

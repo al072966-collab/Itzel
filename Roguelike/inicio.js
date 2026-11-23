@@ -16,7 +16,7 @@
   style.textContent = `
     body.presentando-inicio #screen { visibility:hidden; }
     #apertura { position:fixed; inset:0; z-index:10000; display:grid; place-items:center; overflow:hidden; background:#000; color:#fff; }
-    #apertura .marca { display:block; max-width:min(78vw,760px); max-height:72vh; object-fit:contain; animation:entrada-marca 2.1s ease both; }
+    #apertura .marca { display:block; max-width:min(78vw,760px); max-height:72vh; object-fit:contain; animation:entrada-marca 4.3s ease-in-out both; }
     #apertura.entrada-itzel { background:radial-gradient(ellipse at center,transparent 25%,rgba(120,70,40,.25) 100%), var(--manta) repeat; background-size:auto, 8px 8px; color:#583b2b; }
     #apertura .portada { --logo:min(58vw,440px); display:flex; flex-direction:column; align-items:center; text-align:center; padding:32px; z-index:1; }
     #apertura .bordado-area { width:var(--logo); }
@@ -30,7 +30,8 @@
     #apertura .continuar:hover, #apertura .continuar:focus-visible { color:#c8203a; }
     @keyframes latido-inicio { 50% { opacity:.55; } }
     @media (prefers-reduced-motion:reduce) { #apertura .continuar { animation:none; } }
-    @keyframes entrada-marca { 0%{opacity:0} 18%,75%{opacity:1} 100%{opacity:0} }
+    /* el logo (blanco sobre negro) sale de lo negro hasta su blanco y regresa */
+    @keyframes entrada-marca { 0%{opacity:0;filter:brightness(0)} 35%,65%{opacity:1;filter:brightness(1)} 100%{opacity:0;filter:brightness(0)} }
   `;
   document.head.appendChild(style);
   const capa = document.createElement('div');
@@ -38,14 +39,27 @@
   capa.id = 'apertura'; capa.setAttribute('aria-label', 'Presentación de Itzel');
   document.body.appendChild(capa);
   let fase = 0, temporizador;
-  const marcas = [ ['assets/inicio/gdevelop.png', 'GDevelop'], ['assets/inicio/sphynx.png', 'Sphynx'] ];
+  // cada logo dura lo que su sonido (gdevelop 2seg.mp3 y sphynx 2seg.mp3): ms que se queda en pantalla
+  const marcas = [ ['assets/inicio/gdevelop.png', 'GDevelop', 4300], ['assets/inicio/sphynx.png', 'Sphynx', 7900] ];
   let etapa = 'logos'; // logos → cine → portada
+  // mientras el juego carga, la página se congela por ratos y la subida del logo se salta; se espera a que haya 8 cuadros seguidos fluidos (máx. 8 s)
+  function esperaQuieto(sigue) {
+    let ant = performance.now(), buenos = 0; const limite = ant + 8000;
+    (function cuadro(t) { buenos = t - ant < 40 ? buenos + 1 : 0; ant = t;
+      if (buenos >= 8 || t > limite) sigue(); else requestAnimationFrame(cuadro); })(ant);
+  }
   function mostrar() {
     clearTimeout(temporizador);
     if (fase < marcas.length) {
       const img = document.createElement('img'); img.className = 'marca';
-      [img.src, img.alt] = marcas[fase]; capa.replaceChildren(img);
-      temporizador = setTimeout(() => { fase++; mostrar(); }, 2100);
+      [img.src, img.alt] = marcas[fase]; img.style.animationDuration = marcas[fase][2] + 'ms'; capa.replaceChildren(img);
+      // la animación y el sonido arrancan cuando la imagen ya está lista; si no, el inicio de la subida se pierde mientras carga
+      img.style.animationPlayState = 'paused'; const f = fase;
+      const arranca = () => { if (fase !== f || etapa !== 'logos') return; esperaQuieto(() => {
+        if (fase !== f || etapa !== 'logos') return; img.style.animationPlayState = 'running';
+        if (window.AUDIO_ARCHIVOS) AUDIO_ARCHIVOS.apertura(f === 0 ? 'gdevelop 2seg.mp3' : 'sphynx 2seg.mp3');
+        temporizador = setTimeout(() => { fase++; mostrar(); }, marcas[f][2]); }); };
+      (img.decode ? img.decode() : Promise.resolve()).then(arranca, arranca);
       return;
     }
     if (etapa === 'logos') { cinematica(); return; }

@@ -2,11 +2,47 @@
 // La relojería dorada: recortes de latón sobre un telón dibujado por código.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.deco) return;
-  const V = vestirNivel({ id: 'deco', carpeta: 'relojeria', ver: 3 });
+  const V = vestirNivel({ id: 'deco', carpeta: 'relojeria', ver: 3, manifiesto: window.RELOJERIA_DECO_MANIFIESTO });
   const { spr, h1 } = V;
+  const pasarela = new Image();
+  pasarela.onload = () => V.rehaz(); pasarela.src = '../Roguelike/assets/relojeria/pasarela-deco-v1.png';
+  const goldAnterior = MEC.LOOK.gold;
+  MEC.LOOK.gold = function (c, pl, f, sk) {
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    if (id === 'deco' && pasarela.complete && pasarela.naturalWidth) {
+      c.drawImage(pasarela, 18, 273, 2138, 220, pl.x, pl.y, pl.w, 8);
+      return;
+    }
+    if (goldAnterior) return goldAnterior.call(this, c, pl, f, sk);
+    // Dibujo original para cualquier otro mundo o mientras carga la imagen.
+    const x = pl.x, y = pl.y, w = pl.w;
+    c.fillStyle = '#0b0e14'; c.fillRect(x, y, w, 7); c.strokeStyle = '#d4af37'; c.lineWidth = .8; c.strokeRect(x, y, w, 7);
+    c.beginPath(); for (let i = 0; i < w; i += 6) { c.moveTo(x + i, y + 6); c.lineTo(x + i + 3, y + 2); c.lineTo(x + i + 6, y + 6); } c.lineWidth = .5; c.stroke();
+    c.save(); c.translate(x + w / 2, y + 9); c.rotate(f.t * 3); c.beginPath();
+    for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; c.lineTo(Math.cos(a) * (i % 2 ? 2 : 3), Math.sin(a) * (i % 2 ? 2 : 3)); }
+    c.closePath(); c.fillStyle = '#d4af37'; c.fill(); c.restore();
+  };
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'teatro-panorama-v1', suelo:'suelo-deco-v1', perro:'perro-puente-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/relojeria/' + archivo + '.png';
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'deco';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
+  window.DECO_PANORAMA_LISTO = paisajeListo;
   // Engranes lejanos tenues, trazados por código y sin superficies rectas
   // que puedan confundirse con plataformas.
   V.cielo((c, f, antes) => {
+    if (principal(f) && paisajeListo()) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .08 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#08101b'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(paisaje.fondo, 30, 20, 2112, 620, x, arriba, ancho, base - arriba);
+        c.drawImage(paisaje.fondo, 30, 640, 2112, 50, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore(); return;
+    }
     antes();
     c.save(); c.strokeStyle = '#d4af37'; c.globalAlpha = .18; c.lineWidth = .6;
     for (let i = 0; i < 5; i++) {
@@ -35,6 +71,7 @@
       c.globalAlpha = .6 * Math.sin(Math.PI * y / 220); c.fillStyle = '#ffe28a'; c.fillRect(x, y, 1.2, 1.2);
     }
     c.restore();
+    if (principal(f) && paisajeListo()) return;
     const cx = 340 - f.cam * .05, cy = 60, r = 24, seg = Math.floor(t * 1) , min = (seg % 60) / 60 * 6.2832 - 1.5708, hor = (seg % 720) / 720 * 6.2832 - 1.5708;
     c.save(); c.globalAlpha = .35; c.strokeStyle = '#d4af37'; c.lineWidth = .8; c.beginPath(); c.arc(cx, cy, r, 0, 6.2832); c.stroke();
     for (let q = 0; q < 12; q++) { const a = q * .5236; c.beginPath(); c.moveTo(cx + Math.cos(a) * r * .86, cy + Math.sin(a) * r * .86); c.lineTo(cx + Math.cos(a) * r * .97, cy + Math.sin(a) * r * .97); c.stroke(); }
@@ -49,10 +86,20 @@
     c.beginPath(); c.moveTo(-4.5, -20); c.quadraticCurveTo(-9, -18, -8, -14); c.lineTo(-4, -14); c.fill(); c.stroke();
     c.restore();
   }
-  V.terreno(ctx => {
+  let suelo = null;
+  V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!suelo) { suelo = ctx.createPattern(paisaje.suelo, 'repeat'); suelo.setTransform(new DOMMatrix().scale(500 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = suelo;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 8, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+    }
     for (const o of L.deco) {
       const x = o.x, y = o.y + .5;
-      if (o.k === 'T') { if (V.h1(o.i, 3) < .5) perroPuente(ctx, x, y); else spr(ctx, o.i % 2 ? 'columna' : 'reloj', x, y); }
+      if (o.k === 'T') { if (V.h1(o.i, 3) < .5) {
+        if (principal(f) && paisajeListo()) ctx.drawImage(paisaje.perro, 543, 105, 413, 818, x - 7, y - 28, 14, 28);
+        else perroPuente(ctx, x, y);
+      } else spr(ctx, o.i % 2 ? 'columna' : 'reloj', x, y); }
       else if (o.k === 'f') spr(ctx, 'lampara', x, y);
       else if (o.k === 'r') spr(ctx, 'engranes', x, y);
     }

@@ -2,7 +2,7 @@
 // Estampas: las prensas, los pliegos y la copia de Itzel siguen siendo dinámicos.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.grabado) return;
-  const V = vestirNivel({ id: 'grabado', nivel: 'imprenta', carpeta: 'imprenta-estampas', ver: 1 });
+  const V = vestirNivel({ id: 'grabado', nivel: 'grabado', carpeta: 'imprenta-estampas', ver: 1 });
   const { spr } = V, pick = (a, i) => a[i % a.length];
   // telón: pliegos estampados colgando del techo y, lejos, las prensas y estantes del taller entre papel
   V.cielo((c, f, antes) => {

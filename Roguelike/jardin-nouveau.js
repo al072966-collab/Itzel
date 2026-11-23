@@ -3,9 +3,23 @@
 // sus superficies de colisión y el telón sigue dibujándose por código.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.nouveau) return;
-  const V = vestirNivel({ id: 'nouveau', carpeta: 'jardin', ver: 3 });
+  const V = vestirNivel({ id: 'nouveau', carpeta: 'jardin', ver: 3, manifiesto: window.JARDIN_NOUVEAU_MANIFIESTO });
   const { spr, h1 } = V;
-  V.terreno(ctx => {
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'jardin-panorama-v2', suelo:'fondo-filigrana-v1' })) {
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/jardin/' + archivo + '.png';
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'nouveau';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
+  let filigrana = null;
+  V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!filigrana) { filigrana = ctx.createPattern(paisaje.suelo, 'repeat'); filigrana.setTransform(new DOMMatrix().scale(500 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = filigrana;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 8, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+    }
     for (const o of L.deco) {
       const x = o.x, y = o.y + .5;
       if (o.k === 'T') spr(ctx, ['ceiba', 'palmas', 'maceta'][o.i % 3], x, y, {voltea: o.i % 2 === 1});
@@ -15,6 +29,16 @@
   });
   // El jardín lejano se traza con líneas y hojas tenues: no son superficies.
   V.cielo((c, f, antes) => {
+    if (principal(f) && paisajeListo()) {
+      const ancho = 700, base = 177 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .10 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 177);
+      c.save(); c.fillStyle = '#e9dfbe'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(paisaje.fondo, 0, 0, 2172, 660, x, arriba, ancho, base - arriba);
+        c.drawImage(paisaje.fondo, 0, 660, 2172, 64, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore(); return;
+    }
     antes();
     c.save(); c.globalAlpha = .32; c.lineCap = 'round';
     for (let i = 0; i < 9; i++) {
@@ -33,7 +57,7 @@
     antes();
     const t = f.t, col = ['#d98a8a', '#e6c06a', '#b68ad0', '#f0e2d0'];
     c.save(); c.lineCap = 'round';
-    for (let i = 0; i < 8; i++) {                                         // enredaderas que cuelgan del marco y se mecen
+    for (let i = 0; i < (principal(f) && paisajeListo() ? 0 : 8); i++) { // enredaderas del telón anterior
       const x = ((i * 63 + 20 - f.cam * .12) % (VW + 60) + VW + 60) % (VW + 60) - 30, len = 40 + h1(i, 8) * 55;
       c.strokeStyle = 'rgba(122,138,98,.55)'; c.lineWidth = .9; c.beginPath(); c.moveTo(x, 0);
       for (let y = 4; y <= len; y += 4) c.lineTo(x + Math.sin(y * .12 + t * .8 + i) * (1 + y * .05), y); c.stroke();

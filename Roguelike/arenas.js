@@ -36,9 +36,10 @@
     cargar: b => suelo(b, H4),
     portal: b => suelo(b, ANCHO),
     ladrillo: b => suelo(b, H2).c(8, 10, 9).c(17, 19, 9).c(12, 15, 6).c(9, 9, 6).c(18, 18, 6).o('rebrota', 0, 0),   // los canisteles que Itzel se come vuelven a brotar
-    moldear: b => suelo(b, [[8, 9], [18, 19]]).o('clay', 7, 11, { axis: 'x', dir: 1, min: .6, max: 4 }).o('clay', 20, 11, { axis: 'x', dir: -1, min: .6, max: 4 }).o('clay', 12, 11, { axis: 'y', w: 2, min: .6, max: 6 }),
+    // tres pilares de plastilina (orillas y centro) para subir a la altura del núcleo, esté donde esté el jefe;
+    // antes había dos puentes sobre huecos de 2 que se brincaban sin ellos, y el de la derecha nacía pegado a la tierra
+    moldear: b => suelo(b, [[8, 9], [18, 19]]).o('clay', 4, 11, { axis: 'y', w: 2, min: .6, max: 6 }).o('clay', 13, 11, { axis: 'y', w: 2, min: .6, max: 6 }).o('clay', 22, 11, { axis: 'y', w: 2, min: .6, max: 6 }),
     constelacion: b => suelo(b, ANCHO).o('estrella', 6, 7).o('estrella', 10, 5).o('estrella', 13, 3).o('estrella', 17, 5).o('estrella', 21, 7),
-    valvula: b => suelo(b, H4).o('valvula', 4, 0, { grp: 0 }).o('vent', 6, 0, { grp: 0 }).o('vent', 13, 0, { grp: 0 }).o('vent', 21, 0, { grp: 0 }).o('valvula', 24, 0, { grp: 0 }), // rejillas de vapor para subir
     // ---------------- CONTROL ----------------
     luz: b => suelo(b, H2).p(8, 10, 3).p(17, 10, 3).p(12, 7, 3),                // raíces que solo se ven con la luz de Fresita
     farol: b => suelo(b, H2).p(8, 10, 3).p(17, 10, 3).p(12, 7, 3),              // piedras en la niebla

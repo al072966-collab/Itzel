@@ -11,7 +11,8 @@
 (function () {
   const RUTA = '../Roguelike/assets/fauna/', V = 'f4';
   const IMG = {}, TAM = {}, SERIES = {};
-  fetch(RUTA + 'fauna.json?v=' + V).then(r => r.json()).then(m => {
+  const manifiesto = window.FAUNA_MANIFIESTO ? Promise.resolve(window.FAUNA_MANIFIESTO) : fetch(RUTA + 'fauna.json?v=' + V).then(r => r.json());
+  manifiesto.then(m => {
     for (const n of Object.keys(m)) {
       TAM[n] = m[n]; const im = new Image(); im.decoding = 'async'; im.src = RUTA + n + '.png?v=' + V; IMG[n] = im;
       const b = n.replace(/\d+$/, ''); if (b !== n) (SERIES[b] = SERIES[b] || []).push(n);

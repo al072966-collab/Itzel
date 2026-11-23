@@ -130,11 +130,14 @@ const BLESS = [
   { id: 'heart', icon: 'jade', name: 'Corazón de jade', desc: '+1 corazón máximo y te cura uno.', apply: R => { R.maxHearts++; R.hearts = Math.min(R.maxHearts, R.hearts + 1); } },
   { id: 'dbl', icon: 'feather', name: 'Pluma de pavo ocelado', desc: 'Itzel puede dar un segundo salto en el aire.', once: true, apply: R => R.upg.dbl = 1 },
   { id: 'dash', icon: 'wind', name: 'Viento de norte', desc: 'Con Shift o K, Itzel se impulsa de golpe, también en el aire.', once: true, apply: R => R.upg.dash = 1 },
-  { id: 'bub', icon: 'bubble', name: 'Burbuja extra', desc: 'Fresita puede sostener una burbuja más a la vez.', max: 2, apply: R => R.upg.bubbles++ },
-  { id: 'life', icon: 'rings', name: 'Burbujas firmes', desc: 'Las burbujas de Fresita duran 3 segundos más.', max: 2, apply: R => R.upg.bubbleLife += 3 },
+  { id: 'dashFilo', req: 'dash', icon: 'wind', name: 'Viento cortante', desc: 'El impulso de Shift o K lastima a los enemigos que atraviesa.', once: true, apply: R => R.upg.dashFilo = 1 },
+  { id: 'dashInv', req: 'dash', icon: 'jade', name: 'Impulso de jade', desc: 'Itzel es invulnerable mientras se impulsa.', once: true, apply: R => R.upg.dashInv = 1 },
   { id: 'mag', icon: 'canistel', name: 'Imán de canistel', desc: 'Los canisteles cercanos vuelan hacia Itzel.', once: true, apply: R => R.upg.magnet = 1 },
-  { id: 'lull', icon: 'moon', name: 'Canción de cuna', desc: 'Fresita duerme enemigos más lejos y por más tiempo.', max: 2, apply: R => R.upg.lullaby += .6 },
   { id: 'speed', icon: 'speed', name: 'Huaraches ligeros', desc: 'Itzel corre un 12% más rápido.', max: 2, apply: R => R.upg.speed += .12 },
+  { id: 'rebote', icon: 'feather', name: 'Botas de salto', desc: 'Al pisar un enemigo, Itzel rebota con 25% más impulso.', once: true, apply: R => R.upg.rebote = 1 },
+  { id: 'suerte', icon: 'heart', name: 'Semilla de la suerte', desc: 'Los enemigos pisados sueltan corazones con 75% de probabilidad si te falta vida.', once: true, apply: R => R.upg.suerte = 1 },
+  { id: 'respiro', icon: 'jade', name: 'Amuleto de jade', desc: 'Después de recibir daño, Itzel es invulnerable 0.75 segundos más.', once: true, apply: R => R.upg.respiro = 1 },
+  { id: 'cosecha', icon: 'canistel', name: 'Canasta de cosecha', desc: 'Los canisteles recogidos en niveles de plataformas valen el doble.', once: true, apply: R => R.upg.cosecha = 1 },
   { id: 'heal', icon: 'cup', name: 'Pozol frío', desc: 'Recupera todos los corazones.', apply: R => R.hearts = R.maxHearts },
 ];
 let RUN = null;
@@ -228,16 +231,25 @@ function cambiaDiseno(g) {
   spawn(g, 16, g.p.x, g.p.y - 8, { v: 70, life: .6, s: 1.8, k: 'spark', cols: ['#ffffff', '#ffd1ea', '#fff3a0'], g: -20 });
 }
 // Cada pisotón tiene la misma probabilidad, solo si falta vida.
-function puedeSoltarCorazon() { return !!RUN && RUN.hearts > 0 && RUN.hearts < RUN.maxHearts && Math.random() < .5; }
+function puedeSoltarCorazon() { return !!RUN && RUN.hearts > 0 && RUN.hearts < RUN.maxHearts && Math.random() < (RUN.upg.suerte ? .75 : .5); }
 function sueltaCorazon(g, x, y) {
   if (!g.pickups || !puedeSoltarCorazon()) return false;
   g.pickups.push({ k: 'heart', x, y, got: false, caida: true, vy: -90 }); return true;
 }
 
+// Los corazones temporales absorben daño antes que la vida normal.
+function recibeDanio(cantidad = 1) {
+  const absorbido = Math.min(RUN.escudo || 0, cantidad);
+  RUN.escudo = (RUN.escudo || 0) - absorbido;
+  RUN.hearts -= cantidad - absorbido;
+}
+function tiempoInvulnerable() { return difi().inv + (RUN && RUN.upg.respiro ? .75 : 0); }
+function reboteEnemigo() { return RUN.upg.rebote ? -531.25 : -425; }
+
 function hurt(g, dir) {
   const p = g.p; if (p.inv > 0 || g.win) return;
   cambiaDiseno(g); if (g.asid && MEC.asideroSuelta) MEC.asideroSuelta(g);
-  RUN.hearts--; p.inv = difi().inv; p.vx = dir * 170; p.vy = -230; p.on = false; g.shake = .25;
+  recibeDanio(); p.inv = tiempoInvulnerable(); p.vx = dir * 170; p.vy = -230; p.on = false; g.shake = .25;
   spawn(g, 14, p.x, p.y - 8, { v: 90, life: .6, s: 2, k: 'spark', cols: ['#ff5d73', '#ffffff'], g: 120 });
   if (RUN.hearts <= 0) animarDerrota(g);
 }
@@ -324,6 +336,16 @@ function stepRun(g, inp, dt, st) {
   // ---- horizontal / dash
   p.dashCd -= dt;
   if (inp.dashPress && U.dash && p.dashCd <= 0 && !g.win) { p.dash = .16; p.dashCd = .6; p.sq = -.15; spawn(g, 8, p.x, p.y - 7, { ang: Math.PI * (p.face > 0 ? 1 : 0), spread: .6, v: 70, life: .35, s: 2, k: 'dust', cols: dust }); }
+  if (inp.dashPress && U.dash && p.dashCd <= 0 && !g.win) p.dashId = (p.dashId || 0) + 1;   // cada impulso es un golpe nuevo
+  if (p.dash > 0 && U.dashInv) p.inv = Math.max(p.inv || 0, .15);   // Impulso de jade: invulnerable mientras se impulsa
+  if (p.dash > 0 && U.dashFilo) for (const e of g.foes) {          // Viento cortante: el impulso lastima a quien atraviesa
+    if (e.st === 'gone' || e.st === 'off' || e.st === 'sleep' || e.sj || e._dashId === p.dashId) continue;
+    if (Math.abs(p.x - e.x) < ((e.w || 10) + (p.w || 10)) / 2 + 4 && p.y > e.y - (e.h || 10) - 3 && p.y - (p.h || 14) < e.y + 3) {
+      e._dashId = p.dashId; p.inv = Math.max(p.inv || 0, .25); g.shake = Math.max(g.shake || 0, .08); RUN.stomps++;
+      spawn(g, 10, e.x, e.y - (e.h || 10) / 2, { v: 90, life: .35, s: 1.8, k: 'spark', cols: ['#ffffff', '#bfe6ff'], g: 20 });
+      if (e.hp > 1 && MEC.VIDA && MEC.VIDA.golpe) MEC.VIDA.golpe(e, g); else { e.st = 'gone'; e.tt = 0; if (typeof sueltaCorazon === 'function') sueltaCorazon(g, e.x, e.y - (e.h || 10) / 2); }
+    }
+  }
   if (p.dash > 0) { p.dash -= dt; p.vx = p.face * 330; p.vy = 0; if (Math.random() < .7) spawn(g, 1, p.x - p.face * 4, p.y - 7, { v: 10, life: .3, s: 2.2, k: 'dust', cols: dust }); }
   else if (p.boost > 0) { p.boost -= dt; }
   else {
@@ -336,7 +358,8 @@ function stepRun(g, inp, dt, st) {
   p.coyote = p.on ? .11 : p.coyote - dt;
   const sinSalto = g.def && g.def.sinSalto; // aquí solo sube con el clic de Fresita al compás
   if (sinSalto && inp.press) g.pideSalto = 1.3;
-  p.jb = inp.press && !sinSalto ? .13 : p.jb - dt;
+  const colgada = g.seda || g.sedaSuelta; g.sedaSuelta = false; // en el hilo (o el cuadro en que se suelta) la tecla no es un salto normal
+  p.jb = inp.press && !sinSalto && !colgada ? .13 : p.jb - dt;
   if (p.on) p.air = U.dbl;
   if (E.swim && p.jb > 0) { p.vy = Math.min(p.vy, -185); p.jb = 0; p.on = false; p.sq = -.2; spawn(g, 4, p.x, p.y - 6, { ang: -Math.PI / 2, spread: 1.4, v: 25, life: .7, s: 1.6, k: 'bubble', cols: ['#ffffff'], g: -60 }); }
   else if (p.jb > 0 && p.coyote > 0) { p.vy = -JUMP * E.jumpK; p.jb = 0; p.coyote = 0; p.on = false; p.sq = -.28; spawn(g, 6, p.x, p.y, { ang: -Math.PI / 2, spread: 2.2, v: 40, life: .4, s: 2.2, k: 'dust', cols: dust, g: -20 }); }
@@ -383,11 +406,11 @@ function stepRun(g, inp, dt, st) {
   // ---- caida al vacio
   if (p.y > VH + 40 || E.deadly) {
     if (E.deadly) spawn(g, 18, p.x, p.y - 4, { ang: -Math.PI / 2, spread: 1.6, v: 120, life: .7, s: 2.2, k: 'spark', cols: E.deadlyCols || ['#ff7a2f', '#ffd23f'], g: 160 });
-    if (RUN.jipi > 0) { RUN.jipi--; toast('El sombrero de jipi los salvó de la caída'); } else RUN.hearts--;
+    if (p.y > VH + 40 && RUN.jipi > 0) { RUN.jipi--; toast('El sombrero de jipi los salvó de la caída'); } else recibeDanio();
     if (RUN.hearts <= 0) { animarDerrota(g); return; }
     g.shake = .3; cambiaDiseno(g);
     const lugar = centroReaparicion(g);
-    p.x = lugar.x; p.y = lugar.y; p.vx = 0; p.vy = 0; p.inv = Math.max(p.inv || 0, difi().inv, 1.9); p.plat = null; p.boost = 0; p.dash = 0; p.jb = 0;
+    p.x = lugar.x; p.y = lugar.y; p.vx = 0; p.vy = 0; p.inv = Math.max(p.inv || 0, tiempoInvulnerable(), 1.9); p.plat = null; p.boost = 0; p.dash = 0; p.jb = 0;
     limiteIzquierdo();
   }
   if (p.inv > 0) { p.inv -= dt; p.vis = Math.floor(p.inv * 14) % 2 === 0 || p.inv <= 0; } else p.vis = true;
@@ -404,7 +427,7 @@ function stepRun(g, inp, dt, st) {
       const nx = e.x + e.dir * 26 * dt, ahead = nx + e.dir * 8;
       if (nx < e.x0 || nx > e.x1 || SOLID(ahead, e.y - 4) || !SOLID(ahead, e.y + 2)) e.dir *= -1; else e.x = nx;
       if (Math.abs(p.x - e.x) < 11 && p.y > e.y - 11 && p.y - p.h < e.y && p.vis !== undefined) {
-        if (p.vy > 40 && prevY <= e.y - 6) { e.state = 'gone'; e.t = 0; e.dir = p.x < e.x ? 1 : -1; p.vy = -425; p.noCut = true; p.on = false; p.plat = null; p.air = U.dbl; RUN.stomps++; sueltaCorazon(g, e.x, e.y - 8); spawn(g, 12, e.x, e.y - 6, { v: 80, life: .5, s: 2, k: 'dust', cols: dust }); }
+        if (p.vy > 40 && prevY <= e.y - 6) { e.state = 'gone'; e.t = 0; e.dir = p.x < e.x ? 1 : -1; p.vy = reboteEnemigo(); p.noCut = true; p.on = false; p.plat = null; p.air = U.dbl; RUN.stomps++; sueltaCorazon(g, e.x, e.y - 8); spawn(g, 12, e.x, e.y - 6, { v: 80, life: .5, s: 2, k: 'dust', cols: dust }); }
         else hurt(g, p.x < e.x ? -1 : 1);
       }
     } else if (e.state === 'sleep') { e.t -= dt; if (e.t <= 0) e.state = 'walk'; }
@@ -413,9 +436,9 @@ function stepRun(g, inp, dt, st) {
   g.enemies = g.enemies.filter(e => !(e.state === 'gone' && e.t > .9));
 
   // ---- monedas y corazones
-  const take = (c) => { c.got = true; g.got++; if (!c.rebrote) RUN.coins++; spawn(g, 14, c.x, c.y, { v: 90, life: .6, s: 2, k: 'spark', cols: fx.spark || ['#ffe680', '#fff'], g: 60 }); };
+  const take = (c) => { c.got = true; g.got++; if (!c.rebrote) RUN.coins += U.cosecha ? 2 : 1; spawn(g, 14, c.x, c.y, { v: 90, life: .6, s: 2, k: 'spark', cols: fx.spark || ['#ffe680', '#fff'], g: 60 }); };
   for (const c of g.coins) {
-    if (c.got) continue;
+    if (c.got || c.demora > 0 || c.piedra) continue;   // los canisteles de piedra solo sirven para el poder Ladrillo
     if (U.magnet) { const dx = p.x - c.x, dy = p.y - 7 - c.y, d = Math.hypot(dx, dy); if (d < 52) { c.x += dx / d * 160 * dt; c.y += dy / d * 160 * dt; } }
     // Al caminar alcanza la fruta de la primera fila sobre el suelo;
     // las filas más altas siguen requiriendo saltar o usar plataformas.
@@ -442,7 +465,10 @@ function stepRun(g, inp, dt, st) {
   for (const r of g.rings) r.t += dt; g.rings = g.rings.filter(r => r.t < r.d);
   g.shake = Math.max(0, g.shake - dt);
   // ---- camara
-  const rec = VISTA.rec || 0, target = clamp(p.x - (VW - 2 * rec) * (L.espejo ? .62 : .38) - rec + p.vx * .35, L.camMin - rec, L.camMax + rec);
+  // en la pelea de jefe, si la ventana recorta la arena (ventana alta), la cámara encuadra a Itzel y al jefe juntos:
+  // antes seguía solo a Itzel y el jefe quedaba medio fuera de cuadro sin que se vieran sus ataques
+  const rec = VISTA.rec || 0, jefeVivo = g.isBoss && g.boss && rec > 0 && Number.isFinite(g.boss.x) && g.boss.st !== 'fin';
+  const target = jefeVivo ? clamp(p.x * .55 + g.boss.x * .45 - VW / 2,L.camMin - rec, L.camMax + rec) : clamp(p.x - (VW - 2 * rec) * (L.espejo ? .62 : .38) - rec + p.vx * .35, L.camMin - rec, L.camMax + rec);
   g.cam = g.arenaSubjefe ? g.arenaSubjefe.cam : clamp(g.cam + (target - g.cam) * Math.min(1, dt * 4.5), L.camMin - rec, L.camMax + rec);
   // vertical: si la vista no alcanza a ver todo lo alto del mundo, sigue a Itzel cuando sube
   const yMin = -ALTO_MUNDO, yMax = VH - VISTA.H, ty = clamp(p.y - VISTA.H * .62, yMin, yMax);
@@ -500,10 +526,16 @@ function stepFresita(g, mouse, dt) {
       fr.cool = .3; g.rings.push({ x: wx, y: wy + 3, t: 0, d: .4, c: '#ffd1ea', r: 18 });
     } else if (c.b === 2) {
       if (fr.cool > 0) continue;
-      const rad = 40 * U.lullaby; fr.cool = .5; g.lull = { x: fr.x, y: fr.y, r: rad, t: g.t };
+      // la canción de cuna tiene 3 usos por nivel (para que no se abuse); gasta uno solo si de verdad duerme a alguien
+      if (g.arrullos === undefined) g.arrullos = 3;
+      const rad = 40 * U.lullaby;
+      const quienes = [...g.enemies.filter(e => e.state !== 'gone' && Math.hypot(e.x - fr.x, e.y - 6 - fr.y) < rad), ...g.foes.filter(e => (e.st === 'ok' || e.st === 'run' || e.st === 'lunge' || e.st === 'dive') && Math.hypot(e.x - fr.x, e.y - e.h / 2 - fr.y) < rad + 6)];
+      if (g.arrullos <= 0) { g.rings.push({ x: fr.x, y: fr.y, t: 0, d: .4, c: '#ff8080', r: 14 }); fr.cool = .5; if (typeof toast === 'function' && !g.avisoArrullo) { g.avisoArrullo = 1; toast('Ya no quedan canciones de cuna en este nivel', 2400); } continue; }
+      fr.cool = .5; g.lull = { x: fr.x, y: fr.y, r: rad, t: g.t };
       g.rings.push({ x: fr.x, y: fr.y, t: 0, d: .7, c: '#b9a7ff', r: rad });
+      if (quienes.length) g.arrullos--;
       for (const e of g.enemies) if (e.state !== 'gone' && Math.hypot(e.x - fr.x, e.y - 6 - fr.y) < rad) { if (e.state !== 'sleep') RUN.naps++; e.state = 'sleep'; e.t = 5 * U.lullaby; }
-      for (const e of g.foes) if ((e.st === 'ok' || e.st === 'run' || e.st === 'lunge' || e.st === 'dive') && Math.hypot(e.x - fr.x, e.y - e.h / 2 - fr.y) < rad + 6) { RUN.naps++; e.st = 'sleep'; e.tt = 5 * U.lullaby; }
+      for (const e of g.foes) if ((e.st === 'ok' || e.st === 'run' || e.st === 'lunge' || e.st === 'dive') && Math.hypot(e.x - fr.x, e.y - e.h / 2 - fr.y) < rad + 6) { RUN.naps++; e._golpesDormido = 0; e.st = 'sleep'; e.tt = 5 * U.lullaby; }
     }
   }
   if (g.power === 'lapiz' && g.trazoLapiz && mouse.active) MEC.trazaLapiz(g, g.cam + mouse.x, mouse.y + cy);
@@ -639,12 +671,12 @@ function fit() {
     relleno.style.display = 'none'; view.resize(w, 4, VH);
     return;
   }
-  const modo = !!(CUR && CUR.modo && !CUR.modo.alto); // un modo con `alto` crece hacia arriba como los niveles normales
+  const modo = !!(CUR && CUR.modo && !CUR.modo.alto && !CUR.modo.extiende); // un modo con `alto` crece hacia arriba como los niveles normales
   let w = Math.min(innerWidth, innerHeight * 16 / 9 / .9);
-  VISTA.H = modo ? VH : Math.round(clamp(VW * innerHeight / w, VH, VH + ALTO_MUNDO));
+  VISTA.H = modo ? VH : Math.round(clamp(VW * innerHeight / w, VH, VH + (CUR && CUR.modo && CUR.modo.extiende ? 240 : ALTO_MUNDO)));
   // ventana todavía más alta: se agranda la vista y se recortan los lados (hasta 12% de cada lado);
   // la cámara lo toma en cuenta (VISTA.rec) para que Itzel y las orillas sigan a la vista
-  if (!modo && w * VISTA.H / VW < innerHeight) w = Math.min(innerHeight * VW / VISTA.H, innerWidth / .76);
+  if (!modo && !(CUR && CUR.modo && CUR.modo.extiende) && w * VISTA.H / VW < innerHeight) w = Math.min(innerHeight * VW / VISTA.H, innerWidth / .76);
   VISTA.rec = Math.max(0, (w - innerWidth) / 2) * VW / w;
   const h = w * VISTA.H / VW;
   franja = Math.max(0, innerHeight - h);
@@ -720,18 +752,16 @@ const stitched = (t, c, cols) => BORDADO.text(t, c, cols);
 // titulo: un nivel facil jugandose solo con un estilo al azar
 function title() {
   STATE = 'title'; $('hud').classList.remove('on');
-  const seed = (Math.random() * 1e6) | 0, r = rng(seed);
-  setLevel(buildLevelFromRows(genLevel(r, 1, 0, { easy: true })));
-  view.auto = true; view.setStyle(STYLE_MAP[MUNDOS[Math.floor(Math.random() * MUNDOS.length)]]); fit();
-  showScreen(`<div class="title"><img class="logo" alt="Itzel" src="${stitched('Itzel', 16)}">
-    <p class="sub">Hay aventuras que empiezan en Campeche</p>
-    <button class="patch" id="go">Empezar</button><button class="patch verde" id="abreEnci">Enciclopedia</button>
-    <div class="ctrl panel">
-      <div><img src="${ico('heart', 5)}"><b>Itzel, con el teclado</b><span>A y D (o flechas) para correr, Espacio o W para saltar</span></div>
-      <div><img src="${ico('bubble', 5)}"><b>Fresita, con el mouse</b><span>Clic izquierdo usa el poder del nivel; clic derecho canta para dormir enemigos</span></div>
-    </div>
-    <p class="hint">Son cuatro mundos. Cada uno es un nivel hecho a mano, con su enemigo, sus plataformas y un poder distinto para Fresita; salen al azar de ${MUNDOS.length}.</p></div>`);
-  $('go').onclick = () => { PIDE = null; empezar(); }; $('abreEnci').onclick = abrirEnci;
+  // El menú se carga después de este archivo; nunca fabricar otra versión.
+  if (typeof menuPrincipal === 'function') {
+    const seed = (Math.random() * 1e6) | 0, r = rng(seed);
+    setLevel(buildLevelFromRows(genLevel(r, 1, 0, { easy: true })));
+    view.auto = true; view.setStyle(STYLE_MAP[MUNDOS[Math.floor(Math.random() * MUNDOS.length)]]); fit();
+    menuPrincipal();
+  } else {
+    showScreen(''); fit();
+    addEventListener('load', () => { if (STATE === 'title' && typeof menuPrincipal === 'function') title(); }, { once: true });
+  }
 }
 
 // ---------------------------------------------------------------------
@@ -793,18 +823,22 @@ function espejar(nv) {
 // ---- reintentar el nivel: al empezar cada nivel o jefe se guarda cómo venía la partida ----
 function fotoNivel(boss) {
   RUN.reintento = { boss, coins: RUN.coins, gastado: RUN.gastado, semillas: RUN.semillas, naps: RUN.naps, stomps: RUN.stomps, subjefes: RUN.subjefes,
-    bossIdx: RUN.bossIdx || 0, upg: JSON.parse(JSON.stringify(RUN.upg)), taken: Object.assign({}, RUN.taken), def: null };
+    bossIdx: RUN.bossIdx || 0, escudo: RUN.escudo || 0, jipi: RUN.jipi || 0, upg: JSON.parse(JSON.stringify(RUN.upg)), taken: Object.assign({}, RUN.taken), def: null };
 }
 // el mismo nivel (o el mismo jefe) de este mundo, con la partida como venía y los corazones llenos
 function reintentarNivel() {
   const r = RUN && RUN.reintento; if (!r) { empezar(); return; }
   Object.assign(RUN, { coins: r.coins, gastado: r.gastado, semillas: r.semillas, naps: r.naps, stomps: r.stomps, subjefes: r.subjefes, bossIdx: r.bossIdx,
-    upg: JSON.parse(JSON.stringify(r.upg)), taken: Object.assign({}, r.taken) });
+    escudo: r.escudo || 0, jipi: r.jipi || 0, upg: JSON.parse(JSON.stringify(r.upg)), taken: Object.assign({}, r.taken) });
   RUN.hearts = RUN.maxHearts; RUN.reintentando = true;
+  if (r.boss && r.formaRuptura) RUN.formaRupturaEntrada = r.formaRuptura;
   if (r.boss) startBoss(); else { RUN.reintentoDef = r.def; startLevel({ directo: true }); }
 }
 function startLevel() {
-  STATE = 'loading'; showScreen(''); $('loading').classList.add('on');
+  // la espera es la pantalla oscura con las equis (puntadas) en la esquina; se mantiene encendida hasta que el nivel y su demostración estén listos
+  STATE = 'loading'; showScreen(''); document.documentElement.classList.add('directo');
+  const mantener = setInterval(() => document.documentElement.classList.add('directo'), 120), sueltaEspera = () => { clearInterval(mantener); document.documentElement.classList.remove('directo'); };
+  setTimeout(sueltaEspera, 20000);   // por si algo falla armando el nivel: que no se quede trabada
   const st = curStyle();
   $('loadName').textContent = st.name;
   if (!RUN.reintentando) fotoNivel(false); RUN.reintentando = false;
@@ -823,12 +857,16 @@ function startLevel() {
     view.auto = false; view.setStyle(st); fit(); view.g = CUR;
     if (CUR.modo) CUR.modo.pintar(CUR, view); else { view.y0 = CUR.camY ?? VH - VISTA.H; view.render(); }
     const pw = def && MEC.POW[def.power];
-    if (pw) INTRO_NIVEL.precarga(def.power, st.id, def.id);
-    $('loading').classList.remove('on'); $('hud').classList.add('on'); HUDKEY = '';
+    const claveDemo = pw ? INTRO_NIVEL.precarga(def.power, st.id, def.id) : null;
+    // la pantalla de carga sigue hasta que la demostración del poder esté lista (o falle / tarde demasiado)
+    const entra = () => {
+    sueltaEspera(); $('loading').classList.remove('on'); $('hud').classList.add('on'); HUDKEY = '';
     STATE = 'play';
     banner(`${RUN.desdeEnciclopedia ? 'Nivel' : `Mundo ${RUN.world} de ${WORLDS}`}${def && def.lugar && def.id !== 'paper' ? ' · ' + def.lugar : ''}`, def ? def.nombre : st.name, def && def.id === 'abordaje' ? '' : def ? `${def.lema} Fresita tiene ${pw.name.toLowerCase()}.` : st.ref, { etiqueta: RUN.desdeEnciclopedia ? 'Nivel' : `Mundo ${RUN.world} de ${WORLDS}`, titulo: def ? def.nombre : st.name, nivel: def && def.id, vistaNivel: !!(def && def.modo), lugar: def && def.lugar, epoca: def && INTRO_NIVEL.epoca(def.id), lema: def ? def.lema : '', poder: pw ? { nombre: pw.name, ayuda: pw.help.replace(/^Fresita:? /, ''), id: def.power, mundo: st.id } : null });
     // cómo se usa el poder: solo la primera vez que sale (después lo recuerda la etiqueta de arriba)
     if (pw && def.id !== 'abordaje' && def.id !== 'planos' && !(PROG.d.ayudas = PROG.d.ayudas || {})[def.power]) { PROG.d.ayudas[def.power] = 1; PROG.save(); setTimeout(() => { if (STATE === 'play' && CUR && CUR.def === def) toast(/^Fresita/.test(pw.help) ? pw.help : `Fresita: ${pw.help}`, 4500); }, 4200); }
+    };
+    INTRO_NIVEL.espera(claveDemo, 9000).then(entra);
   }, 60);
 }
 function startBoss() {
@@ -839,6 +877,8 @@ function startBoss() {
   setTimeout(() => {
     const nv = construirArena(def, tipo); setLevel(buildLevelFromRows(nv.rows)); L.goal = { x: -9999, y: -9999 };
     CUR = makeGame(); MEC.init(CUR, def, nv.ents); CUR.def = def; CUR.isBoss = true;
+    // La forma se elige al crear el jefe, después de guardar la foto del nivel.
+    if (tipo === 'ruptura' && CUR.boss && CUR.boss.F && RUN.reintento) RUN.reintento.formaRuptura = CUR.boss.F.id;
     view.auto = false; view.setStyle(st); fit(); view.g = CUR; view.y0 = CUR.camY ?? VH - VISTA.H; view.render();
     $('loading').classList.remove('on'); $('hud').classList.add('on'); HUDKEY = '';
     const pw = MEC.POW[def.power], modo = modoJefe(def.power);
@@ -868,14 +908,26 @@ const datoCampeche = () => {
   }
   return d && d.dato ? `<p class="dato-camp"><b>Campeche de verdad.</b> ${d.dato}</p>` : '';
 };
+// Los corazones y canisteles que llevan, con iconos en vez de texto (corazones llenos y vacíos; canisteles de Itzel + semillas de Fresita a 5 cada una)
+function resumenRun() {
+  if (!document.getElementById('estiloResumenRun')) {
+    const st = document.createElement('style'); st.id = 'estiloResumenRun';
+    st.textContent = `.resumenRun { display:flex; align-items:center; justify-content:center; gap:26px; flex-wrap:wrap; margin-top:14px; color:#fff3dc; font:800 22px 'Alegreya Sans', sans-serif }
+      .resumenRun .rcan { display:flex; align-items:center; gap:6px } .resumenRun .rcan img { height:24px; margin:0 }
+      .resumenRun .rcor { display:flex; align-items:center; gap:3px } .resumenRun .rcor img { height:21px; margin:0 } .resumenRun .rcor img.vacio { opacity:.28; filter:grayscale(1) }`;
+    document.head.appendChild(st);
+  }
+  const total = (RUN.coins || 0) + 5 * (RUN.semillas || 0);
+  return `<div class="resumenRun"><span class="rcor" title="${RUN.hearts} de ${RUN.maxHearts} corazones">${Array.from({ length: RUN.maxHearts }, (_, k) => `<img class="${k < RUN.hearts ? '' : 'vacio'}" src="${ico('heart', 3)}" alt="">`).join('')}</span><span class="rcan" title="Canisteles de Itzel y semillas de Fresita (cada semilla vale 5)"><img src="${ico('canistel', 3)}" alt="Canisteles"><b>${total}</b></span></div>`;
+}
 function ofrenda() {
   STATE = 'ofrenda'; $('hud').classList.remove('on');
-  const ok = BLESS.filter(b => !(b.once && RUN.taken[b.id]) && !(b.max && (RUN.taken[b.id] || 0) >= b.max) && !(b.id === 'heal' && RUN.hearts === RUN.maxHearts));
+  const ok = BLESS.filter(b => !(b.req && !RUN.upg[b.req]) && !(b.once && RUN.taken[b.id]) && !(b.max && (RUN.taken[b.id] || 0) >= b.max) && !(b.id === 'heal' && RUN.hearts === RUN.maxHearts));
   const pick = []; while (pick.length < 3 && ok.length) pick.push(ok.splice(Math.floor(RUN.rand() * ok.length), 1)[0]);
   showScreen(`<div class="ofrenda"><img class="hstitch" alt="Ofrenda" src="${stitched('Ofrenda', 8)}"><p class="sub">Escojan un regalo para el camino</p>
     <div class="cards">${pick.map((b, i) => `<button class="card panel" style="--r:${(i - 1) * 1.5}deg" data-i="${i}"><img src="${ico(b.icon, 7)}"><b>${b.name}</b><span>${b.desc}</span></button>`).join('')}</div>
     ${datoCampeche()}
-    <p class="hint">Después escogen por dónde seguir al mundo ${RUN.world + 1}. Llevan ${RUN.hearts} de ${RUN.maxHearts} corazones, ${RUN.coins} canisteles.</p></div>`);
+    <p class="hint">Después escogen por dónde seguir al mundo ${RUN.world + 1}.</p>${resumenRun()}</div>`);
   const cartasOf = [...document.querySelectorAll('.card')], tomaRegalo = k => { MULTI.limpia(); const b = pick[k]; b.apply(RUN); RUN.taken[b.id] = (RUN.taken[b.id] || 0) + 1; eligeCamino(siguienteMundo); };
   cartasOf.forEach((el, k) => el.onclick = () => tomaRegalo(k));
   if (MULTI.dos()) MULTI.elige(cartasOf, tomaRegalo);   // con dos personas, Itzel también puede escoger con el teclado
@@ -913,9 +965,12 @@ function eligeCamino(seguir) {
     <div class="cards">${ops.map((o, k) => { const pw = MEC.POW[o.def.power]; return `<button class="card panel" style="--r:${k ? 1.2 : -1.2}deg" data-i="${k}"><canvas></canvas>
       <small>${o.def.lugar || o.st.name}</small><b>${tipo === 'ruptura' ? o.st.name : o.def.nombre}</b><i>${claseDeNivel(o.def, tipo, i + 1)}</i>
       <span>${tipo === 'ruptura' ? o.def.nombre + '.' : o.def.lema || ''}${pw ? ` Fresita tiene ${pw.name.toLowerCase()}.` : ''}</span></button>`; }).join('')}</div>
-    <p class="hint">Llevan ${RUN.hearts} de ${RUN.maxHearts} corazones, ${RUN.coins} canisteles.</p></div>`);
+    ${resumenRun()}</div>`);
   const cartas = [...document.querySelectorAll('.camino .card')];
-  const sigueCon = k => { const o = ops[k]; RUN.styles[i] = o.st; if (tipo !== 'ruptura') RUN.reintentoDef = o.def.id; precargaPersonajes(); seguir(); };
+  // mientras se escoge, las demostraciones de poder de las dos opciones ya se van cargando: al entrar al nivel el video está listo
+  const demoDe = o => tipo !== 'ruptura' && o.def && o.def.power && typeof INTRO_NIVEL !== 'undefined' ? [o.def.power, o.st.id, o.def.id] : null;
+  ops.forEach(o => { const d = demoDe(o); if (d) INTRO_NIVEL.precarga(...d); });
+  const sigueCon = k => { const o = ops[k]; ops.forEach((q, n) => { if (n !== k) { const d = demoDe(q); if (d) INTRO_NIVEL.descarta(...d); } }); RUN.styles[i] = o.st; if (tipo !== 'ruptura') RUN.reintentoDef = o.def.id; precargaPersonajes(); seguir(); };
   if (MULTI.dos()) MULTI.vota(cartas, sigueCon);   // cada persona escoge; si no coinciden, decide una moneda
   else cartas.forEach((el, k) => el.onclick = () => sigueCon(k));
   // las postales se pintan sobre un nivel de muestra, ya con la pantalla puesta (y otra vez cuando llegan sus imágenes)
@@ -923,8 +978,19 @@ function eligeCamino(seguir) {
   setTimeout(pinta, 30); setTimeout(pinta, 900);
 }
 function stats() {
-  const m = Math.floor(RUN.time / 60), s = Math.floor(RUN.time % 60);
-  return `<p class="stats">Juntaron ${RUN.coins + (RUN.gastado || 0)} canisteles y Fresita recogió ${RUN.semillas || 0} semillas de luz. Durmieron a ${RUN.naps} enemigos, dieron ${RUN.stomps} pisotones${RUN.subjefes ? ` y vencieron a ${RUN.subjefes === 1 ? 'un subjefe' : `${RUN.subjefes} subjefes`}` : ''}. Tardaron ${m}:${String(s).padStart(2, '0')}.</p>`;
+  const segundos = Math.max(0, Math.floor(RUN.time || 0));
+  const horas = Math.floor(segundos / 3600), minutos = Math.floor(segundos % 3600 / 60), seg = segundos % 60;
+  const tiempo = horas ? `${horas}:${String(minutos).padStart(2, '0')}:${String(seg).padStart(2, '0')}` : `${minutos}:${String(seg).padStart(2, '0')}`;
+  const cantidad = n => Math.max(0, Number(n) || 0).toLocaleString('es-MX');
+  const disponibles = Number(RUN.coins) || 0, gastados = Number(RUN.gastado) || 0;
+  const datos = [
+    ['Tiempo en plataformas', tiempo, 'Sin contar pausas ni otros modos'],
+    ['Canisteles obtenidos', cantidad(disponibles + gastados), `${cantidad(gastados)} gastados · ${cantidad(disponibles)} disponibles`],
+    ['Semillas de luz', cantidad(RUN.semillas), 'Recogidas por Fresita'],
+    ['Corazones restantes', `${cantidad(RUN.hearts)} / ${cantidad(RUN.maxHearts)}`, 'Al terminar la aventura'],
+    ['Subjefes vencidos', cantidad(RUN.subjefes), 'Durante la partida']
+  ];
+  return `<section class="resumen-partida" aria-label="Resumen de la partida"><h3>Su aventura en números</h3><div class="resumen-datos">${datos.map(([etiqueta, valor, detalle]) => `<div class="resumen-dato"><span>${etiqueta}</span><strong>${valor}</strong><small>${detalle}</small></div>`).join('')}</div></section>`;
 }
 function worldsList() {
   if (RUN.desdeEnciclopedia) { const nombre = CUR && CUR.isBoss && CUR.boss ? JEFES[CUR.boss.tipo].nombre : CUR && CUR.def ? CUR.def.nombre : curStyle().name; return `<div class="worlds"><span class="here">${nombre}</span></div>`; }
@@ -997,7 +1063,7 @@ function gameOver() {
 }
 function victory() {
   STATE = 'win'; $('hud').classList.remove('on');
-  showScreen(`<div class="end win"><img class="hstitch" alt="Lo lograron" src="${stitched('¡Lo lograron!', 8)}"><p class="sub">Itzel y Fresita cruzaron los ${WORLDS} mundos y cerraron la Ruptura</p>${worldsList()}${datoCampeche()}${stats()}<button class="patch" id="again">Otra vez</button><button class="patch verde" id="menu">Al inicio</button></div>`);
+  showScreen(`<div class="end win"><img class="hstitch" alt="Lo lograron" src="${stitched('¡Lo lograron!', 8)}"><p class="sub">Itzel y Fresita cruzaron los ${WORLDS} mundos y cerraron la Ruptura</p>${worldsList()}${stats()}${datoCampeche()}<button class="patch" id="again">Otra vez</button><button class="patch verde" id="menu">Al inicio</button></div>`);
   $('again').onclick = empezar; $('menu').onclick = title;
 }
 function pause(on) {
@@ -1015,7 +1081,7 @@ function hud() {
   $('bubbles').innerHTML = aire === null ? '' : `<img src="${ico('bubble', 3)}" alt="Aire"><span>${aire}%</span>`;
   $('bubbles').title = 'Aire de Itzel';
   $('where').innerHTML = CUR.isBoss && CUR.boss ? `${JEFES[CUR.boss.tipo].nombre} <b>· Fresita: ${MEC.POW[CUR.def.power].name}</b>` : CUR.def ? `${CUR.def.nombre} <b>· Fresita: ${MEC.POW[CUR.def.power].name}</b>` : `Mundo ${RUN.world}: <b>${curStyle().name}</b>`;
-  $('perks').innerHTML = Object.keys(RUN.taken).map(k => `<img src="${ico(BLESS.find(b => b.id === k).icon, 3)}">`.repeat(RUN.taken[k])).join('');
+  $('perks').innerHTML = Object.keys(RUN.taken).map(k => { const mejora = BLESS.find(b => b.id === k); return mejora ? `<img src="${ico(mejora.icon, 3)}">`.repeat(RUN.taken[k]) : ''; }).join('');
 }
 
 // ---------------------------------------------------------------------
@@ -1030,7 +1096,7 @@ function loop(now) {
       let acc = (CUR.acc || 0) + dt; const step = 1 / 60;
       while (acc >= step) {
         acc -= step;
-        if (CUR.modo) { PRESSED.clear(); CUR.modo.paso(CUR, step); }
+        if (CUR.modo) { PRESSED.clear(); pasoModo(CUR, step); }
         else { const inp = p1Input(); stepFresita(CUR, MOUSE, step); stepRun(CUR, inp, step, view.st); }
         if (CUR.win && CUR.t - CUR.win > 1.8 && STATE === 'play') { STATE = 'next'; setTimeout(levelDone, 0); break; }
       }

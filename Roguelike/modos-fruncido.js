@@ -15,6 +15,20 @@
 // =====================================================================
 MODOS.fruncido = (() => {
   const P = 2, ARR = 64, CW = 256, PISO = 192, K = .3;
+  const canistelBordado = new Image();
+  canistelBordado.src = '../Roguelike/assets/hipil-detalles/canistel-bordado-v1.png';
+  const itzelCamina = new Image(), itzelSalta = new Image();
+  itzelCamina.src = '../Roguelike/assets/forge/itzel/hipil-caminar-v3/sheet-transparent.png';
+  itzelSalta.src = '../Roguelike/assets/forge/itzel/hipil-salto-v3/sheet-transparent.png';
+  function dibujaItzel(c, p, st, f) {
+    const aire = !p.on, im = aire ? itzelSalta : itzelCamina;
+    if (!im.complete || !im.naturalWidth) return st.player(c, p, f);
+    const q = aire ? ((p.vy || 0) < 0 ? 1 : 2) : Math.abs(p.vx || 0) > 20 ? 1 + Math.floor((p.run || 0) / (Math.PI / 3)) % 6 : 0;
+    const cols = aire ? 2 : 4, altura = aire ? 89 : 190, piso = aire ? 173 : 223, lado = 21 * 256 / altura;
+    c.save(); c.translate(p.x, p.y); c.scale((p.face || 1) < 0 ? -1 : 1, 1); c.imageSmoothingEnabled = true;
+    c.drawImage(im, (q % cols) * 256, Math.floor(q / cols) * 256, 256, 256, -lado / 2, -piso * lado / 256, lado, lado);
+    c.restore();
+  }
   const GRAV = 1100, SALTO = 385, VEL = 112, AN = 5, ALTO = 20;
   const suena = n => { if (typeof SONIDO !== 'undefined' && SONIDO.fx) SONIDO.fx(n); };
   const e3 = g => g * g * (3 - 2 * g);
@@ -27,24 +41,30 @@ MODOS.fruncido = (() => {
     pon(0, W, 12, H, 1);
     const secs = [], hil = (c0, c1, flojo) => secs.push({ u0: c0 * T, u1: c1 * T, g: 0, quiere: 0, t: 0, flojo: !!flojo });
     const coins = [], mon = (c, r) => coins.push({ u: c * T + 8, y: r * T + 8, got: false });
-    const alfileres = [], botones = [], polillas = [];
+    const alfileres = [], botones = [], polillas = [], bichos = [];
     // I. un calado chico y el primer hilván
     hueco(8, 10); mon(9, 9);
+    pon(11, 15, 11, 12, 1); pon(12, 14, 10, 11, 1); mon(13, 8);                       // la primera colina de tela
     hil(15, 31); hueco(18, 28); mon(23, 10); mon(25, 10);
     // II. dos hilvanes seguidos con una isla: un solo hilo
     pon(32, 35, 8, 9, 2); mon(32, 7); mon(33, 7); mon(34, 7);
-    hil(36, 48); hueco(38, 46); hil(52, 64); hueco(54, 62); mon(50, 10); mon(58, 10);
+    hil(36, 48); hueco(38, 46); pon(40, 44, 9, 10, 2); mon(41, 8); mon(42, 8); mon(43, 8); polillas.push({ c: 41 });
+    pon(48, 52, 10, 12, 1); pon(49, 51, 9, 10, 1); mon(50, 7);
+    hil(52, 64); hueco(54, 62); mon(58, 10); pon(57, 60, 9, 10, 2); mon(58, 8);
     // III. alfileres y el hilván flojo, el más largo
-    alfileres.push(66 * T + 8, 67 * T + 8);
-    hil(70, 88, true); hueco(72, 86); mon(79, 9);
-    polillas.push({ c: 92 });
+    bichos.push([62, 65]); alfileres.push(66 * T + 8, 67 * T + 8); pon(65, 69, 9, 10, 2); mon(66, 8); mon(68, 8);
+    hil(70, 88, true); hueco(72, 86); mon(79, 9); pon(82, 85, 9, 10, 2); mon(83, 8); polillas.push({ c: 76 });
+    bichos.push([90, 96]); polillas.push({ c: 92 });
     // IV. el botón que rebota al bordado de arriba (o el hilván por abajo)
     botones.push(98 * T + 8); pon(101, 111, 5, 6, 2); hueco(101, 113); hil(100, 114); for (let c = 102; c < 110; c += 2) mon(c, 4);
-    alfileres.push(117 * T + 8); polillas.push({ c: 119 });
+    bichos.push([113, 116]); alfileres.push(117 * T + 8); polillas.push({ c: 119 });
+    pon(119, 122, 10, 12, 1); pon(120, 122, 9, 10, 1); mon(121, 7);
     // V. el final: un hilván fijo, uno flojo y la flor del hipil
     hil(122, 136); hueco(124, 134); pon(137, 139, 9, 10, 2); mon(137, 8); mon(138, 8);
-    hil(140, 154, true); hueco(142, 151); polillas.push({ c: 158 }); mon(146, 10);
+    hil(140, 154, true); hueco(142, 151); polillas.push({ c: 158 }); polillas.push({ c: 130 }); polillas.push({ c: 147 }); mon(146, 10); pon(144, 148, 9, 10, 2); mon(146, 8);
+    bichos.push([152, 157]); pon(159, 163, 10, 12, 1); pon(160, 162, 9, 10, 1); mon(161, 7);
     return { W, H, M, secs, coins, alfileres, botones, meta: 164 * T, inicio: 2 * T + 8,
+      bichos: bichos.map(([a, b], i) => ({ a: a * T, b: b * T, u: (a + (b - a) * (i % 2 ? .3 : .7)) * T, d: i % 2 ? 1 : -1, st: 'vivo', t: 0 })),
       polillas: polillas.map((q, i) => ({ home: q.c * T, u: q.c * T, y: 140, st: 'vuela', t: i * 2.3, come: 0, comidas: 0 })),
       ayudas: [
         { id: 'calado', u: 5 * T, txt: 'Esos agujeros son el calado de la tela: si Itzel se cae, se va por el revés.' },
@@ -52,6 +72,7 @@ MODOS.fruncido = (() => {
         { id: 'unhilo', u: 47 * T, txt: 'Fresita tiene un solo hilo: al jalar otro hilván, el anterior se suelta.' },
         { id: 'flojo', u: 68 * T, txt: 'Ese hilván rosa está flojo: se suelta solito en unos segundos. ¡Rápido!' },
         { id: 'polilla', u: 88 * T, txt: 'Las polillas se comen la tela. Cáeles encima, o que Fresita les cante con clic derecho.' },
+        { id: 'bicho', u: 60 * T, txt: 'Los escarabajos bordados patrullan la tela: salta sobre ellos para aplastarlos.' },
         { id: 'boton', u: 96 * T, txt: 'Los botones rebotan: por arriba hay canisteles; por abajo, otro hilván.' },
       ] };
   }
@@ -93,7 +114,14 @@ MODOS.fruncido = (() => {
 
   function paso(j, dt) {
     j.t += dt; j.inv = Math.max(0, j.inv - dt); j.shake = Math.max(0, j.shake - dt);
-    const p = j.p, n = j.n, k = j.demo ? {} : teclas(), px = X(j, p.u) - j.cam;
+    // demo del poder en la enciclopedia: Itzel camina sola y salta donde se acaba la tela; Fresita jala el hilván que viene
+    if (j.camina) {
+      for (const sc of j.n.secs) sc.quiere = (j.p.u > sc.u0 - 90 && j.p.u < sc.u1 + 4 && !(sc.flojo && sc.t > 3)) ? 1 : 0;
+      const p0 = j.p, hueco = [8].some(d => !celda(j.n, Math.floor((j.p.u + d) / T), 12) && celda(j.n, Math.floor((j.p.u + d) / T), 11) === 0);
+      const pared = [6, 12, 20].some(d => celda(j.n, Math.floor((j.p.u + d) / T), 11) !== 0 || celda(j.n, Math.floor((j.p.u + d) / T), 10) !== 0);
+      j.kAuto = { right: true, space: (hueco && p0.on) || (pared && Math.floor(j.t * 6) % 2 === 0) };   // pulsa el salto (un salto por pulsación)
+    }
+    const p = j.p, n = j.n, k = j.camina ? j.kAuto || {} : j.demo ? {} : teclas(), px = X(j, p.u) - j.cam;
     // Fresita sigue al cursor; clic jala el hilván que está debajo; clic derecho canta
     if (MOUSE.active && !j.demo) { j.fre.x += (MOUSE.x - j.fre.x) * Math.min(1, dt * 9); j.fre.y += (MOUSE.y - j.dy - j.fre.y) * Math.min(1, dt * 9); }
     else { j.fre.x += (px - p.face * 18 - j.fre.x) * dt * 4; j.fre.y += (p.y - 34 + Math.sin(j.t * 2.2) * 2 - j.fre.y) * dt * 4; }
@@ -103,7 +131,7 @@ MODOS.fruncido = (() => {
       const s = seccionEn(j, c.x); if (s) jala(j, s); else chispas(j, c.x, c.y - j.dy, ['#c8203a'], 5, 20);
     }
     MOUSE.clicks.length = 0;
-    if (j.demo && j.t % 2.4 < dt) { const s = n.secs.find(q => q.u1 > p.u) || n.secs[0]; jala(j, s); }
+    if (j.demo && !j.camina && j.t % 2.4 < dt) { const s = n.secs.find(q => q.u1 > p.u) || n.secs[0]; jala(j, s); }
     // los hilvanes se frunzen y se sueltan poco a poco; los flojos se sueltan solos
     for (const s of n.secs) {
       s.t += dt; if (s.flojo && s.quiere && s.t > 3.4) { s.quiere = 0; suena('aviso'); }
@@ -112,7 +140,7 @@ MODOS.fruncido = (() => {
     if (j.aviso) { if (!(typeof cartelVisible === 'function' && cartelVisible())) j.aviso.t += dt; if (j.aviso.t > 5.5) j.aviso = null; }
     // Itzel: se mueve en pantalla, pero su lugar se guarda en la tela
     const dx = (k.right ? 1 : 0) - (k.left ? 1 : 0);
-    p.vx += (dx * VEL - p.vx) * Math.min(1, dt * 14); if (dx) p.face = dx;
+    p.vx += (dx * VEL * (j.camina ? 1.3 : 1) - p.vx) * Math.min(1, dt * 14); if (dx) p.face = dx;
     if (!j.win && p.vx) {
       const nu = U(j, X(j, p.u) + p.vx * dt), h = choca(j, nu, p.y);
       if (h) p.u = p.vx > 0 ? h.c * T - AN - .01 : (h.c + 1) * T + AN + .01; else p.u = nu;
@@ -134,6 +162,16 @@ MODOS.fruncido = (() => {
     // alfileres y botones
     for (const a of n.alfileres) if (Math.abs(p.u - a) < AN + 2 && p.y > PISO - 8 && dañoModo(j)) { suena('herida'); p.vy = -280; p.on = false; }
     for (const b of n.botones) if (cae > 0 && Math.abs(p.u - b) < AN + 7 && p.y >= PISO - 7 && y0 <= PISO - 5) { p.vy = -560; p.y = PISO - 7; p.on = false; suena('salto'); chispas(j, X(j, b) - j.cam, PISO - 6, ['#2f5fa8', '#ffffff'], 8, 40); }
+    // escarabajos bordados: patrullan un tramo plano; se pisan desde arriba
+    for (const b of n.bichos) {
+      b.t += dt;
+      if (b.st === 'muerto') continue;
+      b.u += b.d * 24 * dt; if (b.u < b.a + 6) { b.u = b.a + 6; b.d = 1; } if (b.u > b.b - 6) { b.u = b.b - 6; b.d = -1; }
+      if (Math.abs(X(j, b.u) - X(j, p.u)) < 9 && p.y > PISO - 10 && p.y < PISO + 6) {
+        if (cae > 0 && y0 <= PISO - 6) { b.st = 'muerto'; b.t = 0; p.vy = -340; j.reboteT = .25; RUN.stomps++; if (puedeSoltarCorazon()) (j.corazones || (j.corazones = [])).push({ u: b.u, y: PISO - 8 }); suena('pisa'); chispas(j, X(j, b.u) - j.cam, PISO - 4, ['#c8203a', '#2a2228', '#ffffff'], 12, 40); }
+        else if (dañoModo(j)) { suena('herida'); p.vy = -200; p.on = false; }
+      }
+    }
     // polillas: revolotean, bajan a comer tela y abren calados
     for (const q of n.polillas) {
       q.t += dt;
@@ -291,9 +329,30 @@ MODOS.fruncido = (() => {
       ctx.fillStyle = '#2f5fa8'; ctx.beginPath(); ctx.ellipse(x, PISO - 4 + sq, 8.5, 3.6 - sq, 0, 0, TAU); ctx.fill(); ctx.strokeStyle = '#1a3a6a'; ctx.lineWidth = .6; ctx.stroke();
       ctx.strokeStyle = '#f6f0e2'; ctx.lineWidth = .7; ctx.beginPath(); ctx.moveTo(x - 2.4, PISO - 5 + sq); ctx.lineTo(x + 2.4, PISO - 3 + sq); ctx.moveTo(x + 2.4, PISO - 5 + sq); ctx.lineTo(x - 2.4, PISO - 3 + sq); ctx.stroke();
     }
-    for (const c of n.coins) if (!c.got) { const x = X(j, c.u) - j.cam; if (x > -10 && x < VW + 10) st.coin(ctx, x, c.y, t, f); }
+    for (const c of n.coins) if (!c.got) {
+      const x = X(j, c.u) - j.cam; if (x < -12 || x > VW + 12) continue;
+      if (canistelBordado.complete && canistelBordado.naturalWidth) {
+        const y = c.y + Math.sin(t * 2.5 + c.u * .04) * 1.2;
+        ctx.drawImage(canistelBordado, x - 8, y - 8, 16, 16);
+      } else st.coin(ctx, x, c.y, t, f);
+    }
     for (const h of j.corazones || []) { const x = X(j, h.u) - j.cam, y = h.y + Math.sin(t * 3) * 1.5; drawHeart(ctx, x, y, 5, '#7a0f2a'); drawHeart(ctx, x, y, 4, '#ff3b5c'); }
     st.goal(ctx, X(j, n.meta + 24) - j.cam, PISO, t, f);
+    // escarabajos bordados
+    for (const b of n.bichos) {
+      const x = X(j, b.u) - j.cam; if (x < -14 || x > VW + 14) continue;
+      const al = b.st === 'muerto' ? Math.max(0, 1 - b.t * 1.5) : 1; if (al <= 0) continue;
+      const sq = b.st === 'muerto' ? .35 : 1, pat = Math.sin(t * 14 + b.a) * .8;
+      ctx.save(); ctx.globalAlpha = al; ctx.translate(x, PISO); ctx.scale(b.d, sq);
+      ctx.strokeStyle = '#2a2228'; ctx.lineWidth = .7; ctx.beginPath();
+      for (let i = -1; i <= 1; i++) { ctx.moveTo(i * 3, -3); ctx.lineTo(i * 3 + (i ? i * 2 : 1) + pat * (i ? 1 : -1), 0); }
+      ctx.stroke();
+      ctx.fillStyle = '#c8203a'; ctx.beginPath(); ctx.ellipse(0, -4.6, 6.2, 4.4, 0, Math.PI, TAU); ctx.fill(); ctx.fillRect(-6.2, -4.7, 12.4, 1.8);
+      ctx.strokeStyle = '#2a2228'; ctx.lineWidth = .6; ctx.beginPath(); ctx.ellipse(0, -4.6, 6.2, 4.4, 0, Math.PI, TAU); ctx.moveTo(0, -9); ctx.lineTo(0, -2.9); ctx.stroke();
+      ctx.fillStyle = '#2a2228'; for (const [dx, dy] of [[-3.2, -5.6], [3.2, -5.6], [-2.2, -3.8], [2.2, -3.8]]) { ctx.beginPath(); ctx.arc(dx, dy, .9, 0, TAU); ctx.fill(); }
+      ctx.beginPath(); ctx.arc(6.4, -3.6, 2.2, 0, TAU); ctx.fill(); ctx.fillStyle = '#fff'; ctx.fillRect(6.6, -4.4, .9, .9);
+      ctx.restore();
+    }
     // polillas
     for (const q of n.polillas) {
       const x = X(j, q.u) - j.cam, y = q.y, al = q.st === 'huye' ? Math.max(0, 1 - q.t) : 1; if (x < -20 || x > VW + 20 || al <= 0) continue;
@@ -307,7 +366,7 @@ MODOS.fruncido = (() => {
       ctx.restore();
     }
     // Itzel y Fresita, bordadas
-    if (!(j.inv > 0 && Math.floor(j.inv * 14) % 2)) { Object.assign(j.pose, { x: X(j, p.u) - j.cam, y: p.y, face: p.face, on: p.on, vx: Math.abs(p.vx) > 20 ? p.vx : 0, vy: p.vy, run: p.run, vis: true, sq: 0 }); st.player(ctx, j.pose, f); }
+    if (!(j.inv > 0 && Math.floor(j.inv * 14) % 2)) { Object.assign(j.pose, { x: X(j, p.u) - j.cam, y: p.y, face: p.face, on: p.on, vx: Math.abs(p.vx) > 20 ? p.vx : 0, vy: p.vy, run: p.run, vis: true, sq: 0 }); dibujaItzel(ctx, j.pose, st, f); }
     if (st.fresita) st.fresita(ctx, { x: j.fre.x, y: j.fre.y, face: j.fre.x < X(j, p.u) - j.cam ? 1 : -1 }, f);
     pintaChispas(ctx, j);
     // el bastidor: barras de madera arriba y abajo

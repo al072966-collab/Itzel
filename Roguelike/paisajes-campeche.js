@@ -7,7 +7,7 @@
 //    · bits64  (La selva de Calakmul)       → el Edificio de las Tres Torres de Xpuhil
 //    · oleo    (Noche en el Fuerte de San Miguel) → también San José el Alto, en la otra colina
 //    · hielo/posadas (Las posadas de San Francisco) → el santuario de Guadalupe, «la Morenita»
-//    · segunda tanda: hacienda Uayamón (vapor), Baluarte de la Soledad (bits32), Teatro Toro (deco), malecón (anime), catedral (vitral), Casa del Teniente (paper)
+//    · segunda tanda: Baluarte de la Soledad (bits32), Teatro Toro (deco), malecón (anime), catedral (vitral), Casa del Teniente (paper)
 // =====================================================================
 (function () {
   if (typeof STYLE_MAP === 'undefined') return;
@@ -20,7 +20,7 @@
   // donde va), para que se lea lejos y no como un objeto del nivel.
   const SIL = new Map();
   // dónde va asentado cada lugar (la base, en coordenadas de su telón). Ajustado con capturas en los huecos.
-  const Y = window.LUGARES_Y = { pixel: 222, bits64: 228, posadas: 180, acuarela: 178, ocaso: 176, paper: 181, vapor: 180, bits32: 222, deco: 178, anime: 181, vitral: 176 };
+  const Y = window.LUGARES_Y = { pixel: 222, bits64: 228, posadas: 180, acuarela: 178, ocaso: 176, paper: 181, bits32: 222, deco: 178, anime: 181, vitral: 176 };
   function silueta(n, color) {
     const k = n + '|' + color; if (SIL.has(k)) return SIL.get(k);
     const im = VL.IMG[n], cv = document.createElement('canvas'); cv.width = im.naturalWidth; cv.height = im.naturalHeight;
@@ -66,7 +66,7 @@
     c.fillStyle = '#3b2b3c'; rec(c, x - 44, y - 30, 3, 7); rec(c, x + 41, y - 30, 3, 7);
     c.fillStyle = '#c4452d'; rec(c, x - 1, y - 74, 1.5, 18); c.beginPath(); c.moveTo(x + .5, y - 74); c.lineTo(x + 10, y - 71); c.lineTo(x + .5, y - 68); c.fill(); // bandera
   }
-  envuelve('pixel', 'pixel', (c, f) => repite(c, f, .1, 520, (cc, x) => puertaMar(cc, x, Y.pixel), .8));
+  envuelve('pixel', 'pixel', (c, f) => { if (!window.MURALLA_TELON_LISTO || !window.MURALLA_TELON_LISTO()) repite(c, f, .1, 520, (cc, x) => puertaMar(cc, x, Y.pixel), .8); });
 
   // ---- Xpuhil, Edificio de las Tres Torres: una fachada con tres torres escalonadas y falsos templos arriba ----
   function tresTorres(c, x, y) {
@@ -84,7 +84,7 @@
     c.fillStyle = '#6b8a70'; rec(c, x - 8, y - 22, 16, 22);                                        // la escalinata central
     c.fillStyle = claro; for (let s = 0; s < 4; s++) rec(c, x - 8, y - 4 - s * 5, 16, 1.5);
   }
-  envuelve('bits64', 'bits64', (c, f) => repite(c, f, .07, 640, (cc, x) => tresTorres(cc, x + 230, Y.bits64), .7));
+  envuelve('bits64', 'bits64', (c, f) => { if (!window.SELVA_TELON_LISTO || !window.SELVA_TELON_LISTO()) repite(c, f, .07, 640, (cc, x) => tresTorres(cc, x + 230, Y.bits64), .7); });
 
   // ---- Óleo: San José el Alto en la colina de la derecha, pintado a pinceladas (San Miguel ya está en su cerro) ----
   function sanJose(c, x, y) {
@@ -126,7 +126,7 @@
     c.fillStyle = '#8fd0c8'; c.beginPath(); c.arc(x, y - 36, 3, 0, 6.3); c.fill();
     c.fillStyle = '#c2453a'; rec(c, x - .7, y - 64, 1.4, 6); rec(c, x - 2.5, y - 62.5, 5, 1.4);
   }
-  envuelve('acuarela', 'acuarela', (c, f) => repite(c, f, .08, 470, (cc, x) => candelaria(cc, x, Y.acuarela), .6));
+  envuelve('acuarela', 'acuarela', (c, f) => { if (!window.CENOTE_TELON_LISTO || !window.CENOTE_TELON_LISTO()) repite(c, f, .08, 470, (cc, x) => candelaria(cc, x, Y.acuarela), .6); });
 
   // ---- Sabancuy (ocaso): el estero con mangle y una lancha de pescador, a contraluz ----
   function sabancuy(c, x, y) {
@@ -150,20 +150,18 @@
     for (const wx of [-26, 20]) { c.fillStyle = '#fff3e0'; rec(c, x + wx - 1, y - 38, 12, 14); c.fillStyle = '#3d5a80'; rec(c, x + wx + 1, y - 36, 8, 10); c.fillStyle = '#2b2b2b'; rec(c, x + wx, y - 26, 10, 1.4); }
     c.fillStyle = '#fff3e0'; for (let a = -36; a < 36; a += 8) rec(c, x + a, y - 50, 5, 4);
   }
-  envuelve('paper', 'paper', (c, f) => repite(c, f, .17, 600, (cc, x, i) => { if (i % 2 === 0) casaSeis(cc, x + 120, Y.paper); else dib(cc, 'casaTeniente', x + 120, Y.paper + 1, { w: 84 }); }, 1));
+  envuelve('paper', 'paper', (c, f) => { if (!window.PAPEL_TELON_LISTO || !window.PAPEL_TELON_LISTO()) repite(c, f, .17, 600, (cc, x, i) => { if (i % 2 === 0) casaSeis(cc, x + 120, Y.paper); else dib(cc, 'casaTeniente', x + 120, Y.paper + 1, { w: 84 }); }, 1); });
 
   // ---- segunda tanda de lugares (imágenes de ChatGPT; sin ellas no se dibuja nada) ----
-  // Hacienda Uayamón con su chimenea de ladrillo: la fábrica de vapor, entre humo y resplandor
-  envuelve('vapor', 'vapor', (c, f) => repite(c, f, .09, 560, (cc, x) => dib(cc, 'haciendaUayamon', x + 60, Y.vapor, { w: 150, filtro: 'sepia(.55) brightness(.5) saturate(1.3)' }), .55));
   // Baluarte de la Soledad: de noche, en piedra azulada, sobre el mar de la muralla
-  envuelve('bits32', 'bits32', (c, f) => repite(c, f, .07, 520, (cc, x) => dib(cc, 'baluarteSoledad', x + 80, Y.bits32, { w: 120, filtro: 'brightness(.55) saturate(.6) hue-rotate(185deg)' }), .75));
+  envuelve('bits32', 'bits32', (c, f) => { if (!window.BALUARTE_TELON_LISTO || !window.BALUARTE_TELON_LISTO()) repite(c, f, .07, 520, (cc, x) => dib(cc, 'baluarteSoledad', x + 80, Y.bits32, { w: 120, filtro: 'brightness(.55) saturate(.6) hue-rotate(185deg)' }), .75); });
   // Teatro Francisco de Paula Toro: al fondo de la tramoya dorada, como un telón pintado
-  envuelve('deco', 'deco', (c, f) => repite(c, f, .06, 600, (cc, x) => dib(cc, 'teatroToro', x + 150, Y.deco, { w: 120, filtro: 'sepia(1) saturate(4) hue-rotate(-8deg) brightness(.75)' }), .26));
+  envuelve('deco', 'deco', (c, f) => { if (!window.DECO_PANORAMA_LISTO?.()) repite(c, f, .06, 600, (cc, x) => dib(cc, 'teatroToro', x + 150, Y.deco, { w: 120, filtro: 'sepia(1) saturate(4) hue-rotate(-8deg) brightness(.75)' }), .26); });
   // Malecón de Campeche: barandal con farola y palmera junto a los resortes
   envuelve('anime', 'anime', (c, f) => {
     if (typeof CUR !== 'undefined' && CUR && CUR.def && (CUR.def.id === 'anime_nubes' || CUR.def.id === 'anime')) return;
     repite(c, f, .28, 520, (cc, x) => dib(cc, 'malecon', x + 80, Y.anime, { w: 150 }), .95);
   });
   // Catedral de la Concepción: sus dos torres entre el vidrio de colores
-  envuelve('vitral', 'vitral', (c, f) => repite(c, f, .08, 560, (cc, x) => dib(cc, 'catedral', x + 120, Y.vitral, { w: 110, filtro: 'sepia(.5) saturate(1.4) hue-rotate(215deg) brightness(.55)' }), .7));
+  envuelve('vitral', 'vitral', (c, f) => { if (!window.VITRAL_PANORAMA_LISTO?.()) repite(c, f, .08, 560, (cc, x) => dib(cc, 'catedral', x + 120, Y.vitral, { w: 110, filtro: 'sepia(.5) saturate(1.4) hue-rotate(215deg) brightness(.55)' }), .7); });
 })();

@@ -10,7 +10,7 @@ const VIDA_ENEMIGOS = (() => {
   const { FOE, VIDA, ring } = MEC;
   const TABLA = {
     3: 'guerrero mecha rinoceronte torito',
-    2: 'centinela jabali jaguar automata bucanero catrin pirata incendiario perro calderita guardia muneco campana garza pintador mono hormiga alacranMini escorpion topon pavo rover ollita gargola buho zopilote pelicano fragata salamandra culebra babosa diablito grumo abordador contramaestre',
+    2: 'centinela jabali jaguar automata bucanero catrin pirata incendiario perro guardia muneco campana garza pintador mono hormiga alacranMini escorpion topon pavo rover ollita gargola buho zopilote pelicano fragata salamandra culebra babosa diablito grumo abordador contramaestre',
   };
   // a estos no se les puede caer encima: se pasan con el poder de Fresita o esquivándolos
   const NO_SE_PISA = new Set('zancudo bocina carambano aplastador bestia morena magma cometa'.split(' '));
@@ -22,6 +22,9 @@ const VIDA_ENEMIGOS = (() => {
     e.hp--; e.aturde = .5; e._golpe = 1; g.shake = Math.max(g.shake || 0, .1);
     spawn(g, 10, e.x, e.y - e.h * .7, { v: 70, life: .45, s: 1.8, k: 'spark', cols: ['#ffffff', '#ffd23f', '#ff7a9a'], g: 80 });
     ring(g, e.x, e.y - e.h * .6, '#ffffff', e.w * .7 + 6, .3);
+    // los de la lanza se vuelven a cubrir después de cada golpe: el centinela levanta la lanza y el guerrero vuelve a alzar su escudo
+    if (e.k === 'centinela') e.lanza = Math.max(e.lanza || 0, 1.6);
+    if (e.k === 'guerrero') e.reescudo = 1.8;
   };
   function corazon(c, x, y, lleno, pix) {
     if (pix) { c.fillStyle = '#2a1420'; c.fillRect(x - 2, y - 2, 5, 3); c.fillRect(x - 1, y + 1, 3, 1); c.fillRect(x, y + 2, 1, 1); c.fillStyle = lleno ? '#ff5d73' : '#6a5a64'; c.fillRect(x - 1, y - 1, 3, 2); c.fillRect(x, y + 1, 1, 1); return; }

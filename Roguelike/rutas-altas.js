@@ -15,7 +15,7 @@
   function rutas(def, nv) {
     const rows = nv.rows, W = rows[0].length, H = rows.length, ents = nv.ents;
     // los mundos de agua se nadan: no hace falta escalera
-    if (def.id === 'nouveau' || def.id === 'paper' || def.escenarioUayamon || ents.some(e => e.k === 'water')) return;
+    if (def.id === 'nouveau' || def.id === 'paper' || def.id === 'cuaderno' || def.escenarioUayamon || ents.some(e => e.k === 'water')) return;   // el cuaderno no lleva las escaleras azules generadas
     const solido = (x, y) => y >= 0 && y < H && x >= 0 && x < W && rows[y][x] === '#';
     const ocupadoGrid = (x, y) => y >= 0 && y < H && x >= 0 && x < W && rows[y][x] !== '.';
     const suelo = x => { for (let y = 0; y < H; y++) if (rows[y][x] === '#') return y; return H; };
@@ -53,7 +53,11 @@
     // que podría saltarse son barrancos. Por eso bajo todo su tramo tiene que haber piso corrido
     const tramoLimpio = (a, z) => { for (let cx = a - 1; cx <= z + 1; cx++) if (suelo(cx) >= H) return false; return true; };
     // ¿alcanza un brinco normal (sin ayuda de Fresita)? mismo cálculo que piezas.js: hueco en columnas y filas que sube
-    const alcanza = (hueco, sube) => { const d = JUMP * JUMP - 2 * G * sube * T; return d > 0 && hueco * T <= MAXV * (JUMP + Math.sqrt(d)) / G - 36 && (sube < 3 || hueco <= 1); };
+    // (con la gravedad y el salto del mundo: en el cielo, de poca gravedad, se sube más por escalón)
+    const jk = def.jumpK || 1, gv = def.grav || 1, J = JUMP * jk, Gm = G * gv;
+    const alcanza = (hueco, sube) => { const d = J * J - 2 * Gm * sube * T; return d > 0 && hueco * T <= MAXV * (J + Math.sqrt(d)) / Gm - 36 && (sube < 3 || (sube < 4 ? hueco <= 1 : hueco <= 0)); };
+    // escalones altos: la escalera lleva a la mitad de plataformas (antes eran demasiadas)
+    const subeMax = Math.max(3, Math.min(5, Math.floor(J * J / (2 * Gm * T) - .4)));
     const cabeW = (x, y, w) => { if (x < 6 || x + w > W - 8) return false; for (let i = 0; i < w; i++) { if (!libre(x + i, y) || solido(x + i, y + 1)) return false; for (let j = y - 3; j < y; j++) if (!aire(x + i, j)) return false; } return true; };
 
     // anclas: terreno plano (2 columnas), lejos del inicio y de la meta; en orden al azar, no la más alta primero
@@ -68,7 +72,7 @@
       if (hechas.length >= max || ++intentos > 60) break;
       if (!hechas.every(x => Math.abs(x - a.x) >= 40)) continue;
       // cada ruta sale distinta: ancho de los escalones, cuánto sube, qué tan separados, a qué altura y cuántos tramos arriba
-      const w = rand() < .6 ? 3 : 4, sube = rand() < .45 ? 2 : 3, arr = rand() < .3 ? -2 : ARR, hueco = entre(0, 2), arriba = entre(1, 3), sepArriba = entre(2, 3), izqPrimero = rand() < .35;
+      const w = rand() < .6 ? 3 : 4, sube = subeMax >= 4 ? (rand() < .6 ? subeMax : 3) : (rand() < .12 ? 2 : 3), arr = rand() < .3 ? -2 : ARR, hueco = entre(0, 2), arriba = entre(1, 2), sepArriba = entre(2, 3), izqPrimero = rand() < .35;
       const nuevas = [], monedas = [];
       let x = a.x, r = a.r, ok = true;
       while (r > arr) {

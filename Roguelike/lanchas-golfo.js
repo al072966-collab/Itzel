@@ -27,7 +27,7 @@
   const TAM = {}, IMG = {};
   const listo = n => { const im = IMG[n]; return !!(im && im.complete && im.naturalWidth && TAM[n]); };
   let faltan = 1;
-  fetch(RUTA + 'golfo.json?v=7').then(r => r.json()).then(m => {
+  (window.GOLFO_MANIFIESTO ? Promise.resolve(window.GOLFO_MANIFIESTO) : fetch(RUTA + 'golfo.json?v=7').then(r => r.json())).then(m => {
     Object.assign(TAM, m); faltan = Object.keys(m).length;
     for (const n of Object.keys(m)) { const im = new Image(); im.decoding = 'async'; im.onload = im.onerror = () => { if (--faltan === 0) rehaz(); }; im.src = RUTA + n + '.png?v=7'; IMG[n] = im; }
   }).catch(() => { faltan = -1; });
@@ -48,6 +48,24 @@
   // trazo plano con el contorno de los assets
   const plano = (x, col, lw = .8) => { x.fillStyle = col; x.fill(); x.strokeStyle = AZUL; x.lineWidth = lw; x.lineJoin = 'round'; x.stroke(); };
 
+  const FONDO_GOLFO_FLAT = {};
+  for (const [n, archivo] of Object.entries({ cielo:'fondo-bahia-champoton.webp', ola:'ola-soporte-v1.png', suelo:'suelo-golfo-v1.png', arena:'arena-golfo-v1.png' })) {   // la bahía nueva (rediseño de ChatGPT) ya trae la ciudad, el faro y las nubes
+    const im = FONDO_GOLFO_FLAT[n] = new Image(); im.decoding = 'async'; im.onload = rehaz; im.src = RUTA + archivo;
+  }
+  const golfoPrincipal = f => ((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'flat';
+  const golfoFondoListo = () => Object.values(FONDO_GOLFO_FLAT).every(im => im.complete && im.naturalWidth);
+  function bahiaIlustrada(c,f) {
+    const im=FONDO_GOLFO_FLAT.cielo,sw=Math.min(im.naturalWidth,im.naturalHeight*VW/VH),max=Math.max(0,im.naturalWidth-sw),sx=max*(.5+.3*Math.sin((f.cam||0)*.0007));
+    c.save(); c.imageSmoothingEnabled=true;
+    // El borde del mar conserva la altura de las plataformas y los peces.
+    // el agua de la bahía nueva empieza en la fila 541 del panorama: ahí queda el nivel de las plataformas (y = 158)
+    c.drawImage(im,sx,0,sw,541,0,0,VW,158); c.drawImage(im,sx,541,sw,im.naturalHeight-541,0,158,VW,VH-158);
+    // Fragatas en vuelo con los sprites del mundo, sin siluetas geométricas.
+    for(let i=0;i<4;i++) { const n='fragata'+(1+Math.floor(((f.t||0)*5+i)%5)); if(!listo(n))continue;
+      const z=VW+70,x=((h1(i,42)*z-(f.cam||0)*.07+(f.t||0)*8)%z+z)%z-35;
+      spr(c,n,x,35+h1(i,43)*65,{ay:.5,k:.32,voltea:i%2===0}); }
+    c.restore();
+  }
   // ---------------- el telón: la bahía de día ----------------
   function nube(x, cx, cy, s) {
     x.beginPath(); x.moveTo(cx - 30 * s, cy);
@@ -114,7 +132,7 @@
     for (let k = -1; k * u - off < VW + u; k++) {
       const i = base + k, x = k * u - off + 40 + hg(i, 3) * 160 + Math.sin(t * .25 + i) * 6, y = 176 + Math.sin(t * 1.4 + i) * 1.2;
       c.save(); c.globalAlpha = .85;
-      if (!(L2 && L2.dib(c, 'lancha', x, y + 2, { w: 40, voltea: hg(i, 4) > .5, alfa: .9 }))) { c.fillStyle = '#e8d8b0'; c.fillRect(x - 12, y - 3, 24, 4); }
+      if (golfoPrincipal(f) && listo('lancha0')) spr(c, 'lancha0', x, y + 2, { k: 35 / TAM.lancha0.w, voltea: hg(i,4) > .5 }); else if (!(L2 && L2.dib(c, 'lancha', x, y + 2, { w: 40, voltea: hg(i, 4) > .5, alfa: .9 }))) { c.fillStyle = '#e8d8b0'; c.fillRect(x - 12, y - 3, 24, 4); }
       c.restore();
       c.strokeStyle = 'rgba(255,255,255,.45)'; c.lineWidth = .7; c.beginPath(); c.moveTo(x - 20, y + 3); c.quadraticCurveTo(x, y + 6 + Math.sin(t * 3 + i), x + 20, y + 3); c.stroke();
     }
@@ -127,7 +145,7 @@
       if (tt > .85) { const u2 = (tt - .85) / .15; c.strokeStyle = 'rgba(255,255,255,' + (.7 * (1 - u2)).toFixed(2) + ')'; c.lineWidth = .7; c.beginPath(); c.ellipse(x + 26, y0 + 2, 2 + u2 * 8, .6 + u2 * 1.8, 0, 0, 6.2832); c.stroke(); }
     }
   }
-  ST.sky = function (ctx, f) { if (!esGolfo(f.st)) return cieloAntes.call(this, ctx, f); cieloGolfo(ctx, f); try { vidaBahia(ctx, f); } catch (e) { /* el telón nunca rompe la partida */ } };
+  ST.sky = function (ctx, f) { if (!esGolfo(f.st)) return cieloAntes.call(this, ctx, f); if (golfoPrincipal(f) && golfoFondoListo()) bahiaIlustrada(ctx, f); else cieloGolfo(ctx, f); try { vidaBahia(ctx, f); } catch (e) { /* el telón nunca rompe la partida */ } };
 
   // ---------------- el terreno: rocas moradas con arena encima ----------------
   const terrenoAntes = ST.terrain;
@@ -135,11 +153,22 @@
     if (window.estiloArteDerivado || faltan !== 0) return terrenoAntes.call(this, ctx, f);
     const deco = L.deco; L.deco = [];
     try { terrenoAntes.call(this, ctx, f); } finally { L.deco = deco; }
+    if (golfoPrincipal(f) && golfoFondoListo()) {
+      ctx.save(); allLoopsPath(ctx,L.loops); ctx.clip();
+      const p=ctx.createPattern(FONDO_GOLFO_FLAT.suelo,'repeat'); p.setTransform(new DOMMatrix().scale(160/FONDO_GOLFO_FLAT.suelo.naturalWidth));
+      ctx.fillStyle=p; ctx.fillRect(0,0,L.ww,VH+40); ctx.restore();
+    }
     for (const r of L.tops) {                                         // la franja de arena, plana y con su contorno
+      if (golfoPrincipal(f) && golfoFondoListo()) {
+        ctx.save(); ctx.beginPath(); ctx.rect(r.x0,r.y-2,r.x1-r.x0,8); ctx.clip();
+        for(let x=r.x0;x<r.x1;x+=110) ctx.drawImage(FONDO_GOLFO_FLAT.arena,0,316,2172,95,x,r.y-1.4,110,4.8);
+        ctx.restore();
+      } else {
       const a = r.x0 - 1, b = r.x1 + 1;
       ctx.beginPath(); ctx.moveTo(a, r.y - 1.4); ctx.lineTo(b, r.y - 1.4); ctx.lineTo(b, r.y + 4); for (let x = b; x >= a; x -= 6) ctx.lineTo(x, r.y + 4 + Math.sin(x * .25) * 1.2); ctx.closePath();
       ctx.fillStyle = '#f2d39a'; ctx.fill(); ctx.strokeStyle = AZUL; ctx.lineWidth = .7; ctx.stroke();
       ctx.fillStyle = 'rgba(217,170,110,.6)'; for (let x = a + 4; x < b - 4; x += 7 + h1(x | 0, 2) * 9) ctx.fillRect(x, r.y + .6 + h1(x | 0, 3) * 2, 1.4, .8);
+      }
       for (let x = r.x0 + 14; x < r.x1 - 14; x += 28 + h1(x | 0, r.y) * 40) if (h1(x | 0, 9) > .55) spr(ctx, 'concha' + Math.floor(h1(x | 0, 10) * 5), x, r.y + .5, { voltea: h1(x | 0, 11) < .5 });
     }
     for (const o of L.deco) {
@@ -174,6 +203,11 @@
   function ola(c, pl, f, ancho) {
     if (pl.y >= MAR_JUEGO) return;
     const cx = pl.x + pl.w / 2, top = pl.y + 4, fin = sueloDebajo(cx, pl.y) ?? fondoVista(), w = ancho * .62, t = f.t + (pl.x0 || 0) * .01;
+    if (golfoPrincipal(f) && golfoFondoListo() && fin > top) {
+      c.save(); c.imageSmoothingEnabled=true;
+      c.drawImage(FONDO_GOLFO_FLAT.ola,112,86,784,1407,cx-ancho*.48,top-1,ancho*.96,fin-top+1);
+      c.restore(); return;
+    }
     const onda = k => Math.sin(t * 3 + k) * 1.6;
     c.save(); c.beginPath(); c.moveTo(cx - w / 2 - 6, fin);
     for (let y = fin; y > top + 4; y -= 6) c.lineTo(cx - w / 2 + onda(y * .15), y);

@@ -113,25 +113,47 @@
     },
     pinta(c, z, f) {
       c.save(); c.strokeStyle = 'rgba(42,74,176,.65)'; c.lineWidth = 1; c.setLineDash([3, 3]);
-      for (const x of [z.x0, z.x1]) { c.beginPath(); c.moveTo(x, z.base); c.lineTo(x, z.base - 110); c.stroke(); }
+      for (const x of [z.x0, z.x1]) { c.beginPath(); c.moveTo(x, z.base); c.lineTo(x, z.base - (z.alto || 110)); c.stroke(); }
       c.restore();
     },
   };
   // Un enjambre persigue a Itzel; los trazos del lápiz detienen físicamente a cada abeja.
+  // Cada nivel trae UNA de estas 10 variantes del refugio, al azar (?refugio=1…10 la fija): cambia dónde están las colmenas,
+  // qué tan separados y altos son los postes (los altos son paredes de un hoyo), cuántas oleadas vienen, de dónde y qué tan rápidas.
+  // Las colmenas son relativas al centro de la sección y los postes a donde esté Itzel al empezar.
+  const REFUGIOS = [
+    { nombre: 'El refugio clásico', aviso: 8, postes: [{ dx: -32, alto: 14 }, { dx: 32, alto: 14 }], colmenas: [{ dx: -100, dy: 58 }, { dx: 100, dy: 58 }], oleadas: [{ n: 6, vel: 48, t: 6, de: [0] }, { n: 9, vel: 58, t: 6, de: [0, 1] }] },
+    { nombre: 'El hoyo hondo', aviso: 9, postes: [{ dx: -26, alto: 38 }, { dx: 26, alto: 38 }], colmenas: [{ dx: -90, dy: 96 }], oleadas: [{ n: 10, vel: 52, t: 7, de: [0] }] },
+    { nombre: 'Dos colmenas', aviso: 8, postes: [{ dx: -44, alto: 14 }, { dx: 44, alto: 14 }], colmenas: [{ dx: -110, dy: 50 }, { dx: 110, dy: 50 }], oleadas: [{ n: 5, vel: 50, t: 6, de: [0, 1] }, { n: 8, vel: 58, t: 6, de: [0, 1] }] },
+    { nombre: 'La colmena alta', aviso: 9, postes: [{ dx: -36, alto: 26 }, { dx: 36, alto: 26 }], colmenas: [{ dx: 80, dy: 108 }], oleadas: [{ n: 12, vel: 44, t: 8, de: [0] }] },
+    { nombre: 'El pasillo', aviso: 7, postes: [{ dx: -20, alto: 14 }, { dx: 20, alto: 14 }], colmenas: [{ dx: -100, dy: 40 }, { dx: 100, dy: 40 }], oleadas: [{ n: 4, vel: 62, t: 4, de: [0] }, { n: 4, vel: 66, t: 4, de: [1] }, { n: 6, vel: 70, t: 4, de: [0, 1] }] },
+    { nombre: 'El refugio ancho', aviso: 10, postes: [{ dx: -62, alto: 14 }, { dx: 62, alto: 14 }], colmenas: [{ dx: -120, dy: 70 }], oleadas: [{ n: 14, vel: 40, t: 8, de: [0] }] },
+    { nombre: 'La torre', aviso: 9, postes: [{ dx: -34, alto: 54 }, { dx: 30, alto: 14 }], colmenas: [{ dx: 110, dy: 60 }], oleadas: [{ n: 8, vel: 50, t: 6, de: [0] }, { n: 10, vel: 56, t: 6, de: [0] }] },
+    { nombre: 'La colmena que se mueve', aviso: 8, postes: [{ dx: -36, alto: 18 }, { dx: 36, alto: 18 }], colmenas: [{ dx: 0, dy: 100, mueve: 80 }], oleadas: [{ n: 10, vel: 50, t: 8, de: [0] }] },
+    { nombre: 'Tres colmenas', aviso: 8, postes: [{ dx: -40, alto: 20 }, { dx: 40, alto: 20 }], colmenas: [{ dx: -110, dy: 45 }, { dx: 0, dy: 112 }, { dx: 110, dy: 45 }], oleadas: [{ n: 3, vel: 46, t: 5, de: [0, 1, 2] }, { n: 5, vel: 52, t: 5, de: [0, 1, 2] }, { n: 7, vel: 58, t: 5, de: [0, 1, 2] }] },
+    { nombre: 'La lluvia de abejas', aviso: 8, postes: [{ dx: -50, alto: 30 }, { dx: 50, alto: 30 }], colmenas: [{ dx: -30, dy: 122 }, { dx: 30, dy: 122 }], oleadas: [{ n: 14, vel: 60, t: 6, de: [0, 1] }] },
+  ];
+  // una sola oleada por refugio (se juntan las abejas de las oleadas de cada variante)
+  for (const r of REFUGIOS) { const o = r.oleadas; r.oleadas = [{ n: o.reduce((a, w) => a + w.n, 0), vel: Math.max(...o.map(w => w.vel)), de: [...new Set(o.flatMap(w => w.de))], t: Math.max(9, o.reduce((a, w) => a + w.n, 0) * .3 + 5) }]; }
   OBJ.enjambreCuaderno = {
     make(g, en) {
+      // las piezas del nivel repetían la sección varias veces: ahora solo hay un refugio por nivel (el primero que se arma)
+      if (g.objs.some(q => q.k === 'enjambreCuaderno')) return;
       const x = tx(en.x), base = L.surfaceY(en.x + PAD, 0) * T;
-      g.objs.push({ k: 'enjambreCuaderno', x, base, colmenaX: x - 100, colmenaY: base - 58, fase: 'espera', tiempo: 0, abejas: [] });
+      const pedida = Number(new URLSearchParams(location.search).get('refugio')), v = pedida >= 1 && pedida <= REFUGIOS.length ? pedida - 1 : Math.floor(Math.random() * REFUGIOS.length);
+      g.objs.push({ k: 'enjambreCuaderno', x, base, variante: v, cfg: REFUGIOS[v], fase: 'espera', tiempo: 0, abejas: [], t: 0 });
     },
+    colmena(o, i) { const h = o.cfg.colmenas[i]; return { x: o.x + h.dx + (h.mueve ? Math.sin(o.t * .9) * h.mueve : 0), y: o.base - h.dy }; },
     step(o, g, dt) {
-      const p = g.p;
+      const p = g.p, cfg = o.cfg; o.t += dt;
       if (o.fase === 'espera') {
         if (Math.abs(p.x - o.x) < 65 && Math.abs(p.y - o.base) < 70) {
-          o.fase = 'aviso'; o.tiempo = 8; o.oleada = 1; o.golpes = 0;
-          o.zona = { k: 'refugioAbejas', x0: p.x - 65, x1: p.x + 65, base: o.base, t: 0 };
+          o.fase = 'aviso'; o.tiempo = cfg.aviso; o.oleada = 1; o.golpes = 0;
+          const ancho = Math.max(...cfg.postes.map(q => Math.abs(q.dx))) + 33;
+          o.zona = { k: 'refugioAbejas', x0: p.x - ancho, x1: p.x + ancho, base: o.base, t: 0, alto: Math.max(110, ...cfg.postes.map(q => q.alto + 40)) };
           g.zones.push(o.zona);
-          o.postes = [-32, 32].map(dx => { const poste = { k: 'posteAbejas', x: p.x + dx - 4, y: o.base - 14, w: 8, h: 14, on: true }; g.solids.push(poste); return poste; });
-          if (typeof toast === 'function') toast('¡Dos oleadas! Dibuja un refugio y sujétalo a los postes rojos', 8000);
+          o.postes = cfg.postes.map(q => { const poste = { k: 'posteAbejas', x: p.x + q.dx - 4, y: o.base - q.alto, w: 8, h: q.alto, on: true }; g.solids.push(poste); return poste; });
+          if (typeof toast === 'function') toast(`${cfg.nombre}: ${cfg.oleadas.length === 1 ? 'una oleada' : cfg.oleadas.length + ' oleadas'}. Dibuja un refugio y sujétalo a los postes rojos`, 8000);
         }
         return;
       }
@@ -139,19 +161,20 @@
       // El refugio no caduca durante la prueba, aunque se dibuje al empezar el aviso.
       for (const pl of g.plats) if (pl.trazoLapiz && pl.life !== undefined && pl.x2 >= o.zona.x0 && pl.x <= o.zona.x1) pl.life = Math.max(pl.life, 2);
       o.tiempo -= dt;
+      const ola = cfg.oleadas[o.oleada - 1];
       if (o.fase === 'aviso' || o.fase === 'descanso') {
         if (o.tiempo <= 0) {
-          o.fase = 'ataque'; o.tiempo = 6;
-          o.abejas = Array.from({ length: o.oleada === 1 ? 6 : 9 }, (_, i) => {
-            const derecha = o.oleada === 2 && i % 2 === 1;
-            return { x: derecha ? o.x + 100 : o.colmenaX, y: o.colmenaY + (i % 3 - 1) * 5, espera: i * .3, fase: i * 1.7 };
+          o.fase = 'ataque'; o.tiempo = ola.t;
+          o.abejas = Array.from({ length: ola.n }, (_, i) => {
+            const h = OBJ.enjambreCuaderno.colmena(o, ola.de[i % ola.de.length]);
+            return { x: h.x, y: h.y + (i % 3 - 1) * 5, espera: i * .3, fase: i * 1.7 };
           });
         }
         return;
       }
       if (o.tiempo <= 0) {
         o.abejas = [];
-        if (o.oleada === 1) { o.oleada = 2; o.fase = 'descanso'; o.tiempo = 3; if (typeof toast === 'function') toast('¡Otra oleada! Ahora vienen por los dos lados', 3000); return; }
+        if (o.oleada < cfg.oleadas.length) { o.oleada++; o.fase = 'descanso'; o.tiempo = 3; if (typeof toast === 'function') toast(o.oleada === cfg.oleadas.length && cfg.oleadas.length > 1 ? '¡La última oleada!' : '¡Otra oleada!', 3000); return; }
         o.fase = 'terminado'; if (o.zona) o.zona.dead = true;
         for (const poste of o.postes || []) { poste.on = false; poste.dead = true; }
         if (!o.golpes) { RUN.coins += 3; if (typeof toast === 'function') toast('¡Refugio perfecto! Ganaron 3 canisteles', 3000); }
@@ -164,7 +187,7 @@
         if (abeja.espera > 0) { abeja.espera -= dt; continue; }
         abeja.fase += dt * 8;
         const dx = p.x - abeja.x, dy = p.y - p.h * .55 - abeja.y, d = Math.hypot(dx, dy) || 1;
-        const velocidad = o.oleada === 2 ? 58 : 48, nx = abeja.x + dx / d * velocidad * dt, ny = Math.min(o.base - 3, abeja.y + dy / d * velocidad * dt + Math.sin(abeja.fase) * 8 * dt);
+        const velocidad = ola.vel, nx = abeja.x + dx / d * velocidad * dt, ny = Math.min(o.base - 3, abeja.y + dy / d * velocidad * dt + Math.sin(abeja.fase) * 8 * dt);
         // La distancia al segmento y el cruce entre trayectorias impiden atravesar trazos finos.
         const barrera = barreras.find(pl => {
           if (distSeg(nx, ny, pl.x, pl.y, pl.x2, pl.y2) < 2.6) return true;
@@ -187,21 +210,22 @@
       }
     },
     draw(c, o, f) {
+      const cfg = o.cfg, altoMax = Math.max(0, ...cfg.postes.map(q => q.alto - 14));
       for (const poste of o.postes || []) if (poste.on) {
         c.save(); c.fillStyle = '#d9a75d'; c.strokeStyle = '#493b30'; c.lineWidth = .8; c.fillRect(poste.x, poste.y, poste.w, poste.h); c.strokeRect(poste.x, poste.y, poste.w, poste.h);
         c.fillStyle = '#ed4e61'; c.beginPath(); c.arc(poste.x + poste.w / 2, poste.y, 3.2, 0, TAU); c.fill(); c.stroke(); c.restore();
       }
-      for (const hx of [o.colmenaX, o.x + 100]) {
-        c.save(); c.translate(hx, o.colmenaY);
+      cfg.colmenas.forEach((h, i) => {
+        const pos = OBJ.enjambreCuaderno.colmena(o, i);
+        c.save(); c.translate(pos.x, pos.y);
         c.strokeStyle = '#78511e'; c.fillStyle = '#f4c64b'; c.lineWidth = 1; c.beginPath(); c.ellipse(0, 0, 9, 10, 0, 0, TAU); c.fill(); c.stroke();
         c.beginPath(); for (let y = -5; y <= 5; y += 4) { c.moveTo(-7, y); c.lineTo(7, y); } c.stroke(); c.fillStyle = '#49351f'; c.beginPath(); c.ellipse(1, 3, 2, 2.8, 0, 0, TAU); c.fill(); c.restore();
-      }
+      });
       if (o.fase === 'aviso' || o.fase === 'ataque' || o.fase === 'descanso') {
         c.save(); c.font = 'bold 6px "Alegreya Sans", sans-serif'; c.textAlign = 'center'; c.lineWidth = 2.4; c.strokeStyle = '#fff9e8'; c.fillStyle = '#653624';
-        const msg = o.fase === 'aviso' ? '¡Une el dibujo a un poste! ' + Math.ceil(o.tiempo) : o.fase === 'descanso' ? '¡Repara el refugio! ' + Math.ceil(o.tiempo) : 'Oleada ' + o.oleada + '/2 · ¡Resiste! ' + Math.ceil(o.tiempo);
-        c.strokeText(msg, gX(), o.base - 78); c.fillText(msg, gX(), o.base - 78); c.restore();
+        const msg = o.fase === 'aviso' ? '¡Une el dibujo a un poste! ' + Math.ceil(o.tiempo) : o.fase === 'descanso' ? '¡Repara el refugio! ' + Math.ceil(o.tiempo) : (cfg.oleadas.length > 1 ? 'Oleada ' + o.oleada + '/' + cfg.oleadas.length + ' · ' : '') + '¡Resiste! ' + Math.ceil(o.tiempo);
+        c.strokeText(msg, f.g.p.x, o.base - 78 - altoMax); c.fillText(msg, f.g.p.x, o.base - 78 - altoMax); c.restore();
       }
-      function gX() { return f.g.p.x; }
       for (const a of o.abejas) if (a.espera <= 0) {
         c.save(); c.translate(a.x, a.y); c.fillStyle = '#fffdf1'; c.beginPath(); c.ellipse(-1, -3, 2.5, 1.6, -.5, 0, TAU); c.ellipse(2, -3, 2.5, 1.6, .5, 0, TAU); c.fill();
         c.fillStyle = '#f4c837'; c.strokeStyle = '#4a3425'; c.lineWidth = .5; c.beginPath(); c.ellipse(0, 0, 3.8, 2.5, 0, 0, TAU); c.fill(); c.stroke(); c.fillStyle = '#4a3425'; c.fillRect(-1.8, -2.2, 1, 4.4); c.fillRect(.7, -2.2, 1, 4.4); c.restore();
@@ -239,7 +263,7 @@
     const L2 = (x0, y0, x1, y1) => [x0, y0, x1 - x0, { x2: x1, y2: y1 }];
     // I · líneas de lápiz y la primera goma
     b.g(0, 13).P(3).d('T', 8);
-    b.p(...L2(14, 10, 20, 8)).p(...L2(22, 8, 28, 10)).c(15, 27, 6);
+    b.c(15, 27, 6);   // (sin las líneas azules del nivel: el hueco se cruza con la tinta de Fresita)
     b.g(30, 46).e(35, undefined, 'garabato').e(42, undefined, 'goma').d('f', 33);
     b.c(49, 61, 8);
     // II · el sacapuntas y la regla: empújala para tener puente
@@ -247,11 +271,11 @@
     // Una pausa en el muelle de papel: dibuja un refugio antes de que salga el enjambre.
     b.g(88, 104).o('enjambreCuaderno', 96, 0).d('f', 102);
     // III · la hoja en blanco: dibuja el camino; gomas y chapulines lo complican
-    b.p(...L2(110, 9, 114, 9)).c(106, 118, 6);
+    b.c(106, 118, 6);
     b.g(119, 136).e(124, undefined, 'goma').e(130, undefined, 'chapulin').o('regla', 136, 0, { n: 6, dir: 1 }).d('f', 121);
     // IV · el muro del margen y la última hoja
     b.g(143, 160).e(148, undefined, 'sacapuntas').blk(154, 6, 2, 5).e(158, undefined, 'goma').c(154, 155, 4);
-    b.p(...L2(166, 9, 170, 8)).c(162, 174, 6);
+    b.c(162, 174, 6);
     b.g(176, 189).h(179, 9).Gl(185).d('T', 182);
   });
   NIVELES.cuaderno.fauna = ['garabato', 'goma', 'sacapuntas', 'chapulin'];

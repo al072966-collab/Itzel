@@ -279,26 +279,4 @@
     D('Farol', 'Itzel carga un farol que alumbra la ceniza.', { itzel: (c, p, f) => { const g = drawItzel(c, p, f, { mono: '#08080a', keep: ['bow'], bow: '#c8202a', noFace: true, eyeGlow: '#ffffff' }); const x = p.x + (g.arm[2] + .5) * p.face, y = p.y + g.arm[3] + 3; glow(c, x, y, 26, '#ffd0a0', .35); c.fillStyle = '#ffe0b0'; c.fillRect(x - 1, y - 1.5, 2, 3); }, fresita: STYLE_MAP.hollin.fresita }),
     D('Contorno blanco', 'Silueta con una línea blanca fina para que se lea mejor.', linea('#d8d2c8', .4, null, '#08080a')),
   ]);
-
-  // ================= VAPOR Y ENGRANAJES (la fábrica de vapor) =================
-  // goggles de latón en la frente (como el diseño de ahora), con el color de lente que se quiera
-  const goggles = (lente = '#9ad8e8', laton = '#c8902a') => (ctx, g) => { const hy = -15 + g.bob; ctx.strokeStyle = '#3a2414'; ctx.lineWidth = .9; ctx.beginPath(); ctx.arc(.6, hy, 4.9, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-    for (const gx of [-.4, 2.8]) { ctx.fillStyle = laton; ctx.beginPath(); ctx.arc(gx, hy - 4, 1.55, 0, TAU); ctx.fill(); ctx.strokeStyle = '#5a3a1a'; ctx.lineWidth = .4; ctx.stroke(); ctx.fillStyle = lente; ctx.beginPath(); ctx.arc(gx, hy - 4, .95, 0, TAU); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.fillRect(gx - .5, hy - 4.6, .45, .45); } };
-  const engrane = (ctx, x, y, r, rot, col) => { ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.fillStyle = col; ctx.beginPath(); for (let k = 0; k < 16; k++) { const a = k / 16 * TAU, rr = k % 2 ? r : r * 1.35; ctx.lineTo(Math.cos(a) * rr, Math.sin(a) * rr); } ctx.closePath(); ctx.fill(); ctx.fillStyle = '#2a1810'; ctx.beginPath(); ctx.arc(0, 0, r * .4, 0, TAU); ctx.fill(); ctx.restore(); };
-  const VPI = { lw: .7, line: '#2a1810', skin: '#c8865a', hair: '#2a1810', blouse: '#f0e2c4', blouse2: '#d8c8a0', emb: ['#c8203a', '#c8902a', '#2a6a5a'], shorts: '#4a5a3a', shoes: '#c8203a', bow: '#c8203a', pack: '#8a5a2a', eye: '#2a1810', cheek: 'rgba(200,80,60,.35)' };
-  const VPF = { lw: .7, line: '#2a1810', body: '#f0a0b0', belly: '#f8d8c8', gill: '#c8743a', gillTip: '#f2c94c', eye: '#2a1810', glow: '#ffb060', glowA: .2, gillLine: true };
-  V('vapor', [
-    D('Aviadora', 'Chamarra de cuero con bordado de latón y goggles de lente ámbar, lista para volar en dirigible.',
-      colores({ ...VPI, blouse: '#8a5a2a', blouse2: '#6a4220', emb: ['#f2c94c', '#c8902a'], shorts: '#3a2a20', pack: '#5a3a1a', extra: goggles('#ffb040') },
-        { ...VPF, body: '#f4b0a0', belly: '#fde0d0', gill: '#8a5a2a', gillTip: '#f2c94c' })),
-    D('Cobre y verdín', 'Colores de cobre viejo con su pátina verde, como las tuberías de la fábrica.',
-      colores({ ...VPI, blouse: '#5aa898', blouse2: '#3a8a7a', emb: ['#c8743a', '#e8b860'], shorts: '#8a4a24', shoes: '#c8743a', bow: '#c8743a', pack: '#3a7a6a', extra: goggles('#c8f0e0', '#c8743a') },
-        { ...VPF, body: '#6ac0a8', belly: '#c8ece0', gill: '#c8743a', gillTip: '#e8b860', glow: '#9affd8' })),
-    D('Plano de ingeniera', 'Dibujadas como plano técnico: líneas blancas sobre papel azul.', linea('#e8f0ff', .55, null, '#1f4a8a')),
-    D('Contraluz de caldera', 'Siluetas contra el fuego de las calderas, con el filo naranja.', contraluz('#1a0c08', '#ffb040')),
-    D('Cuerda de reloj', 'Itzel con un engrane girando en la mochila; Fresita de latón con su llave de cuerda en la espalda.',
-      { itzel: (c, p, f) => { const g = drawItzel(c, p, f, { ...VPI, extra: goggles() }); c.save(); c.translate(p.x, p.y); c.scale(p.face, 1); engrane(c, -5, -8 + g.bob, 2.1, f.t * 3, '#c8902a'); c.restore(); },
-        fresita: Fd({ ...VPF, body: '#d8a040', belly: '#f6dc98', gill: '#8a4a24', gillTip: '#fff0b0', glow: '#ffd070',
-          extra: (c, o, mode, f, t) => { c.save(); c.translate(-2, -4.2); c.rotate(t * 4); c.strokeStyle = '#5a3a1a'; c.fillStyle = '#c8902a'; c.lineWidth = .5; c.beginPath(); c.ellipse(-1.8, 0, 1.6, 1, 0, 0, TAU); c.ellipse(1.8, 0, 1.6, 1, 0, 0, TAU); c.fill(); c.stroke(); c.fillRect(-.4, 0, .8, 2.6); c.restore(); } }) }),
-  ]);
 })();

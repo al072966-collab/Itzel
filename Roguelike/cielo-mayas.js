@@ -2,10 +2,41 @@
 // Carta celeste: la constelación, la gravedad y los avisos siguen intactos.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.cielo) return;
-  const V = vestirNivel({ id: 'cielo', carpeta: 'cielo-mayas', ver: 3 });
+  const V = vestirNivel({ id: 'cielo', carpeta: 'cielo-mayas', ver: 3, manifiesto: window.CIELO_MAYAS_MANIFIESTO });
   const { spr } = V;
+  // Recursos independientes para el firmamento y los sillares del nivel lateral.
+  const EDZNA_FONDO = {};
+  for (const [n, archivo] of Object.entries({ firmamento:'firmamento-edzna-v1', alacran:'constelacion-alacran-v1', muro:'muro-celeste-v1', luna:'luna-completa-v1', observatorio:'observatorio-completo-v1' })) {
+    const im = EDZNA_FONDO[n] = new Image(); im.decoding = 'async'; im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/cielo-mayas/' + archivo + '.png';
+  }
+  // el vuelo sobre Edzná usa el mismo firmamento ilustrado que el nivel lateral (en la enciclopedia salía con el fondo morado de respaldo)
+  const edznaPrincipal = f => ['cielo', 'vuelo'].includes((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id));
+  const recursosEdznaListos = () => Object.values(EDZNA_FONDO).every(i => i.complete && i.naturalWidth);
+  function cieloIlustrado(c, f) {
+    const im = EDZNA_FONDO.firmamento, H = f.H || VH;
+    // Encuadre panorámico sin estirar: se excluye la luna pintada del extremo para usar la pieza móvil existente.
+    const sw = Math.min(im.naturalWidth, im.naturalHeight * VW / H), max = Math.max(0, Math.min(580, im.naturalWidth - sw));
+    const sx = max * (.5 + .35 * Math.sin((f.cam || 0) * .0008));
+    c.save(); c.imageSmoothingEnabled = true; c.drawImage(im, sx, 0, sw, im.naturalHeight, 0, 0, VW, H);
+    const x = 60 - ((f.cam || 0) * .025 % 150);
+    c.globalAlpha = .78; c.drawImage(EDZNA_FONDO.alacran, x, 21, 105, 70); c.globalAlpha = 1;
+    const mx = VW - 78 - (((f.cam || 0) * .015) % 40);
+    c.drawImage(EDZNA_FONDO.luna, 368, 105, 782, 795, mx - 14, 32, 28, 28);
+    // El observatorio descansa sobre una nube en su propia capa, no en el aire.
+    const unit = 340, off = ((f.cam || 0) * .1 % unit + unit) % unit;
+    for (let k = -1; k * unit - off < VW + unit; k++) {
+      const cx = k * unit - off + 125;
+      V.spr(c, 'nube2', cx, 171, { ay:.5, w:95, alfa:.75 });
+      c.globalAlpha = .55;
+      c.drawImage(EDZNA_FONDO.observatorio, 79, 53, 1616, 800, cx - 47, 121, 94, 47);
+      c.globalAlpha = 1;
+    }
+    c.restore();
+  }
   // ---- cielo: de la lámina se toma el ambiente (violeta cálido, luna con halo, bruma y observatorio lejano) ----
   V.cielo((c, f, antes) => {
+    if (edznaPrincipal(f) && recursosEdznaListos()) { cieloIlustrado(c, f); return; }
     antes();
     // bruma violeta que apaga la silueta dorada de la carta (para que no parezca terreno) y calienta el cielo
     const g = c.createLinearGradient(0, 0, 0, VH);
@@ -64,7 +95,11 @@
     // ladrillos azul-violeta con junta dorada tenue (sobre la losa de antes)
     ctx.globalAlpha = .93;
     const ymax = VH + 40;
-    for (let y = 0, fila = 0; y < ymax; y += 8, fila++) for (let x = -(fila % 2) * 8; x < L.ww; x += 16) {
+    if (edznaPrincipal() && recursosEdznaListos()) {
+      const patron = ctx.createPattern(EDZNA_FONDO.muro, 'repeat');
+      patron.setTransform(new DOMMatrix().scale(96 / EDZNA_FONDO.muro.naturalWidth));
+      ctx.fillStyle = patron; ctx.fillRect(0, 0, L.ww, ymax);
+    } else     for (let y = 0, fila = 0; y < ymax; y += 8, fila++) for (let x = -(fila % 2) * 8; x < L.ww; x += 16) {
       const h = V.h1((x / 16 | 0) + 7, fila + 3);
       ctx.fillStyle = h < .33 ? '#1d2158' : h < .66 ? '#232a66' : '#1a1e4d'; ctx.fillRect(x, y, 16, 8);
       ctx.fillStyle = 'rgba(226,192,110,.2)'; ctx.fillRect(x, y, 16, .6); ctx.fillRect(x, y, .6, 8);
@@ -117,25 +152,27 @@
     V.spr(c, 'estrella', o.x, o.y, { ay: .5, k: sel ? 1.25 : tw * .95, rot: f.t * .25 });
   }, 'estrella');
   V.meta('meta', { h: 36 });
-  V.fd('escorpion', (c, e, t, s, antes) => {
+  // los bichos del cielo se veían muy chicos junto a Itzel: se dibujan 1.4 veces más grandes (sus cajas de golpe crecen en mundos-ampliados6.js)
+  const grande = (k, fn) => (c, e, t, s, antes) => { c.save(); c.scale(k, k); try { return fn(c, e, t, s, antes); } finally { c.restore(); } };
+  V.fd('escorpion', grande(1, (c, e, t, s, antes) => {
     if (e.st === 'sleep') return V.dormido(c, 'escorpion', t);   // dormido: la misma pieza (no el dibujo viejo)
     if (e.st === 'lunge' && V.listo('escorpionAtaque')) { spr(c, 'escorpionAtaque', 0, .5); return; }
     antes(c, e, t, s);
-  }, 'escorpion');
-  V.fd('conejo', (c, e, t, s, antes) => {
+  }), 'escorpion');
+  V.fd('conejo', grande(1, (c, e, t, s, antes) => {
     if (e.st === 'sleep') return V.dormido(c, 'conejo', t);   // dormido: la misma pieza (no el dibujo viejo)
     antes(c, e, t, s);
-  }, 'conejo');
-  V.fd('cometa', (c, e, t, s, antes) => {
+  }), 'conejo');
+  V.fd('cometa', grande(1, (c, e, t, s, antes) => {
     if (e.st === 'sleep') return V.dormido(c, 'cometa', t, -4, { ax: .8, ay: .5, h: 8 });   // dormido: la misma pieza (no el dibujo viejo)
     antes(c, e, t, s);
-  }, 'cometa');
-  V.fd('jaguar', (c, e, t, s, antes) => {
+  }), 'cometa');
+  V.fd('jaguar', grande(1, (c, e, t, s, antes) => {
     if (e.st === 'sleep') return V.dormido(c, 'jaguar', t);   // dormido: la misma pieza (no el dibujo viejo)
     if (e.st === 'gone') { spr(c, 'jaguar', 0, .5); return; } // no conserva la pose de salto al desvanecerse
     const n = e.vy !== 0 && V.listo('jaguarSalta') ? 'jaguarSalta' : 'jaguar';
     spr(c, n, 0, .5);
-  }, 'jaguar');
+  }), 'jaguar');
   V.moneda('canistel'); V.corazon('corazon');
   window.CIELO_MAYAS = V;
 })();

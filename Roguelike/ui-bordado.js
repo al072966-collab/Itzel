@@ -139,7 +139,7 @@ const BORDADO = (() => {
     speed: ['110011000', '011001100', '001100110', '000110011', '001100110', '011001100', '110011000'],
     cup: ['0101000', '1010000', '0000000', '1111110', '1111111', '1111101', '1111110', '0111100'],
     jade: ['0110110', '1111111', '1122211', '0122210', '0012100', '0001000'],
-    libro: ['01111011110', '12222112221', '12332113231', '12332113231', '12332113231', '12332113231', '12222112221', '01111011110'],
+    libro: ['011111110', '133333310', '133333310', '133222310', '133222310', '133333310', '133333310', '133333310', '122222210', '011111110'],
     engrane: ['000101000', '011111110', '011111110', '111202111', '112222211', '111202111', '011111110', '011111110', '000101000'],
     barras: ['0000033', '0000033', '0022033', '0022033', '1122033', '1122033', '1122033'],
     control: ['01110001110', '11111111111', '12111113131', '22211111111', '12111131311', '11111111111', '11100000111'],
@@ -177,7 +177,7 @@ const BORDADO = (() => {
     catedral: ['#f0e1c0'], cofre: ['#a05a2a', '#e8a33a', '#ffd23f', '#fff4d0'], cangrejo: ['#d8402a', '#d8402a', '#d8402a', '#ffffff'], corona: ['#e8a33a', '#e8a33a', '#c8203a'], globo: ['#2f7fc8'],
     itzel: ['#3a2418', '#3a2418', '#e0303f'], escalones: ['#3f7fd6', '#9cc0f0'], ajolote: ['#ffc9e0', '#ffc9e0', '#ff4f95'], subjefe: ['#7a3a8a', '#7a3a8a', '#e0303f', '#ffffff'] };
   Object.assign(ICOL, {
-    libro: ['#875132', '#f4e0b5', '#bd7990'],
+    libro: ['#7a3e1c', '#fff5b7', '#c8203a'],
     dificultad: ['#b75345'], musica: ['#7e5ba7'], sonido: ['#3e8aa1'], pantalla: ['#458a70'], sacudida: ['#d46e38'], tarjeta: ['#c05a80', '#efba44'],
     partida: ['#2f7fc8'], trofeo: ['#ce8d12'], reloj: ['#527a9a'], cronometro: ['#d16d30'],
     pisoton: ['#8b553b'], dormido: ['#8161a4'], burbujaCura: ['#de6294'],
@@ -204,7 +204,9 @@ const BORDADO = (() => {
     x.fillStyle = '#efe4cc'; x.fillRect(0, 0, 8, 8); x.fillStyle = 'rgba(120,90,50,.12)'; x.fillRect(0, 0, 8, 1); x.fillRect(0, 0, 1, 8); x.fillStyle = 'rgba(255,255,255,.4)'; x.fillRect(3, 3, 3, 1); x.fillRect(4, 2, 1, 3);
     return c.toDataURL();
   }
-  return { text, frase, teje, icon, frame, cloth, HUIPIL };
+  // otros archivos agregan iconos (iconos-logros.js); el cache de ico() se limpia porque la clave es nombre+tamaño
+  function agregaIconos(rows, cols) { Object.assign(ICONS, rows); Object.assign(ICOL, cols); }
+  return { text, frase, teje, icon, frame, cloth, HUIPIL, agregaIconos, tiene: n => !!ICONS[n] };
 })();
 
 // variables CSS con las texturas bordadas

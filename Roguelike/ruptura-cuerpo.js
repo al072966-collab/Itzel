@@ -98,13 +98,14 @@ const RUPTURA = (() => {
       try { const im=x.getImageData(0,0,630,623);for(let i=3;i<im.data.length;i+=4)im.data[i]=im.data[i]<160?0:255;x.putImageData(im,0,0); } catch (e) { if (e.name !== 'SecurityError') throw e; }}
     return humoLimpio;
   }
-  function dibujarHumo(c,t,img){
+  const impulsoVisual = o => o && o.st === 'ataque' ? Math.min(1, Math.max(0, (o.at || 0) * 3)) : 0;
+  function dibujarHumo(c,t,img,impulso=0){
     const n=8,paso=TAU/n;
-    for(let i=0;i<n;i++){const a=-Math.PI/2+i*paso,d=Math.sin(t*1.6+i*1.3)*1.5;
+    for(let i=0;i<n;i++){const a=-Math.PI/2+i*paso,d=Math.sin(t*1.6+i*1.3)*(1.5+impulso*.8);
       c.save();c.translate(Math.cos(a)*d,Math.sin(a)*d);c.beginPath();c.moveTo(0,0);c.arc(0,0,78,a-paso/2,a+paso/2);c.closePath();c.clip();c.drawImage(img,-57,-56,114,112);c.restore();}
   }
   function sombra(c, t, o = {}) {
-    const imagen=prepararHumo(); if(imagen) dibujarHumo(c,t,imagen);
+    const imagen=prepararHumo(); if(imagen) dibujarHumo(c,t,imagen,impulsoVisual(o));
     // La forma final es una grieta viva: humo violeta, no bloques rígidos.
     const tent = [], angs = Array.from({ length: 9 }, (_, k) => k / 9 * TAU + (hash1(k, 3) - .5) * .18 - Math.PI / 2), agarra = asigna(angs, o.alcances);
     for (let k = 0; k < angs.length; k++) {
@@ -160,17 +161,17 @@ const RUPTURA = (() => {
     }
     return nucleoLimpio;
   }
-  function nucleoNuevo(c, t, imagen) {
+  function nucleoNuevo(c, t, imagen, impulso = 0) {
     const x = -56, y = -55, w = 112, h = 117.7;
     // Anillo y grieta respiran por separado, con el centro en el punto de impacto.
-    c.save(); c.rotate(Math.sin(t * .7) * .025);
+    c.save(); c.rotate(Math.sin(t * .7) * (.025 + impulso * .015));
     c.beginPath(); c.rect(-80,-80,160,160); c.arc(0,0,28,0,TAU,true); c.clip('evenodd');
     c.drawImage(imagen,x,y,w,h); c.restore();
     c.save(); c.beginPath(); c.arc(0,0,28.3,0,TAU); c.clip();
     const pulso = 1 + Math.sin(t*2.6)*.012; c.scale(pulso,pulso); c.drawImage(imagen,x,y,w,h); c.restore();
   }
   function nucleo(c, t, o = {}) {
-    const imagen = prepararNucleo(); if (imagen) { nucleoNuevo(c, t, imagen); return; }
+    const imagen = prepararNucleo(); if (imagen) { nucleoNuevo(c, t, imagen, impulsoVisual(o)); return; }
     escombros(c, t, 12, 42, 58, 21, NOCHE, MAG);
     const tent = [], angs = Array.from({ length: 10 }, (_, k) => k / 10 * TAU + (hash1(k, 13) - .5) * .25 - Math.PI / 2), agarra = asigna(angs, o.alcances);
     for (let k = 0; k < 10; k++) {
@@ -197,11 +198,11 @@ const RUPTURA = (() => {
   const muralImagen = new Image();
   muralImagen.src = '../Roguelike/assets/jefes/ruptura-mural.png';
   // Cada sector se desplaza por separado, conservando libre el centro del núcleo.
-  function muralNuevo(c, t) {
+  function muralNuevo(c, t, impulso = 0) {
     const n = 10, paso = TAU / n;
     for (let i = 0; i < n; i++) {
       const a = -Math.PI / 2 + i * paso;
-      const desplazamiento = Math.sin(t * 1.4 + i * 1.17) * 1.6;
+      const desplazamiento = Math.sin(t * 1.4 + i * 1.17) * (1.6 + impulso);
       c.save();
       c.translate(Math.cos(a) * desplazamiento, Math.sin(a) * desplazamiento);
       c.beginPath(); c.moveTo(0, 0); c.arc(0, 0, 80, a - paso / 2, a + paso / 2); c.closePath(); c.clip();
@@ -210,8 +211,8 @@ const RUPTURA = (() => {
     }
     aroNucleo(c, 9, .95);
   }
-  function codice(c, t) {
-    if (muralImagen.complete && muralImagen.naturalWidth) { muralNuevo(c, t); return; }
+  function codice(c, t, o = {}) {
+    if (muralImagen.complete && muralImagen.naturalWidth) { muralNuevo(c, t, impulsoVisual(o)); return; }
     // chispas de piedra que flotan
     for (let i = 0; i < 18; i++) { const x = (hash1(i, 41) - .5) * 92, y = 14 + hash1(i, 42) * 38 + Math.sin(t * 1.4 + i) * 1.5, w = 1.6 + hash1(i, 43) * 2.4, h = 2.4 + hash1(i, 44) * 3.6; c.save(); c.translate(x, y); c.rotate((hash1(i, 45) - .5) * .6); c.fillStyle = i % 3 ? PIEDRA[0] : OSCURA[0]; c.fillRect(-w / 2, -h / 2, w, h); c.strokeStyle = LINEA; c.lineWidth = .4; c.strokeRect(-w / 2, -h / 2, w, h); c.restore(); }
     // rocas de las esquinas
@@ -269,7 +270,7 @@ const RUPTURA = (() => {
     }
     return golemLimpio;
   }
-  function golemNuevo(c, t, img) {
+  function golemNuevo(c, t, img, impulso = 0) {
     // El núcleo del sprite coincide con (0, 0), donde el combate detecta los golpes.
     const x = -36.7, y = -35, w = 73.4, h = 110;
     const pieza = (poligono, dx, dy, ang, px, py) => {
@@ -277,15 +278,15 @@ const RUPTURA = (() => {
       c.beginPath(); poligono.forEach(([a,b], i) => i ? c.lineTo(a,b) : c.moveTo(a,b)); c.closePath(); c.clip();
       c.drawImage(img, x, y, w, h); c.restore();
     };
-    const ritmo = Math.sin(t * 1.6);
+    const ritmo = Math.sin(t * 1.6) * (1 + impulso * .6);
     pieza([[-40,-10],[-12,-10],[-12,34],[-40,34]], -ritmo*.6, ritmo*.45, ritmo*.075, -15, -7);
     pieza([[12,-10],[40,-10],[40,34],[12,34]], ritmo*.6, -ritmo*.45, -ritmo*.075, 15, -7);
     pieza([[-40,32],[40,32],[40,80],[-40,80]], 0, Math.sin(t*1.3)*.45, ritmo*.004, 0, 32);
     pieza([[-40,-40],[40,-40],[40,-10],[16,-10],[16,32],[-16,32],[-16,-10],[-40,-10]], 0, Math.sin(t*1.3)*.3, 0, 0, 0);
     aroNucleo(c, 8.5);
   }
-  function golem(c, t) {
-    const imagen = prepararGolem(); if (imagen) { golemNuevo(c, t, imagen); return; }
+  function golem(c, t, o = {}) {
+    const imagen = prepararGolem(); if (imagen) { golemNuevo(c, t, imagen, impulsoVisual(o)); return; }
     c.save(); c.globalCompositeOperation = 'lighter'; glowDot(c, 0, -6, 62, '#3a6aff', .2); c.restore();
     // esquirlas de cristal que flotan
     for (let i = 0; i < 16; i++) { const an = hash1(i, 51) * TAU + t * .07, r = 48 + hash1(i, 52) * 14; cristal(c, Math.cos(an) * r, Math.sin(an) * r * .85 + 6, 2.4, 4 + hash1(i, 53) * 4, an + t * .3, t, i); }
@@ -312,6 +313,43 @@ const RUPTURA = (() => {
   const FORMAS = [sombra, codice, golem, nucleo];
   const NOMBRES = ['Sombra', 'Mural del códice', 'Gólem dimensional', 'Núcleo expuesto'];
   // o.alcances = [{ x, y, k }]: blancos (en sus unidades) a los que estira sus propios tentáculos (Sombra y Núcleo)
-  function dibuja(c, forma, t, o) { (FORMAS[forma] || sombra)(c, t, o); }
+  // Símbolos de hacker: su sonido es de glitch, así que alrededor suyo sale código: lluvia de caracteres que se va hacia afuera,
+  // un anillo de símbolos que parpadea y, de vez en cuando, franjas desplazadas en cian y magenta.
+  const CODIGO = '01{}<>/#$%&*+=?;:[]|~^01010x', MAG_H = '#a352ff', CIAN_H = '#a352ff', BLANCO_H = '#d6b3ff'; // todo morado (la cabeza de cada hilera, más clara)
+  function simbolos(c, t, o = {}) {
+    const fuerte = (o.st === 'ataque' || o.st === 'herido' ? 1.35 : 1), q = Math.floor(t * 9), caracter = (i, k) => CODIGO[Math.floor(hash1(i * 7 + k * 3, q + 11) * CODIGO.length)];
+    c.save(); c.textAlign = 'center'; c.textBaseline = 'middle'; // (normal, no «lighter»: sobre el cielo claro el cian se perdería)
+    // 1 · lluvia de código: corre desde el cuerpo hacia afuera, con la cabeza más clara y una cola que se apaga
+    c.font = 'bold 6.2px Consolas, "Courier New", monospace';
+    for (let i = 0; i < 10; i++) {
+      const base = i / 10 * TAU + hash1(i, 21) * .5, v = .28 + hash1(i, 22) * .22, p = (t * v + hash1(i, 23)) % 1;
+      for (let k = 0; k < 4; k++) {
+        const r = 30 + p * 68 - k * 6; if (r < 26) continue;
+        const a = base + Math.sin(t * .8 + i) * .05, al = Math.max(0, (1 - p) * (1 - k / 4)) * .85 * fuerte;
+        c.globalAlpha = Math.min(1, al); c.fillStyle = k === 0 ? BLANCO_H : (i % 3 ? CIAN_H : MAG_H);
+        c.fillText(caracter(i, k), Math.cos(a) * r, Math.sin(a) * r * .86);
+      }
+    }
+    // 2 · anillo de símbolos que giran y parpadean
+    c.font = 'bold 9px Consolas, "Courier New", monospace';
+    for (let i = 0; i < 7; i++) {
+      const an = i / 7 * TAU + t * (.25 + (i % 3) * .07) * (i % 2 ? 1 : -1), r = 50 + (i % 4) * 9 + Math.sin(t * 1.3 + i) * 2.5;
+      const vive = hash1(i, Math.floor(t * 6) + 40) > .4; if (!vive) continue;
+      c.globalAlpha = (.45 + .4 * hash1(i, q + 51)) * fuerte; c.fillStyle = i % 2 ? MAG_H : CIAN_H;
+      c.fillText(caracter(i + 30, 1), Math.cos(an) * r, Math.sin(an) * r * .86);
+    }
+    // 3 · glitch: franjas que se desplazan, con el cian y el magenta separados
+    const ciclo = (t * .9) % 1.6;
+    if (ciclo < .16 || (o.st === 'herido' && Math.sin(t * 40) > 0)) {
+      const n = 1 + Math.floor(hash1(q, 61) * 2);
+      for (let i = 0; i < n; i++) {
+        const y = (hash1(i, q + 62) - .5) * 96, w = 34 + hash1(i, q + 63) * 56, h = 1.6 + hash1(i, q + 64) * 3.4, dx = (hash1(i, q + 65) - .5) * 26;
+        c.globalAlpha = .34; c.fillStyle = CIAN_H; c.fillRect(dx - w / 2 - 1.6, y, w, h);
+        c.fillStyle = MAG_H; c.fillRect(dx - w / 2 + 1.6, y + .6, w, h);
+      }
+    }
+    c.restore();
+  }
+  function dibuja(c, forma, t, o) { (FORMAS[forma] || sombra)(c, t, o); simbolos(c, t, o); }
   return { dibuja, NOMBRES, FORMAS, bloque, greca, anillo, escombros };
 })();

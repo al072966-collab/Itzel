@@ -17,12 +17,31 @@
 // =====================================================================
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.vitral) return;
-  const V = vestirNivel({ id: 'vitral', carpeta: 'catedral', ver: 1 });
+  const V = vestirNivel({ id: 'vitral', carpeta: 'catedral', ver: 1, manifiesto: window.VITRAL_CATEDRAL_MANIFIESTO });
   const { spr, h1, TAM } = V;
+  const cenefaVidrio = new Image();
+  cenefaVidrio.onload = () => V.rehaz(); cenefaVidrio.src = '../Roguelike/assets/catedral/cenefa-vidrio-v1.png';
+  const paisaje = {};
+  for (const [n, archivo] of Object.entries({ fondo:'panorama-catedral-v2.webp', suelo:'mosaico-oscuro-v1.png' })) {   // el panorama nuevo es el del rediseño de ChatGPT (misma proporción que el anterior)
+    const im = paisaje[n] = new Image(); im.onload = () => V.rehaz();
+    im.src = '../Roguelike/assets/catedral/' + archivo;
+  }
+  const principal = f => ((f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'vitral';
+  const paisajeListo = () => Object.values(paisaje).every(im => im.complete && im.naturalWidth);
+  window.VITRAL_PANORAMA_LISTO = paisajeListo;
 
   // telón: palomas que cruzan, polvo de colores en la luz del vitral y humo de incienso
   V.cielo((c, f, antes) => {
-    antes();
+    if (principal(f) && paisajeListo()) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .10 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#17132e'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(paisaje.fondo, 0, 0, 2172, 520, x, arriba, ancho, base - arriba);
+        c.drawImage(paisaje.fondo, 0, 520, 2172, 204, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.fillStyle = 'rgba(16,12,38,.26)'; c.fillRect(0, 0, VW, alto); c.restore();
+    } else antes();
     const t = f.t;
     c.save(); c.globalCompositeOperation = 'lighter';
     const col = ['255,120,110', '120,190,255', '255,220,120', '150,255,170'];
@@ -44,7 +63,24 @@
     }
   });
 
+  let mosaico = null;
   V.terreno((ctx, f) => {
+    if (principal(f) && paisajeListo()) {
+      if (!mosaico) { mosaico = ctx.createPattern(paisaje.suelo, 'repeat'); mosaico.setTransform(new DOMMatrix().scale(500 / paisaje.suelo.naturalWidth)); }
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.fillStyle = mosaico;
+      for (const r of L.tops) ctx.fillRect(r.x0, r.y + 8, r.x1 - r.x0, VH + 40);
+      ctx.restore();
+      if (cenefaVidrio.complete && cenefaVidrio.naturalWidth) {
+        ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
+        for (const r of L.tops) {
+          ctx.save(); ctx.beginPath(); ctx.rect(r.x0, r.y, r.x1 - r.x0, 8); ctx.clip();
+          for (let x = r.x0; x < r.x1; x += 110)
+            ctx.drawImage(cenefaVidrio, 0, 278, 2172, 158, x, r.y, 110, 8);
+          ctx.restore();
+        }
+        ctx.restore();
+      }
+    }
     for (const r of L.tops) for (let x = r.x0 + 12; x < r.x1 - 12; x += 30 + h1(x | 0, r.y) * 50) if (h1(x | 0, 81) > .6) spr(ctx, 'gema' + Math.floor(h1(x | 0, 82) * 5), x, r.y + 1, { voltea: h1(x | 0, 83) < .5 });
     for (const o of L.deco) {
       const x = o.x, y = o.y + 1;

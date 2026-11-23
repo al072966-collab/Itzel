@@ -109,15 +109,6 @@ const CAMPECHE_FOTOS = {
    "url": "https://commons.wikimedia.org/wiki/File:Baluarte_de_Santiago_Campeche.JPG"
   }
  ],
- "campeche:uayamon-pirata": [
-  {
-   "a": "uayamon-pirata-a3.jpg",
-   "que": "Una ceiba enorme junto a las ruinas de la hacienda Uayamón",
-   "autor": "Tereso Hernández",
-   "lic": "CC BY-SA 3.0",
-   "url": "https://commons.wikimedia.org/wiki/File:Hacienda_Uyamon_-_panoramio.jpg"
-  }
- ],
  "campeche:fundacion": [
   {
    "a": "fundacion-a5.jpg",
@@ -475,7 +466,7 @@ const CAMPECHE_FOTOS = {
  "campeche:delfines": [
   {
    "a": "delfines-b1.jpg",
-   "que": "Delfín nariz de botella. La foto es de Florida, no de Campeche",
+   "que": "Delfín nariz de botella",
    "autor": "NASA",
    "lic": "Dominio público",
    "url": "https://commons.wikimedia.org/wiki/File:Tursiops_truncatus_01.jpg"

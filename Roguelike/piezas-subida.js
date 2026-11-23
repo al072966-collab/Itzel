@@ -12,7 +12,8 @@ window.PIEZAS_SUBIDA = (() => {
   const BASE = '../Roguelike/assets/', META = {}, IMG = {}, CARGANDO = {};
   let json = null;
   const V = 2;
-  fetch(BASE + 'piezas-subida/piezas-subida.json?v=' + V).then(r => r.json()).then(m => { json = m; }).catch(() => { json = {}; });
+  const manifiesto = window.PIEZAS_SUBIDA_MANIFIESTO ? Promise.resolve(window.PIEZAS_SUBIDA_MANIFIESTO) : fetch(BASE + 'piezas-subida/piezas-subida.json?v=' + V).then(r => r.json());
+  manifiesto.then(m => { json = m; }).catch(() => { json = {}; });
   const clave = j => window.estiloArteDerivado || (j && j.st && j.st.id);
   // nombres de las piezas de un estilo y dónde viven sus imágenes
   function fuente(id) {
@@ -21,7 +22,8 @@ window.PIEZAS_SUBIDA = (() => {
     return null;
   }
   const BIOLUM_META = {}; let biolumListo = false;
-  fetch(BASE + 'bosque/bosque-piezas.json?v=1').then(r => r.json()).then(m => { Object.assign(BIOLUM_META, m); biolumListo = true; }).catch(() => {});
+  const bosque = window.BOSQUE_PIEZAS_MANIFIESTO ? Promise.resolve(window.BOSQUE_PIEZAS_MANIFIESTO) : fetch(BASE + 'bosque/bosque-piezas.json?v=1').then(r => r.json());
+  bosque.then(m => { Object.assign(BIOLUM_META, m); biolumListo = true; }).catch(() => {});
   function pide(id) {
     if (IMG[id] || CARGANDO[id]) return IMG[id];
     const f = fuente(id); if (!f || (id === 'biolum' && !biolumListo)) return null;
@@ -58,9 +60,13 @@ window.PIEZAS_SUBIDA = (() => {
     bandera(c, j, x, y, encendida, t) {
       const p = pieza(j, 'bandera'); if (!p) return false;
       const w = p.m.w, h = p.m.h, ax = p.m.ax ?? .36; hq(c); c.save();
-      if (!encendida) c.filter = 'grayscale(.85) brightness(.6)';
-      else { c.globalCompositeOperation = 'lighter'; glowDot(c, x, y - h + 6, 12, '#fff2c0', .18 + Math.sin(t * 3) * .05); c.globalCompositeOperation = 'source-over'; }
-      c.drawImage(p.im, x - w * ax, y - h + 1, w, h); c.restore(); return true;
+      let img = p.im;
+      if (!encendida) {
+        // el gris se pinta una sola vez en otro lienzo: aplicar ctx.filter en cada cuadro vuelve lento el nivel
+        if (!p.apagada && p.im.naturalWidth) { const cv = document.createElement('canvas'); cv.width = p.im.naturalWidth; cv.height = p.im.naturalHeight; const cx = cv.getContext('2d'); cx.filter = 'grayscale(.85) brightness(.6)'; cx.drawImage(p.im, 0, 0); p.apagada = cv; }
+        if (p.apagada) img = p.apagada;
+      } else { c.globalCompositeOperation = 'lighter'; glowDot(c, x, y - h + 6, 12, '#fff2c0', .18 + Math.sin(t * 3) * .05); c.globalCompositeOperation = 'source-over'; }
+      c.drawImage(img, x - w * ax, y - h + 1, w, h); c.restore(); return true;
     },
     // burbuja de apoyo: aparece (cuenco), se sostiene (esfera, su aro es el piso) y revienta en gotas
     burbuja(c, j, q, x, y, t) {

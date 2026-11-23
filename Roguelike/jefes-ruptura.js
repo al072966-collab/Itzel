@@ -77,14 +77,20 @@ Object.assign(JEFES, {
   };
   X.BODY.ruptura = (c, o, f) => {
     const t = f.t, stun = o.stunT > 0, open = o.st === 'ventana' || o.st === 'herido', wh = o.flash > 0 && Math.sin(t * 40) > 0;
-    const esc = (stun ? .62 : 1) * (1 + Math.sin(t * 2.2) * .025) * (o.st === 'muere' ? 1 + o.at * .25 : 1);
-    c.save(); c.translate(o.x, o.y); c.rotate(Math.sin(t * .5) * .06 + (o.st === 'muere' ? o.at * .5 : 0)); c.scale(esc, esc);
+    const a = o.at || 0, atacando = o.st === 'ataque';
+    // Conserva el tamaño de cada forma; la energía y las piezas se mueven por separado.
+    let balance = Math.sin(t * .5) * .04;
+    if (atacando && (o.fx === 'carga' || o.fx === 'laser')) balance += .018 * Math.sin(a * 9);
+    else if (atacando && ['aplastar','cristales','barridaRaiz','tornado'].includes(o.atk)) balance += .035 * Math.sin(a * 5) * Math.min(1, a * 3);
+    else if (atacando) balance += .015 * Math.sin(a * 6) * Math.min(1, a * 3);
+    if (o.st === 'herido' || o.flash > 0) balance += .08 * Math.sin(a * 18) * Math.exp(-a * 3.5);
+    c.save(); c.translate(o.x, o.y); c.rotate(balance + (o.st === 'muere' ? a * .5 : 0));
     if (o.st === 'muere') c.globalAlpha *= clamp(1 - o.at / 2.4, 0, 1);
     // escombros que orbitan
     for (let n = 0; n < 9; n++) { const an = n / 9 * TAU + t * (.25 + (n % 3) * .08), r = 54 + (n % 3) * 6, x = Math.cos(an) * r, y = Math.sin(an) * r * .8, s = 3 + (n % 4); c.save(); c.translate(x, y); c.rotate(an + t); c.fillStyle = '#1a1030'; c.fillRect(-s / 2, -s / 2, s, s); c.strokeStyle = rgba('#ff4fd8', .6); c.lineWidth = .5; c.strokeRect(-s / 2 + .8, -s / 2 + .8, s - 1.6, s - 1.6); c.restore(); }
     // la forma, dibujada a la resolución de la pantalla (ruptura-cuerpo.js)
     if (wh) c.filter = 'brightness(3)';
-    RUPTURA.dibuja(c, o.forma, t, { alcances: o.alcances });
+    RUPTURA.dibuja(c, o.forma, t, { alcances: o.alcances, st: o.st, atk: o.atk, at: o.at });
     c.filter = 'none';
     // el núcleo que late, con destello de cuatro rayos
     const pulso = .6 + Math.sin(t * 5) * .2 + (open ? .4 : 0);

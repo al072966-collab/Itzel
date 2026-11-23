@@ -321,7 +321,19 @@ function vignette(ctx, a = .45, col = '#000000', inner = .45) {
   const g = ctx.createRadialGradient(VW / 2, VH / 2, VH * inner, VW / 2, VH / 2, VW * .62);
   g.addColorStop(0, rgba(col, 0)); g.addColorStop(1, rgba(col, a)); ctx.fillStyle = g; ctx.fillRect(0, 0, VW, VH);
 }
+// los destellos se pintan una vez en un lienzo chico (por color y opacidad) y después solo se estiran: crear un degradado por cada
+// destello y por cada cuadro vuelve lentos los niveles con muchas luces
+const GLOW_SPR = new Map();
 function glowDot(ctx, x, y, r, col, a = 1) {
+  if (ctx.imageSmoothingEnabled && typeof col === 'string' && a > 0 && r > 0) {
+    const qa = Math.min(1, Math.round(a * 50) / 50), key = col + '|' + qa; let sp = GLOW_SPR.get(key);
+    if (!sp) {
+      if (GLOW_SPR.size > 600) GLOW_SPR.clear();
+      sp = mkCanvas(48, 48); const c2 = sp.getContext('2d'), g2 = c2.createRadialGradient(24, 24, 0, 24, 24, 24); g2.addColorStop(0, rgba(col, qa)); g2.addColorStop(1, rgba(col, 0));
+      c2.fillStyle = g2; c2.fillRect(0, 0, 48, 48); GLOW_SPR.set(key, sp);
+    }
+    ctx.drawImage(sp, x - r, y - r, r * 2, r * 2); return;
+  }
   const g = ctx.createRadialGradient(x, y, 0, x, y, r); g.addColorStop(0, rgba(col, a)); g.addColorStop(1, rgba(col, 0));
   ctx.fillStyle = g; ctx.fillRect(x - r, y - r, r * 2, r * 2);
 }
@@ -526,7 +538,7 @@ function renderScene(ctx, st, g, S, opt = {}) {
   ctx.drawImage(terrainCanvas(st, S), cam * S, 0, VW * S, VH * S, 0, 0, VW, VH);
   ctx.save(); ctx.translate(-cam, 0);
   if (st.front) st.front(ctx, f);
-  for (const c of g.coins) if (!c.got) monedaItzel(ctx, c.x, c.y, g.t, f);
+  for (const c of g.coins) if (!c.got) { if (c.piedra) { ctx.save(); ctx.filter = 'grayscale(1) brightness(.8)'; monedaItzel(ctx, c.x, c.y, g.t, f); ctx.restore(); } else monedaItzel(ctx, c.x, c.y, g.t, f); }
   (L.metaPinta || st.goal)(ctx, L.goal.x, L.goal.y, g.t, f); // un nivel puede traer su propia meta (el nacimiento, Juan Carnaval…)
   if (typeof WORLD_HOOK === 'function') WORLD_HOOK(ctx, f, 'under');
   if (g.p.vis) {

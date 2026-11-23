@@ -277,7 +277,15 @@ const RUPTURA_FORMAS = (() => {
     });
     // la forma final se celebra con su cinemática antes de seguir jugando
     GANCHOS.en('levelDone', ldPrev => function () {
-      if (RUN && RUN.verFinal && CUR && CUR.isBoss) { RUN.verFinal = false; CINE.play('final', { alTerminar: () => ldPrev.apply(this, arguments) }); return; }
+      if (RUN && RUN.verFinal && CUR && CUR.isBoss) {
+        RUN.verFinal = false; const yo = this, args = arguments, estado = STATE;
+        // después de la cinemática final salen los créditos, y al cerrarlos sigue la pantalla de victoria
+        const sigue = () => { STATE = estado; ldPrev.apply(yo, args); };
+        CINE.play('final', { alTerminar: () => {
+          if (window.OPCIONES && OPCIONES.pantallaCreditos) { STATE = 'win'; const h = document.getElementById('hud'); if (h) h.classList.remove('on'); OPCIONES.pantallaCreditos(sigue); } else sigue();
+        } });
+        return;
+      }
       ldPrev.apply(this, arguments);
     });
   }
@@ -300,17 +308,18 @@ const RUPTURA_FORMAS = (() => {
     }
     return mareaLimpia;
   }
-  function dibujarMarea(c,t,img) {
+  const impulsoVisual = o => o && o.st === 'ataque' ? Math.min(1, Math.max(0, (o.at || 0) * 3)) : 0;
+  function dibujarMarea(c,t,img,impulso=0) {
     // La franja central queda alineada con el punto de impacto; las otras ondulan.
     const bandas = [[0,205],[205,320],[320,390],[390,530],[530,768]];
     const ancho=81.3, alto=122, x=-43.7, y=-56.4;
     for (let i=0; i<bandas.length; i++) {
-      const [a,b]=bandas[i], desplazamiento=i===2?0:Math.sin(t*2+i*1.6)*1.4;
+      const [a,b]=bandas[i], desplazamiento=i===2?0:Math.sin(t*2+i*1.6)*(1.4+impulso*1.6);
       c.drawImage(img,0,a,512,b-a,x+desplazamiento,y+a*alto/768,ancho,(b-a)*alto/768+.05);
     }
   }
-  RUPTURA.FORMAS.push((c, t) => {
-    const imagen = prepararMarea(); if (imagen) { dibujarMarea(c,t,imagen); return; }
+  RUPTURA.FORMAS.push((c, t, o) => {
+    const imagen = prepararMarea(); if (imagen) { dibujarMarea(c,t,imagen,impulsoVisual(o)); return; }
     escombros(c, t, 12, 40, 56, 71, MARE, '#bff4ff');
     for (let i = 0; i < 34; i++) { const u = i / 34, an = u * TAU * 1.5 - Math.PI * .8 + t * .35, r = 16 + u * 36; BM(c, Math.cos(an) * r, Math.sin(an) * r * .86 + Math.sin(t * 2 + i * .4) * 1.5, 11 - u * 5, an); }
     for (let i = 0; i < 12; i++) { const an = i / 12 * TAU - t * .5, r = 56 + Math.sin(t * 2 + i) * 3; c.fillStyle = 'rgba(236,250,255,.85)'; c.beginPath(); c.arc(Math.cos(an) * r, Math.sin(an) * r * .84, 1.8 + (i % 3) * .6, 0, TAU); c.fill(); }
@@ -332,17 +341,17 @@ const RUPTURA_FORMAS = (() => {
     }
     return baluarteLimpio;
   }
-  function dibujarBaluarte(c,t,img) {
+  function dibujarBaluarte(c,t,img,impulso=0) {
     const x=-40.7,y=-47.3,w=81.4,h=122;
     const pieza=(poly,dx,dy)=>{ c.save();c.translate(dx,dy);c.beginPath();poly.forEach(([a,b],i)=>i?c.lineTo(a,b):c.moveTo(a,b));c.closePath();c.clip();c.drawImage(img,x,y,w,h);c.restore(); };
-    const a=Math.sin(t*1.4)*1.4;
+    const a=Math.sin(t*1.4)*1.4+impulso*Math.sin(t*6)*.8;
     pieza([[-45,-38],[-11,-38],[-11,20],[-45,20]],-a,a*.4);
     pieza([[11,-38],[45,-38],[45,20],[11,20]],a,-a*.4);
     pieza([[-45,20],[45,20],[45,78],[-45,78]],0,Math.sin(t*1.2)*.55);
     pieza([[-45,-50],[45,-50],[45,-38],[11,-38],[11,20],[-11,20],[-11,-38],[-45,-38]],0,0);
   }
-  RUPTURA.FORMAS.push((c, t) => {
-    const imagen=prepararBaluarte(); if(imagen) { dibujarBaluarte(c,t,imagen); return; }
+  RUPTURA.FORMAS.push((c, t, o) => {
+    const imagen=prepararBaluarte(); if(imagen) { dibujarBaluarte(c,t,imagen,impulsoVisual(o)); return; }
     for (let y = 0; y < 5; y++) for (let x = -3 + (y % 2) * .5; x <= 3; x++) BC(c, x * 13, 30 - y * 13, 12.6);
     for (let x = -3; x <= 3; x += 2) BC(c, x * 13, -36, 10);
     for (const s of [-1, 1]) { c.fillStyle = '#d8ba8a'; c.beginPath(); c.moveTo(s * 42, -30); c.lineTo(s * 58, -30); c.lineTo(s * 56, -8); c.lineTo(s * 44, -8); c.closePath(); c.fill(); c.strokeStyle = '#5a4028'; c.lineWidth = .8; c.stroke(); c.fillStyle = '#b89464'; c.beginPath(); c.arc(s * 50, -30, 8.4, Math.PI, 0); c.fill(); c.stroke(); c.fillStyle = '#2a1a10'; c.fillRect(s * 50 - 1.6, -24, 3.2, 8); }
@@ -362,8 +371,8 @@ const RUPTURA_FORMAS = (() => {
     }
     return enjambreLimpio;
   }
-  function dibujarEnjambre(c,t,img){
-    const x=-40.7,y=-47.2,w=81.4,h=122, oscilacion=Math.sin(t*2)*1.2;
+  function dibujarEnjambre(c,t,img,impulso=0){
+    const x=-40.7,y=-47.2,w=81.4,h=122, oscilacion=Math.sin(t*2)*(1.2+impulso*1.1);
     const pieza=(poly,dx,dy)=>{c.save();c.translate(dx,dy);c.beginPath();poly.forEach(([a,b],i)=>i?c.lineTo(a,b):c.moveTo(a,b));c.closePath();c.clip();c.drawImage(img,x,y,w,h);c.restore();};
     pieza([[-43,-27],[-13,-27],[-13,18],[-43,18]],-oscilacion,0);
     pieza([[13,-27],[43,-27],[43,18],[13,18]],oscilacion,0);
@@ -371,8 +380,8 @@ const RUPTURA_FORMAS = (() => {
     pieza([[-43,-48],[43,-48],[43,-27],[13,-27],[13,18],[-13,18],[-13,-27],[-43,-27]],0,0);
     for(let i=0;i<8;i++){const a=i*TAU/8+t*(i%2?.7:-.6),r=43+Math.sin(t*2+i)*3; c.save();c.translate(Math.cos(a)*r,Math.sin(a)*r*.75);c.rotate(a+Math.PI/2);c.fillStyle='#0a3836';c.beginPath();c.ellipse(0,0,1.6,2.6,0,0,TAU);c.fill();c.strokeStyle='#d1ad59';c.lineWidth=.45;c.stroke();c.beginPath();c.moveTo(0,-2);c.lineTo(0,2);c.stroke();c.restore();}
   }
-  RUPTURA.FORMAS.push((c, t) => {
-    const imagen=prepararEnjambre();if(imagen){dibujarEnjambre(c,t,imagen);return;}
+  RUPTURA.FORMAS.push((c, t, o) => {
+    const imagen=prepararEnjambre();if(imagen){dibujarEnjambre(c,t,imagen,impulsoVisual(o));return;}
     for (let i = 0; i < 46; i++) { const h = hash1(i, 81), r = 18 + hash1(i, 82) * 40, an = h * TAU + t * (.7 + hash1(i, 83)) * (i % 2 ? 1 : -1), x = Math.cos(an) * r, y = Math.sin(an) * r * .78 + Math.sin(t * 3 + i) * 2.4, s = 1.4 + hash1(i, 84) * 1.6; c.fillStyle = i % 3 ? '#1a120a' : '#3a2410'; c.beginPath(); c.ellipse(x, y, s * 1.7, s, an + Math.PI / 2, 0, TAU); c.fill(); c.fillStyle = 'rgba(214,236,255,.5)'; c.beginPath(); c.ellipse(x, y - s, s * 1.2, s * .5, Math.sin(t * 40 + i), 0, TAU); c.fill(); if (i % 5 === 0) { c.fillStyle = '#e6b422'; c.fillRect(x - s * .7, y - .4, s * 1.4, .8); } }
     anillo(c, t, 10, 12.5, 6.2, ['#2a1a0a', '#6a4418', '#120a06'], '#e6b422');
   });
@@ -387,15 +396,15 @@ const RUPTURA_FORMAS = (() => {
       try { const im=cx.getImageData(0,0,512,768);for(let i=3;i<im.data.length;i+=4)im.data[i]=im.data[i]<210?0:255;cx.putImageData(im,0,0); } catch (e) { if (e.name !== 'SecurityError') throw e; }}
     return huracanLimpio;
   }
-  function dibujarHuracan(c,t,img){
+  function dibujarHuracan(c,t,img,impulso=0){
     // El ojo permanece fijo en el punto vulnerable y la cola ondula con el viento.
     const x=-40.7,y=-41.3,w=81.4,h=122;
     const bandas=[[0,190],[190,330],[330,470],[470,615],[615,768]];
-    bandas.forEach(([a,b],i)=>{const dx=i===1?0:Math.sin(t*1.8-i*.8)*(.2+i*.27);c.drawImage(img,0,a,512,b-a,x+dx,y+a*h/768,w,(b-a)*h/768+.1);});
+    bandas.forEach(([a,b],i)=>{const dx=i===1?0:Math.sin(t*1.8-i*.8)*(.2+i*.27)*(1+impulso*.7);c.drawImage(img,0,a,512,b-a,x+dx,y+a*h/768,w,(b-a)*h/768+.1);});
     for(let i=0;i<5;i++){const an=t*1.6+i*TAU/5,r=35+i*2;c.save();c.translate(Math.cos(an)*r,Math.sin(an)*r*.7);c.rotate(an);c.fillStyle='rgba(183,219,226,.7)';c.beginPath();c.ellipse(0,0,1.6,.6,0,0,TAU);c.fill();c.restore();}
   }
-  RUPTURA.FORMAS.push((c, t) => {
-    const imagen=prepararHuracan();if(imagen){dibujarHuracan(c,t,imagen);return;}
+  RUPTURA.FORMAS.push((c, t, o) => {
+    const imagen=prepararHuracan();if(imagen){dibujarHuracan(c,t,imagen,impulsoVisual(o));return;}
     for (let a = 0; a < 4; a++) for (let i = 0; i < 18; i++) { const u = i / 18, an = a / 4 * TAU + u * 4 - t * 1.6, r = 12 + u * 46, s = 3.2 + u * 7.5; c.fillStyle = rgba(i % 2 ? '#c8d4e0' : '#7a8898', .9 - u * .45); c.beginPath(); c.ellipse(Math.cos(an) * r, Math.sin(an) * r * .78, s * 1.4, s * .8, an, 0, TAU); c.fill(); }
     for (let i = 0; i < 9; i++) { const an = i / 9 * TAU + t * 2.2, r = 44 + (i % 3) * 8; bloque(c, Math.cos(an) * r, Math.sin(an) * r * .78, 3.4, an, ['#5a5448', '#8a8070', '#2a2620'], null); }
     c.strokeStyle = rgba('#e8f4ff', .55); c.lineWidth = .7; for (let i = 0; i < 5; i++) { const an = i * 1.3 - t * 2.4; c.beginPath(); c.ellipse(0, 0, 30 + i * 6, 22 + i * 4, 0, an, an + 1.2); c.stroke(); }
@@ -421,17 +430,17 @@ const RUPTURA_FORMAS = (() => {
       try { const im=cx.getImageData(0,0,612,643);for(let i=3;i<im.data.length;i+=4)im.data[i]=im.data[i]<210?0:255;cx.putImageData(im,0,0); } catch (e) { if (e.name !== 'SecurityError') throw e; }}
     return ceibaLimpia;
   }
-  function dibujarCeiba(c,t,img){
+  function dibujarCeiba(c,t,img,impulso=0){
     const x=-55,y=-60,w=110,h=116;
     const pieza=(poly,dx,dy,angulo,px,py)=>{c.save();c.translate(dx,dy);c.translate(px,py);c.rotate(angulo);c.translate(-px,-py);c.beginPath();poly.forEach(([a,b],i)=>i?c.lineTo(a,b):c.moveTo(a,b));c.closePath();c.clip();c.drawImage(img,x,y,w,h);c.restore();};
-    const brisa=Math.sin(t*1.3);
+    const brisa=Math.sin(t*1.3)*(1+impulso*.8);
     pieza([[-56,-61],[56,-61],[56,-25],[-56,-25]],0,0,brisa*.025,0,-25);
     pieza([[-56,25],[0,25],[0,57],[-56,57]],-brisa*.25,0,0,0,0);
     pieza([[0,25],[56,25],[56,57],[0,57]],brisa*.25,0,0,0,0);
     pieza([[-56,-25],[56,-25],[56,25],[-56,25]],0,0,0,0,0);
   }
-  RUPTURA.FORMAS.push((c, t) => {
-    const imagen=prepararCeiba();if(imagen){dibujarCeiba(c,t,imagen);return;}
+  RUPTURA.FORMAS.push((c, t, o) => {
+    const imagen=prepararCeiba();if(imagen){dibujarCeiba(c,t,imagen,impulsoVisual(o));return;}
     const rama = (x, y, an, l, n) => { const x2 = x + Math.cos(an) * l, y2 = y + Math.sin(an) * l, sw = Math.sin(t * 1.4 + n + x) * .05; c.strokeStyle = '#4a2c1a'; c.lineWidth = n * 1.5 + .7; c.beginPath(); c.moveTo(x, y); c.lineTo(x2, y2); c.stroke(); if (n > 0) { rama(x2, y2, an - .46 + sw, l * .74, n - 1); rama(x2, y2, an + .42 + sw, l * .72, n - 1); } else { c.fillStyle = ['#3f7a34', '#5a9a44', '#2c5a28'][(Math.abs(Math.round(x * 3))) % 3]; c.beginPath(); c.ellipse(x2, y2, 4.8, 3.4, an, 0, TAU); c.fill(); } };
     c.lineCap = 'round'; for (const an of [-1.57, -2.2, -.94, -2.8, -.34]) rama(0, -4, an, 19, 3);
     for (const [an, l] of [[1.57, 30], [2.2, 28], [.94, 28], [2.75, 24], [.4, 24]]) { const x = Math.cos(an) * l, y = Math.sin(an) * l + 10; c.strokeStyle = '#3a2214'; c.lineWidth = 6; c.beginPath(); c.moveTo(0, 6); c.quadraticCurveTo(x * .3 + Math.sin(t + an) * 3, y * .9, x, y + 6); c.stroke(); }

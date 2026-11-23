@@ -34,8 +34,6 @@ const ENEMIGO_INFO = {
   soplo: ['Soplo', 'Un remolinito de viento con cachetes que va a las antorchas encendidas y las apaga.', 'Vuelve a prenderlas con Fresita, o cáele encima mientras sopla.'],
   tucan: ['Tucán de Calakmul', 'Mientras Fresita carga a Itzel, la persigue y la picotea hasta que la suelta.', 'Carga a Itzel cuando esté lejos, o en tramos cortos.'],
   nauyaca: ['Nauyaca', 'Una víbora enroscada entre las hojas: cascabelea y lanza la mordida.', 'Cuando suene el cascabel, aléjate; enroscada se le puede caer encima.'],
-  calderita: ['Calderita', 'Una caldera con patas que resopla un chorro de vapor de lado y empuja a Itzel.', 'El vapor de las rejillas de Fresita la levanta y la quita del camino.'],
-  pajaro: ['Pájaro de cuerda', 'Un ornitóptero de latón que vuela en ochos por la fábrica.', 'Si pasa por una columna de vapor, sale volando lejos.'],
   foca: ['Foca del mar helado', 'Nada bajo el hielo (se ven sus ondas) y sale junto a Itzel: empuja el témpano y avienta a Itzel.', 'Cuando veas las ondas debajo, brinca a otro témpano.'],
   muneco: ['Muñeco de nieve', 'Avienta bolas de nieve; si caen al mar, dejan un pedacito de hielo flotando un rato.', 'Se echa para atrás antes de aventar. Se le puede caer encima.'],
   cometa: ['Cometa', 'Cruza el cielo en diagonal cada tanto; si pasa por una línea de constelación de Fresita, la rompe.', 'Una estrellita brilla antes de que salga: tiende la línea después de que pase.'],

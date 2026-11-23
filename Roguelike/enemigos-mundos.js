@@ -900,27 +900,5 @@
     if (k > .3) { c.fillStyle = '#fffaf0'; c.beginPath(); c.moveTo(hx + 2.6, hy + .4); c.lineTo(hx + 3, hy + 1.8); c.lineTo(hx + 3.4, hy + .4); c.fill(); }
     if ((t * 1.3 + e.hx) % 1.4 < .2 || k > .3) { c.strokeStyle = '#d02040'; c.lineWidth = .3; c.beginPath(); c.moveTo(hx + 3.6, hy); c.lineTo(hx + 5.4, hy + .2); c.lineTo(hx + 6, hy - .4); c.moveTo(hx + 5.4, hy + .2); c.lineTo(hx + 6, hy + .8); c.stroke(); }
   };
-  // calderita: caldera de cobre con patitas, manómetro y chimenea; resopla de lado
-  FD.calderita = (c, e, t) => {
-    const ln = '#1a0c06', a = Math.sin(e.anim * 10), av = e.avisa ? Math.sin(t * 40) * .5 : 0;
-    for (const [x, ph] of [[-3, 0], [2.4, 1]]) trazo(c, [[x, -3], [x + (e.flota ? 0 : (ph ? a : -a)), 0]], .7, '#4a2a18', { ln, lw: .4 });
-    vol(c, c => c.ellipse(av, -6.6, 5.4, 4.4, 0, 0, TAU), '#c8743a', { ln, hl: [-1.8, -8.4, 2.2], tex: c => { c.strokeStyle = '#8a4a24'; c.lineWidth = .5; for (const y of [-9, -4.4]) { c.beginPath(); c.moveTo(-5.4, y); c.lineTo(5.4, y); c.stroke(); } motas(c, [[-4, -9, .3], [-1.4, -9, .3], [1.4, -9, .3], [4, -9, .3]], '#f2d090'); } });
-    vol(c, c => roundRect(c, -1 + av, -14, 2.6, 4, .5), '#4a2a18', { ln, lw: .35 });
-    vol(c, c => c.arc(2 + av, -6.6, 1.8, 0, TAU), '#f2e0b0', { ln, lw: .35, s: false }); c.strokeStyle = '#b8203a'; c.lineWidth = .35; c.beginPath(); c.moveTo(2 + av, -6.6); const ang = e.avisa || e.resopla ? -.3 : -2.4; c.lineTo(2 + av + Math.cos(ang) * 1.4, -6.6 + Math.sin(ang) * 1.4); c.stroke();
-    for (const x of [-2.6, -.6]) ojo(c, e, t, x + av, -7.4, .65, { piel: '#c8743a', ln, enojo: e.avisa ? .8 : .3 });
-    if (Math.random() < .5) { c.fillStyle = 'rgba(232,224,216,.6)'; c.beginPath(); c.arc(.3 + av + Math.sin(t * 5) * .6, -15 - (t * 8 % 4), 1 + (t * 8 % 4) * .3, 0, TAU); c.fill(); }
-  };
-  FX.calderita = (c, e, t) => { if (!e.resopla) return; c.save(); for (let k = 0; k < 9; k++) { const u = (t * 2.4 + k / 9) % 1; c.fillStyle = `rgba(240,232,224,${.7 * (1 - u)})`; c.beginPath(); c.arc(6 + u * 40, -6 + Math.sin(k * 2 + t * 6) * 2 * u, 1.5 + u * 3, 0, TAU); c.fill(); } c.restore(); };
-  // pájaro de cuerda: ornitóptero de latón con alas de tela y llave en la espalda
-  FD.pajaro = (c, e, t) => {
-    const ln = '#1a0c06', f = Math.sin(e.anim * 16);
-    for (const d of [-1, 1]) vol(c, c => { c.moveTo(-1, -5); c.lineTo(-4, -10 - f * 3.4 * d); c.lineTo(-8, -9 - f * 3 * d); c.lineTo(-3, -4); c.closePath(); }, d < 0 ? '#c8b088' : '#efe0c0', { ln, lw: .35, s: false, tex: c => { c.strokeStyle = '#8a4a24'; c.lineWidth = .3; c.beginPath(); c.moveTo(-1, -5); c.lineTo(-6, -9.4 - f * 3 * d); c.stroke(); } });
-    vol(c, c => c.ellipse(0, -4.6, 4, 2.4, 0, 0, TAU), '#c8903a', { ln, hl: [-1, -5.6, 1.4], tex: c => motas(c, [[-2, -4.6, .3], [0, -4.6, .3], [2, -4.6, .3]], '#f2d090') });
-    vol(c, c => c.arc(3.6, -6, 1.8, 0, TAU), '#c8903a', { ln, lw: .35 });
-    c.fillStyle = '#8a4a24'; c.beginPath(); c.moveTo(5.2, -6.4); c.lineTo(7.6, -5.8); c.lineTo(5.2, -5.2); c.closePath(); c.fill();
-    ojo(c, e, t, 4, -6.4, .55, { blanco: '#ffe08a', pupila: '#5a2a10', piel: '#c8903a', ln });
-    c.save(); c.translate(-3.6, -6.6); c.rotate(t * 6); c.strokeStyle = '#e8b860'; c.lineWidth = .4; c.beginPath(); c.moveTo(0, 0); c.lineTo(0, -1.6); c.stroke(); c.beginPath(); c.arc(-.6, -2, .6, 0, TAU); c.arc(.6, -2, .6, 0, TAU); c.stroke(); c.restore();
-  };
-
-  for (const k of ['fantasma', 'soplo', 'tucan', 'nauyaca', 'calderita', 'pajaro', 'foca', 'muneco', 'cometa', 'conejo', 'aranaCeniza', 'cuervoCeniza', 'topon', 'halcon', 'bestia', 'guardia', 'ollita', 'silbato', 'morena', 'pezloro', 'incendiario', 'magma', 'charran', 'medusa', 'oruga', 'pavo', 'cucu', 'bailarina', 'rover', 'gargola', 'campana', 'goma', 'sacapuntas', 'catrin', 'carcoma', 'aplastador', 'cuadrito', 'nahual', 'bejuco', 'carpintero', 'geoda', 'escribano', 'guerrero', 'girasol', 'cuervo', 'chapulin', 'pirata', 'hadita', 'loro', 'garza', 'zancudo', 'mojarra', 'libelula', 'tijeras', 'grulla', 'polilla', 'esporin', 'bucanero', 'fragata']) GEN.add(k);
+  for (const k of ['fantasma', 'soplo', 'tucan', 'nauyaca', 'foca', 'muneco', 'cometa', 'conejo', 'aranaCeniza', 'cuervoCeniza', 'topon', 'halcon', 'bestia', 'guardia', 'ollita', 'silbato', 'morena', 'pezloro', 'incendiario', 'magma', 'charran', 'medusa', 'oruga', 'pavo', 'cucu', 'bailarina', 'rover', 'gargola', 'campana', 'goma', 'sacapuntas', 'catrin', 'carcoma', 'aplastador', 'cuadrito', 'nahual', 'bejuco', 'carpintero', 'geoda', 'escribano', 'guerrero', 'girasol', 'cuervo', 'chapulin', 'pirata', 'hadita', 'loro', 'garza', 'zancudo', 'mojarra', 'libelula', 'tijeras', 'grulla', 'polilla', 'esporin', 'bucanero', 'fragata']) GEN.add(k);
 })();

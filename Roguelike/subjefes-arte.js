@@ -63,7 +63,6 @@ window.SUBJEFES_ARTE = (() => {
     apuntador: { archivo: 'apuntador-v1/processed', acciones: ['asomar', 'emerger', 'aviso de elevadores', 'soplar y lanzar rosas'], cajas: [[36,73,184,148],[49,36,158,186],[52,36,152,186],[36,63,185,159]], escala: [185,186], altoCentro: false },
     chapopote: { archivo: 'chapopote-v1/processed', acciones: ['reposo', 'comprimirse', 'brinco', 'aterrizar y soltar crías'], cajas: [[36,135,185,86],[36,126,184,95],[34,43,187,179],[35,156,186,65]], escala: [187,179], altoCentro: false },
     fauces: { archivo: 'fauces-v1/processed', acciones: ['reposo', 'paso', 'absorber aire', 'escupir piedras'], cajas: [[50,36,155,186],[48,37,159,185],[42,36,173,185],[36,37,185,185]], escala: [185,186], altoCentro: false },
-    caldera: { archivo: 'caldera-v1/processed', acciones: ['reposo', 'paso', 'sobrepresión', 'enfriada y cansada'], cajas: [[46,36,163,186],[51,37,155,185],[47,36,163,185],[45,37,164,185]], escala: [164,186], altoCentro: false },
     horno: { archivo: 'horno-v1/processed', acciones: ['reposo', 'paso', 'aviso de brasas', 'ataque de brasas y jarrito'], cajas: [[58,37,139,185],[59,35,138,186],[61,36,134,185],[37,36,182,186]], escala: [182,186], altoCentro: false },
     polvorin: { archivo: 'polvorin-v1/processed', acciones: ['reposo', 'paso', 'mecha de aviso', 'soltar bombas / embestir'], cajas: [[80,37,95,185],[69,37,118,185],[68,37,120,185],[51,36,153,185]], escala: [153,185], altoCentro: false },
     tapir: { archivo: 'tapir-v1/processed-v3', acciones: ['caminar: cuatro poses', 'aviso alzando la pata', 'embestida', 'cansado vulnerable'], cajas: [[19,54,217,148],[19,64,217,127],[19,79,217,98],[19,72,217,111]], escala: [217,148], altoCentro: false },
@@ -128,7 +127,6 @@ window.SUBJEFES_ARTE = (() => {
     if (clave === 'apuntador') return e.fase === 'cansado' ? 1 : e.fase === 'aviso' ? 2 : e.fase === 'ataque' ? (e.atq === 'lluvia' ? 3 : 2) : (e.hunde || 0) < .35 ? 1 : 0;
     if (clave === 'chapopote') return e.fase === 'aviso' ? 1 : e.fase === 'ataque' ? (e.atq === 'crias' ? 3 : (e.vy || 0) < -10 ? 2 : 0) : (e.vy || 0) < -10 ? 2 : Math.floor(t * 3) % 2;
     if (clave === 'fauces') return e.fase === 'cansado' ? 0 : e.fase === 'aviso' ? 2 : e.fase === 'ataque' ? (e.atq === 'lluvia' ? 3 : 2) : Math.floor(Math.abs(e.paso || 0) / 8) % 2;
-    if (clave === 'caldera') return e.fase === 'cansado' ? 3 : (e.fase === 'aviso' || e.fase === 'ataque') ? 2 : Math.floor(Math.abs(e.paso || 0) / 8) % 2;
     if (clave === 'horno') return e.fase === 'cansado' ? 0 : e.fase === 'ataque' ? 3 : e.fase === 'aviso' ? 2 : Math.floor(Math.abs(e.paso || 0) / 8) % 2;
     if (clave === 'polvorin') return e.fase === 'cansado' ? 0 : e.fase === 'aviso' ? 2 : e.fase === 'ataque' ? (e.atq === 'embestida' ? 3 : 0) : Math.floor(Math.abs(e.paso || 0) / 8) % 2;
     return 0;
@@ -399,24 +397,6 @@ window.SUBJEFES_ARTE = (() => {
       c.fillStyle = '#efe8d8'; for (let i = 0; i < 5; i++) { const x = -8 + i * 4; c.beginPath(); c.moveTo(x, -19); c.lineTo(x + 2, -15.5 + (i % 2 ? 0 : 1.2)); c.lineTo(x + 4, -19); c.fill(); }
       for (let i = 0; i < 4; i++) { const x = -7 + i * 4, yb = -19 + mh; c.beginPath(); c.moveTo(x, yb); c.lineTo(x + 2, yb - 2.4); c.lineTo(x + 4, yb); c.fill(); }
     },
-    // ---- 22. Vapor · La Caldera de Uayamón: la caldera que movía la desfibradora de henequén
-    caldera(c, e, t) {
-      const pr = e.presion ?? .3, frio = cansado(e);
-      for (const x of [-9, 0, 9]) L(c, [[x, -6], [x * 1.1, 0]], 1.8, '#3a2a1a');
-      V(c, rr(-13, -29, 26, 24, 6), '#b8743a', { hl: [-6, -23, 8], tex: c => {
-        c.fillStyle = '#8a4a24'; c.fillRect(-13, -22, 26, 1.6); c.fillRect(-13, -12, 26, 1.6);
-        c.fillStyle = '#f0c070'; for (const y of [-21.2, -11.2]) for (let x = -11; x < 13; x += 3) { c.beginPath(); c.arc(x, y, .45, 0, TAU); c.fill(); }
-        if (!frio) { c.fillStyle = `rgba(255,60,20,${.18 + Math.sin(t * 6) * .08 + pr * .2})`; c.fillRect(-13, -29, 26, 24); }
-      } });
-      V(c, rr(-9, -38, 5, 10, 1), '#4a2a18');
-      humo(c, -6.5, -38, t, 3, frio ? 'rgba(200,200,200,' : 'rgba(250,250,250,');
-      V(c, el(4, -17.5, 6.2, 6.2), '#e8e0c8', { s: false });
-      c.strokeStyle = LN; c.lineWidth = .4; for (let k = 0; k <= 6; k++) { const g = Math.PI * .8 + k / 6 * Math.PI * 1.4; c.beginPath(); c.moveTo(4 + Math.cos(g) * 4.6, -17.5 + Math.sin(g) * 4.6); c.lineTo(4 + Math.cos(g) * 5.6, -17.5 + Math.sin(g) * 5.6); c.stroke(); }
-      c.fillStyle = 'rgba(200,40,30,.8)'; c.beginPath(); c.arc(4, -17.5, 5.6, Math.PI * 1.95, Math.PI * 2.2); c.lineTo(4, -17.5); c.fill();
-      const ag = Math.PI * .8 + clamp(pr, 0, 1) * Math.PI * 1.4 + (frio ? 0 : Math.sin(t * 20) * .05); c.strokeStyle = '#a01818'; c.lineWidth = .8; c.beginPath(); c.moveTo(4, -17.5); c.lineTo(4 + Math.cos(ag) * 4.4, -17.5 + Math.sin(ag) * 4.4); c.stroke();
-      ojo(c, e, t, -6.5, -19.5, 2.4, { piel: '#b8743a' });
-      c.strokeStyle = '#4a2a18'; c.lineWidth = 1; c.beginPath(); c.arc(-9.5, -9, 2.4, 0, TAU); c.moveTo(-12, -9); c.lineTo(-7, -9); c.moveTo(-9.5, -11.5); c.lineTo(-9.5, -6.5); c.stroke();
-    },
     // ---- 23. Barro · El Horno de Tepakán: el horno de leña donde se cuecen las ollas
     horno(c, e, t) {
       const a = av(e), w = e.paso || 0, s = Math.sin(w * .3);
@@ -579,7 +559,6 @@ window.SUBJEFES_ARTE = (() => {
     estrella(c, o) { c.save(); c.shadowColor = '#fff6c8'; c.shadowBlur = 5; estrella(c, o.x, o.y, 3.4, '#fff2a0', 5, .42); c.restore(); },
     ceniza(c, o) { c.save(); c.translate(o.x, o.y); c.rotate(o.rot || 0); V(c, pl([[-3, -1], [-1, -3], [3, -2], [2.6, 2], [-2, 2.4]]), '#4a4440'); c.strokeStyle = '#ff7a2a'; c.lineWidth = .4; c.beginPath(); c.moveTo(-1, -1); c.lineTo(1.4, .6); c.stroke(); c.restore(); },
     espina(c, o) { c.save(); c.translate(o.x, o.y); c.rotate(Math.atan2(o.vy, o.vx)); V(c, pl([[-3.4, -1.2], [3.4, 0], [-3.4, 1.2]]), '#9a8a4a', { s: false, lw: .4 }); c.restore(); },
-    vapor(c, o) { K().motas(c, [[o.x, o.y, 2.8], [o.x - 2, o.y + 1, 1.8], [o.x + 2, o.y + 1, 1.8]], 'rgba(250,250,250,.85)'); },
     hielo(c, o) { c.save(); c.translate(o.x, o.y); c.rotate(Math.atan2(o.vy, o.vx)); V(c, pl([[-3.4, -1.4], [3.6, 0], [-3.4, 1.4]]), '#cfe8ff', { s: false, lw: .4 }); c.restore(); },
     tinta(c, o) { V(c, el(o.x, o.y, 2.8, 2.6), '#2a1a3a', { s: false, hl: [o.x - 1, o.y - 1, 1.6] }); },
     chapopote(c, o) { V(c, el(o.x, o.y, 2.8, 2.6), '#141018', { s: false, l: false, hl: [o.x - 1, o.y - 1, 1.6] }); },
@@ -652,10 +631,7 @@ window.SUBJEFES_ARTE = (() => {
         if (clave === 'sol') { c.translate(0, Math.sin(t * 2) * .55); c.rotate(Math.sin(t * .7) * .018); }
         c.imageSmoothingEnabled = clave !== 'culebrina';
         c.drawImage(im, (frame % 2) * 256 + r[0], Math.floor(frame / 2) * 256 + r[1], r[2], r[3], dx, dy, dw, dh);
-        if ((clave === 'volcan' || clave === 'cazon') && cansado(e)) {
-          estrella(c, -dw * .2, dy - 3, 2.4, '#ffd84a', 4, t * 2);
-          estrella(c, dw * .2, dy - 5, 2, '#ffd84a', 4, -t * 2);
-        }
+        // (antes aquí salían dos estrellas amarillas cruzadas, que se veían como una equis gigante sobre el cazón y el volcán; el mareo ya lo marcan las estrellitas de arriba)
         if (clave === 'culebrina' && e.fase === 'cansado') { estrella(c, 11, -dh - 3, 2.4, '#ffd84a', 4, .4); }
         c.restore();
       } else if (asset.lista) {

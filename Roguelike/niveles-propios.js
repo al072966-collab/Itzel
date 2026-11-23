@@ -1,11 +1,11 @@
 'use strict';
 // =====================================================================
-//  NIVELES PROPIOS · cuatro niveles de plataformas que se salen del molde
+//  NIVELES PROPIOS · tres niveles de plataformas que se salen del molde
 //  (motor de modos-propio.js). Cada uno es nivel alterno de su mundo:
 //   cyber    La plataforma de cabeza: Fresita invierte la gravedad
-//   lowpoly  El pozo de Bolonchén: hacia abajo, por las escaleras de troncos
 //   vitral   Las torres de la Catedral: hacia arriba, con salto de pared
 //   cinema   El laberinto de Chicanná: para explorar (llave, pluma, ilusiones)
+//   lowpoly  El pozo de Bolonchén: hacia abajo, con cristales flotantes
 // =====================================================================
 (() => {
   // un lienzo de texto para dibujar los mapas con rectángulos
@@ -79,63 +79,6 @@
     const Hv = PROPIO.alto ? (typeof VISTA !== 'undefined' && j.vista === 'juego' ? VISTA.H : VH) : VH, x0 = Math.floor((j.cam.x - 40) / 32) * 32, y0 = Math.max(desde * T, Math.floor((j.cam.y - 40) / 32) * 32);
     for (let y = y0; y < j.cam.y + Hv + 40; y += 32) for (let x = x0; x < j.cam.x + VW + 40; x += 32) pinta(ctx, x, y, hash2(x / 32, y / 32, 61), hash2(x / 32, y / 32, 62));
   }
-
-  // ---------------------------------------------------------------
-  //  LOWPOLY · El pozo de Bolonchén (hacia abajo)
-  //  Catherwood dibujó a los mayas bajando por escaleras de troncos hasta
-  //  el agua de las grutas. Una caída de más de siete filas lastima:
-  //  Fresita pone cristales flotantes para frenarla.
-  // ---------------------------------------------------------------
-  const po = lienzo(28, 82);
-  po.r(0, 1, 0, 81).r(26, 27, 0, 81).r(2, 25, 0, 0);
-  const rep = (c0, c1, r) => po.r(c0, c1, r, r + 1);
-  rep(2, 10, 5); po.p(4, 4, 'P');
-  po.r(11, 11, 5, 11, 'H'); rep(11, 20, 12);                    // la primera escalera (y si se cae, no duele: son siete filas)
-  rep(2, 7, 21); rep(17, 25, 24); po.monedas(18, 24, 23);
-  po.r(22, 22, 24, 33, 'H'); rep(12, 25, 34); po.p(14, 33, 'w');
-  rep(2, 8, 41).p(5, 40, 'C');                                   // caída larga: cristal o duele
-  po.r(3, 3, 41, 51, 'H'); rep(2, 12, 52); po.r(9, 11, 51, 51, 'x');
-  rep(16, 25, 55); po.p(20, 54, 'w').monedas(17, 24, 54);
-  rep(6, 12, 62); po.p(18, 45, 'v').p(9, 58, 'v');
-  po.r(9, 9, 62, 70, 'H'); rep(2, 10, 71).p(4, 70, 'C');
-  rep(15, 25, 74);
-  rep(2, 25, 80); po.r(12, 15, 80, 81, '.').r(12, 15, 81, 81, '#');
-  po.p(22, 79, 'G').monedas(16, 21, 79).monedas(3, 9, 61).monedas(6, 12, 40);
-  nivelPropio('bolonchen', 'lowpoly', {
-    nombre: 'El pozo de Bolonchén', lugar: 'Grutas de Xtacumbilxunaan, Bolonchén',
-    lema: 'Hacia abajo por las escaleras de troncos hasta el agua de la gruta. Una caída muy larga lastima: Fresita pone cristales para frenarla.',
-    dato: 'Bolonchén quiere decir «nueve pozos». En 1842 Frederick Catherwood dibujó a la gente bajando por una escalera enorme de troncos para traer agua de estas grutas.',
-    relleno: '#1a1628', power: 'cristalFlota', foe: 'jabali', fauna: ['jabali', 'murcielago'], foes: { w: 'jabali', v: 'murcielago' }, mapa: po.filas(), caida: 7, cd: .3,
-    prepara(j) { j.cristales = []; },
-    solido(j, c, r) { return j.cristales.some(q => q.r === r && (c === q.c || c === q.c + 1)); },
-    poder(j, x, y) {
-      const c = Math.floor(x / T) - (x % T < 8 ? 1 : 0), r = Math.floor(y / T);
-      if ([c, c + 1].some(cc => j.at(cc, r) !== '.' && j.at(cc, r) !== 'o')) return false;
-      const p = j.p; if (Math.abs((c + 1) * T - p.x) < 16 + 5 && r * T < p.y && (r + 1) * T > p.y - 20) return false;
-      if (j.cristales.length >= 2) j.cristales.shift();
-      j.cristales.push({ c, r, t: 6 }); chispas(j, (c + 1) * T, r * T + 8, ['#bff4ff', '#ffffff'], 10, 40);
-    },
-    paso(j, dt) { for (const q of j.cristales) q.t -= dt; j.cristales = j.cristales.filter(q => q.t > 0); },
-    demo(j) { if (j.t % 2 < 1 / 60) j.def.poder(j, j.p.x + 20, j.p.y + 40); },
-    tinte(ctx, j, Hv) { const k = clamp(j.cam.y / (j.H * T), 0, 1); ctx.fillStyle = `rgba(8,10,24,${.15 + k * .55})`; ctx.fillRect(0, 0, VW, Hv); },
-    pinta(ctx, j, f, capa) {
-      if (capa === 'atras') {
-        // la roca de la gruta, en facetas (desde la boca del pozo hacia abajo)
-        // las esquinas de cada faceta se mueven un poco (con la misma semilla que su vecina), para que no se vea cuadriculado
-        const v = (x, y) => [x + (hash2(x / 32, y / 32, 71) - .5) * 22, y + (hash2(x / 32, y / 32, 72) - .5) * 22];
-        paredFondo(ctx, j, 7, (c, x, y, a, b) => { const hondo = clamp((y / T - 7) / 70, 0, 1), base = mix('#2c2442', '#100d1a', hondo), A = v(x, y), B = v(x + 32, y), C = v(x + 32, y + 32), D = v(x, y + 32);
-          c.fillStyle = mix(base, '#000000', a * .2); c.beginPath(); c.moveTo(...A); c.lineTo(...B); c.lineTo(...(a < .5 ? C : D)); c.closePath(); c.fill();
-          c.fillStyle = mix(base, '#7a6aa0', b * .12); c.beginPath(); c.moveTo(...(a < .5 ? A : B)); c.lineTo(...C); c.lineTo(...D); c.closePath(); c.fill();
-          if (b > .93) { c.fillStyle = 'rgba(160,230,255,.35)'; c.beginPath(); c.moveTo(C[0], C[1]); c.lineTo(C[0] + 3, C[1] - 7); c.lineTo(C[0] + 6, C[1]); c.fill(); } });
-        // el agua de la gruta, al fondo
-        const y = 80 * T - 6; ctx.fillStyle = 'rgba(90,190,220,.55)'; ctx.fillRect(12 * T, y, 4 * T, 3 * T);
-        ctx.strokeStyle = 'rgba(220,250,255,.7)'; ctx.lineWidth = .6; ctx.beginPath(); for (let x = 12 * T; x < 16 * T; x += 4) ctx.lineTo(x, y + Math.sin(x * .3 + j.t * 2) * .8); ctx.stroke();
-      }
-      if (capa !== 'medio') return;
-      for (const q of j.cristales) { const x = q.c * T, y = q.r * T, a = q.t < 1 && Math.sin(j.t * 30) > 0 ? .4 : 1; ctx.globalAlpha = a; const gr = ctx.createLinearGradient(x, y, x + 32, y + 12); gr.addColorStop(0, '#d8fbff'); gr.addColorStop(1, '#6ac0e0'); ctx.fillStyle = gr; ctx.beginPath(); ctx.moveTo(x, y + 4); ctx.lineTo(x + 8, y); ctx.lineTo(x + 24, y); ctx.lineTo(x + 32, y + 4); ctx.lineTo(x + 22, y + 12); ctx.lineTo(x + 10, y + 12); ctx.closePath(); ctx.fill(); ctx.strokeStyle = '#ffffff'; ctx.lineWidth = .6; ctx.stroke(); ctx.beginPath(); ctx.moveTo(x + 8, y); ctx.lineTo(x + 10, y + 12); ctx.moveTo(x + 24, y); ctx.lineTo(x + 22, y + 12); ctx.stroke(); ctx.globalAlpha = 1; }
-    },
-    ayudas: [{ id: 'baja', cuando: j => j.t > 1, txt: 'Hacia abajo: ↓ en las escaleras. Fresita, clic pone un cristal flotante para frenar las caídas largas.' }],
-  });
 
   // ---------------------------------------------------------------
   //  VITRAL · Las torres de la Catedral (hacia arriba, salto de pared)

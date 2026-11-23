@@ -246,7 +246,19 @@
     else { s.w = s.pw; s.x = s.bx; s.h = s.len; s.y = s.base - s.len; }
   }
   OBJ.clay = {
-    make(g, en) { const s = { k: 'clay', axis: en.axis || 'x', dir: en.dir || 1, bx: tx(en.x), by: tl(en.y), base: tl(en.y), pw: tl(en.w || 2), thick: 10, len: tl(en.min || .6), min: tl(en.min || .6), max: tl(en.max || 8), on: true, glow: 0 }; s.tgt = s.len; clayRect(s); g.solids.push(s); g.objs.push({ k: 'clayctl', s }); },
+    make(g, en) {
+      const axis = en.axis || 'x', dir = en.dir || 1, y = tl(en.y); let bx = tx(en.x);
+      if (axis === 'x' && !solidAt(bx + dir * .5, y + 2) && !solidAt(bx - dir * .5, y + 2)) {
+        // Una pieza volteada puede dejar el anclaje una loseta dentro del hueco.
+        // Buscar únicamente el borde de tierra más cercano detrás del puente.
+        for (let distancia = 1; distancia <= T * 2; distancia++) {
+          const x = bx - dir * distancia;
+          if (solidAt(x, y + 2)) { bx = borde(x, y + 2, dir > 0 ? 'der' : 'izq'); break; }
+        }
+      }
+      const s = { k: 'clay', axis, dir, bx, by: y, base: y, pw: tl(en.w || 2), thick: 10, len: tl(en.min || .6), min: tl(en.min || .6), max: tl(en.max || 8), on: true, glow: 0 };
+      s.tgt = s.len; clayRect(s); g.solids.push(s); g.objs.push({ k: 'clayctl', s });
+    },
     drawSolid(c, s, f, sk) {
       const x = s.x, y = s.y, w = s.w, h = s.h, wob = s.wob || 0;
       c.save();

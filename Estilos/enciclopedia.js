@@ -28,9 +28,9 @@ const modoTxt = pw => modoJefe(pw) === 'alcance' ? 'Alcance: el núcleo se abre 
 // ===================== CATEGORÍAS =====================
 const CATS = [
   { id: 'mundos', nombre: 'Mundos', icono: 'globo', color: '#3f8a4a', intro: 'Cada run toca cuatro mundos al azar. Cada mundo es un lugar o un suceso de Campeche, pintado con su propio estilo de arte, con su nivel, enemigo, plataforma y poder de Fresita.',
-    items: MUNDOS_LIBRO.flatMap(m => { const d = NIVELES[m], st = STYLE_MAP[m], GEN = { iso: '2.5D isométrico', torres: 'Tower defense', vuelo: "Shoot 'em up", cocina: 'Cocina cooperativa', jarana: 'Ritmo (jarana)', carrera: 'Carreras', pesca: 'Pesca cooperativa', planos: 'Planta y alzado', fruncido: 'Plataformas 2D', vela: 'Navegación a vela', propio: 'Plataformas 2D', golpes: "Beat 'em up" };
+    items: MUNDOS_LIBRO.flatMap(m => { const d = NIVELES[m], st = STYLE_MAP[m], GEN = { iso: '2.5D isométrico', torres: 'Tower defense', vuelo: "Shoot 'em up", cocina: 'Cocina cooperativa', jarana: 'Ritmo (jarana)', campechanidad: 'Baile de la Campechanita', carrera: 'Carreras', pesca: 'Pesca cooperativa', planos: 'Planta y alzado', fruncido: 'Plataformas 2D', vela: 'Navegación a vela', propio: 'Plataformas 2D', golpes: "Beat 'em up" };
       const base = { id: 'mundo:' + m, tipo: d.modo ? 'modo' : 'mundo', def: d, mundo: m, nombre: d.nombre, sub: `${st.name} · ${st.ref}`, datos: [['Género', d.modo ? GEN[d.modo] : 'Plataformas 2D'], ['Poder de Fresita', POW[d.power].name], ['Plataforma', PLAT_NOMBRE[d.plat.look || 'plain']], ['Lugar', d.lugar || 'Campeche'], ...VENTAJAS.filaTerreno(m)], tecnica: st.desc, nota: d.lema };
-      const alt = (typeof NIVELES_ALT !== 'undefined' && NIVELES_ALT[m] || []).map(k => NIVELES[k]).filter(Boolean).map(a => ({ id: 'mundo:' + a.id, tipo: a.modo ? 'modo' : 'mundo', def: a, mundo: m, nivel: a.id, nombre: a.nombre, sub: `${GEN[a.modo] || 'Plataformas 2D'} · ${st.name}`, datos: [['Género', GEN[a.modo] || 'Plataformas 2D'], ['Fresita', POW[a.power].name], ['Cómo se juega', POW[a.power].help]], tecnica: st.desc, nota: a.lema }));
+      const alt = (typeof NIVELES_ALT !== 'undefined' && NIVELES_ALT[m] || []).map(k => NIVELES[k]).filter(Boolean).map(a => ({ id: 'mundo:' + a.id, tipo: a.modo ? 'modo' : 'mundo', def: a, mundo: m, nivel: a.id, nombre: a.nombre, sub: `${(a.genero || (a.modo ? (GEN[a.modo] || a.modo) : 'Plataformas 2D'))} · ${st.name}`, datos: [['Género', (a.genero || (a.modo ? (GEN[a.modo] || a.modo) : 'Plataformas 2D'))], ['Fresita', POW[a.power].name], ['Cómo se juega', POW[a.power].help]], tecnica: st.desc, nota: a.lema }));
       return [base, ...alt]; }) },
   { id: 'campeche', nombre: 'Campeche', icono: 'catedral', color: '#c98a2a', intro: 'Lo que van aprendiendo al jugar: cada mundo nuevo regala un dato y cada doblón de Lorencillo descubre otro. Todo esto es de verdad.',
     items: CAMPECHE_SABER.HALLAZGOS.map(h => ({ id: 'campeche:' + h.id, tipo: 'vista', mundo: STYLE_MAP[h.mundo] ? h.mundo : (MUNDOS_LIBRO.find(m => (NIVELES_ALT[m] || []).includes(h.mundo)) || h.mundo), niveles: h.mundos, nombre: h.titulo, sub: h.tema, datos: [['En corto', h.breve]], nota: h.largo })) },
@@ -50,7 +50,7 @@ const CATS = [
   { id: 'entorno', nombre: 'Cosas del entorno', icono: 'cofre', color: '#8a5a2a', intro: 'Objetos, trampas y ayudas que aparecen en los mundos.',
     items: Object.keys(ENTORNO).map(k => ({ id: 'entorno:' + k, tipo: 'entorno', clave: k, mundo: ENTORNO[k].mundo, nivel: ENTORNO[k].nivel, nombre: ENTORNO[k].nombre, sub: 'Cosa del entorno', datos: [], nota: ENTORNO[k].texto })) },
   { id: 'jefes', nombre: 'Jefes', icono: 'corona', color: '#2a2a4a', intro: 'Salen en cualquier mundo y atacan igual, pero se vencen con el poder del lugar. Cada mundo tiene su propia variante: hay que encontrarlas todas.',
-    items: Object.keys(JEFES).map((k, i) => ({ id: 'jefe:' + k, tipo: 'jefe', clave: k, mundo: ({ mythos:'bits64', golem:'codex', serpiente:'cinema', jaguar:'bits64', hadas:'nouveau', cocodrilo:'agua', pirata:'fuego', chaac:'codex', camazotz:'bits64', abeja:'nouveau', brawbot:'vapor', ruptura:'codex' })[k] || 'pixel', nombre: JEFES[k].nombre, sub: JEFES[k].lema, datos: [['Ataques', JEFES[k].ataques.map(a => ({ orbes: 'orbes de colores', tentaculo: 'tentáculo', rayo: 'rayo', pisoton: 'pisotón con ondas', rocas: 'rocas en arco', embestida: 'embestida', picada: 'picada', fuego: 'lluvia de fuego', cola: 'barrida de cola', acecho: 'acecho y salto', garras: 'zarpazos', rugido: 'rugido que tira piedras', secuestro: 'secuestro de Fresita', polvo: 'polvo de estrellas', espejos: 'reflejos', emboscada: 'mordida desde el suelo', coletazo: 'coletazo', escupe: 'escupitajo de agua', golpe: 'puñetazo con aviso', onda: 'ondas de choque', calderas: 'calderas al rojo', canones: 'cañonazos con mira', ancla: 'ancla que cae', loros: 'loros fantasma', rayos: 'rayos marcados con glifos', aguacero: 'aguacero', ventarron: 'ventarrón con granizo', picada: 'picada', chillido: 'chillido en ondas', oscuridad: 'oscuridad con murcielaguitos', enjambre: 'filas de abejas', miel: 'charcos de miel', aguijon: 'aguijonazo', laser: 'láser de energía', fragmentos: 'fragmentos de piedra', aplastar: 'aplastón con ondas' })[a]).join(', ')], ['Vida', k === 'ruptura' ? `Cada forma tiene la suya: ${VIDA_ENEMIGOS.iconos(3)} 3 golpes, y ${VIDA_ENEMIGOS.iconos(5)} 5 La otra Itzel y Los Tentáculos.` : `${VIDA_ENEMIGOS.iconos(3)} 3 golpes. 4 si pelea con ventaja y 2 si pelea con desventaja.`], ...VENTAJAS.filasJefe(k), ['Cómo se vence', 'Después de cada ataque abre su núcleo. Según el mundo, Fresita sube a Itzel o lo aturde, e Itzel le cae encima. Si a Itzel le faltan corazones, Fresita puede bajar a tocar las burbujas de curación.']], nota: `${JEFES[k].texto}${JEFES[k].dato ? ' Campeche de verdad: ' + JEFES[k].dato : ''}` })) },
+    items: Object.keys(JEFES).map((k, i) => ({ id: 'jefe:' + k, tipo: 'jefe', clave: k, mundo: 'anime', nombre: JEFES[k].nombre, sub: JEFES[k].lema, datos: [['Ataques', JEFES[k].ataques.map(a => ({ orbes: 'orbes de colores', tentaculo: 'tentáculo', rayo: 'rayo', pisoton: 'pisotón con ondas', rocas: 'rocas en arco', embestida: 'embestida', picada: 'picada', fuego: 'lluvia de fuego', cola: 'barrida de cola', acecho: 'acecho y salto', garras: 'zarpazos', rugido: 'rugido que tira piedras', secuestro: 'secuestro de Fresita', polvo: 'polvo de estrellas', espejos: 'reflejos', emboscada: 'mordida desde el suelo', coletazo: 'coletazo', escupe: 'escupitajo de agua', golpe: 'puñetazo con aviso', onda: 'ondas de choque', calderas: 'calderas al rojo', canones: 'cañonazos con mira', ancla: 'ancla que cae', loros: 'loros fantasma', rayos: 'rayos marcados con glifos', aguacero: 'aguacero', ventarron: 'ventarrón con granizo', picada: 'picada', chillido: 'chillido en ondas', oscuridad: 'oscuridad con murcielaguitos', enjambre: 'filas de abejas', miel: 'charcos de miel', aguijon: 'aguijonazo', laser: 'láser de energía', fragmentos: 'fragmentos de piedra', aplastar: 'aplastón con ondas' })[a]).join(', ')], ['Vida', k === 'ruptura' ? `Cada forma tiene la suya: ${VIDA_ENEMIGOS.iconos(3)} 3 golpes, y ${VIDA_ENEMIGOS.iconos(5)} 5 La otra Itzel y Los Tentáculos.` : `${VIDA_ENEMIGOS.iconos(3)} 3 golpes. 4 si pelea con ventaja y 2 si pelea con desventaja.`], ...VENTAJAS.filasJefe(k), ['Cómo se vence', 'Después de cada ataque abre su núcleo. Según el mundo, Fresita sube a Itzel o lo aturde, e Itzel le cae encima. Si a Itzel le faltan corazones, Fresita puede bajar a tocar las burbujas de curación.']], nota: `${JEFES[k].texto}${JEFES[k].dato ? ' Campeche de verdad: ' + JEFES[k].dato : ''}` })) },
 ];
 
 // ===================== ESCENAS =====================
@@ -140,6 +140,7 @@ const DEMO = {
   rafaga: { pasos: [[2.02, g => [g.p.x - 14, g.p.y + 4]]], itzel: [[.6, 'der'], ['x', 15.3, 'salta'], ['x', 30, 'alto']] },
   portal: { pasos: [[2.2, [X(26), 150]]], fija: true, itzel: [[.2, 'der'], ['x', 15, 'alto'], [2.6, 'der'], ['x', 32, 'alto']], luego: g => { if (g.cyc < 2.2) g.freT = [lerp(X(14), X(26), clamp((g.cyc - .8) / 1.2, 0, 1)), 140]; } },
   cargar: { fija: true, pasos: [[1.5, C(15, 9.6), 'down'], [3.2, C(23, 8), 'up']], arrastre: [[1.5, C(15, 9.6)], [3.2, C(23, 8)]], itzel: [[.2, 'der'], ['x', 15, 'alto'], [3.3, 'der'], ['x', 30, 'alto']], luego: g => { if (g.cyc < 1.5) g.freT = [g.p.x - 14, g.p.y - 26]; } },
+  seda: { arma: b => b.o('ramita', 18, 4), pasos: [[1.2, C(18, 4), 'down'], [1.85, C(18, 4), 'up']], arrastre: [[1.2, C(18, 4)], [1.85, C(18, 4)]], itzel: [[.2, 'der'], ['x', 14, 'alto'], [1.25, 'der'], ['x', 30, 'alto']] },
   valvula: { arma: b => b.o('valvula', 9, 0, { grp: 0 }).o('vent', 14, 0, { grp: 0 }).g(16, 21, 7), pasos: [[.7, [X(9), 160]]], itzel: [[.3, 'der'], ['x', 14, 'alto'], [2.3, 'der'], ['x', 26, 'alto']] },
   // ---------- luz y bloques que cambian ----------
   luz: { arma: b => b.p(16, 10, 2).p(19, 10, 2), pasos: [[1.1, [X(17), 130]]], itzel: [[1, 'der'], ['x', 15.5, 'salta'], ['x', 20.4, 'salta'], ['x', 30, 'alto']] },
@@ -173,12 +174,14 @@ const ARMAR = {
       if (beh === 'icicle') b.isl(15, 21, 4).e(17, 6, k).e(19, 6, k);
       else if (beh === 'thrower') b.isl(17, 20, 8).e(18, 8, k);
       else if (beh === 'formation') b.e(17, 5, k).e(19, 5, k).e(21, 5, k);
+      else if (beh === 'morena') b.blk(18, 5, 3, 6).o('morena', 18, 8, { dir: -1 });   // vive en el agujero de una pared
       else if (beh === 'mojarra') b.e(18, 15, k);
       else if (AIRE.has(beh)) b.e(18, 6, k);
       else b.e(12, undefined, k).e(26, undefined, k);
     });
-    g.quieta = d.id === 'agua';
+    g.quieta = d.id === 'agua' && beh !== 'morena';   // la morena sí se mueve: asoma y se esconde
     if (it.subjefe && g.foes[0]) SUBJEFES.vitrina(g, g.foes[0], it.subjefe);
+    if (beh === 'morena' && g.foes[0]) g.foes[0].visor = true;   // en el libro sale y se esconde sola, sin esperar a Itzel
     const e0 = g.foes[0];
     // En el nivel espera oculta bajo el agua; la ficha debe mostrarla desde el inicio.
     if (e0 && beh === 'mojarra') { e0.nada = true; e0.y = e0.hy - 80; e0.vx = 35; e0.vy = 0; }
@@ -277,15 +280,17 @@ function pintaEstilo(esc, ctx, st, g, S, extra) {
 class Escena {
   constructor(cv) { this.cv = cv; this.ctx = cv.getContext('2d'); }
   mostrar(it, variante) {
+    // el poder de Aguja e hilo se enseña con el nivel real (el hipil fruncido): Itzel camina sola y Fresita jala el hilván que sigue
+    if (it.tipo === 'poder' && it.poder === 'aguja' && NIVELES.bordado) it = Object.assign({}, it, { tipo: 'modo', def: NIVELES.bordado, demoAguja: true });
     this.it = it; this.variante = variante; this.modoJ = null;
-    if (it.tipo === 'modo') { const st = STYLE_MAP[it.mundo]; setLevel(buildLevelFromRows(FONDO_MODO)); this.st = st; this.mundo = it.mundo; this.foco = null; this.sigue = null; this.zoom = 1; this.modoJ = MODOS[it.def.modo].crear(it.def, st); if (it.demoIntro) this.modoJ.demo = true; this.g = this.modoJ; if (it.def.modo === 'torres') this.modoJ.espera = 0; return; }
+    if (it.tipo === 'modo') { const st = STYLE_MAP[it.mundo]; setLevel(buildLevelFromRows(FONDO_MODO)); this.st = st; this.mundo = it.mundo; this.foco = null; this.sigue = null; this.zoom = 1; this.modoJ = MODOS[it.def.modo].crear(it.def, st); if (it.demoIntro) this.modoJ.demo = true; if (it.demoAguja) { this.modoJ.demo = true; this.modoJ.camina = true; } this.g = this.modoJ; if (it.def.modo === 'torres') this.modoJ.espera = 0; return; }
     const r = ARMAR[it.tipo](it, variante); this.g = r.g; this.mundo = r.mundo || it.mundo; this.st = STYLE_MAP[this.mundo]; this.foco = r.foco; this.sigue = r.sigue;
     this.zoom = { enemigo: 2, plataforma: 1.6, poder: 1.35, entorno: 1.6 }[it.tipo] || 1;
     const g = this.g; g.home = { x: g.p.x, y: g.p.y }; g.t0 = 0; g.cyc = 0;
     g.cam = this.foco ? clamp(this.foco[0] - VW / 2, L.camMin, L.camMax) : clamp(g.p.x - VW * .3, L.camMin, L.camMax);
   }
   paso(dt) {
-    if (this.modoJ) { const j = this.modoJ; MOUSE.clicks.length = 0; RUN.hearts = 9; j.inv = 9; MODOS[this.it.def.modo].paso(j, dt); if (j.t > 40 || (this.it.def.modo === 'golpes' && j.win && j.t - j.win > 2)) this.mostrar(this.it); return; }
+    if (this.modoJ) { const j = this.modoJ; MOUSE.clicks.length = 0; RUN.hearts = 9; j.inv = 9; MODOS[this.it.def.modo].paso(j, dt); if (j.t > 40 || (j.camina && (j.p.u > 600 || j.t > 14)) || (this.it.def.modo === 'golpes' && j.win && j.t - j.win > 2)) this.mostrar(this.it); return; }
     const g = this.g; if (!g) return;
     g.cyc += dt;
     // guion del poder
@@ -347,9 +352,11 @@ class Escena {
   }
   // Itzel y Fresita en grande, cambiando de pose
   retrato(S, ctx = this.ctx, st = this.st) {
-    const g = this.g, f = { t: g.t, cam: g.cam, S: S * 2.6, g, st, key: st.id + '@' + (S * 2.6).toFixed(3) }, fase = Math.floor(g.t / 2.2) % 3;
+    // En el retrato la pose Quieto debe ser realmente quieta. Las otras
+    // acciones se eligen desde sus botones y no deben cambiar el modelo base.
+    const g = this.g, f = { t: g.t, cam: g.cam, S: S * 2.6, g, st, enciclopedia: true, key: st.id + '@' + (S * 2.6).toFixed(3) }, fase = 0;
     const p = this.pose || (this.pose = { w: 10, h: 14, vx: 0, vy: 0, on: true, face: 1, run: 0, sq: 0, vis: true, inv: 0 });
-    p.on = fase !== 2; p.vx = fase === 1 ? 120 : 0; p.vy = fase === 2 ? -120 + (g.t % 2.2) * 160 : 0; p.run += fase === 1 ? .3 : 0;
+    p.vis = true; p.on = true; p.vx = 0; p.vy = 0;
     ctx.save(); ctx.setTransform(S * 2.6, 0, 0, S * 2.6, 0, 0); ctx.imageSmoothingEnabled = !st.pixel;
     // El retrato comparte la superficie visible del terrario: sus pies
     // deben apoyarse en el césped, no en la tierra que queda debajo.
@@ -357,7 +364,7 @@ class Escena {
     const cx = VW / 2.6 / 2, by = (Number.isFinite(superficie) && superficie <= VH ? superficie : 176) / 2.6;
     ctx.fillStyle = 'rgba(0,0,0,.22)'; ctx.beginPath(); ctx.ellipse(cx - 6, by + .5, 9, 2, 0, 0, TAU); ctx.fill();
     const k = g.retrato;
-    if (k === 'itzel' || k === 'ambas') { p.x = k === 'ambas' ? cx - 12 : cx; p.y = by - (fase === 2 ? 10 + Math.sin(g.t * 3) * 3 : 0); st.player(ctx, p, f); }
+    if (k === 'itzel' || k === 'ambas') { p.x = k === 'ambas' ? cx - 12 : cx; p.y = by; st.player(ctx, p, f); }
     if (k === 'fresita' || k === 'ambas') { const fr = { x: k === 'ambas' ? cx + 14 : cx, y: by - 26, face: -1 }; st.fresita(ctx, fr, f); }
     ctx.restore();
   }
@@ -415,6 +422,11 @@ function acercarEscena(it) {
     sujeto = it.tipo === 'jefe' ? g.boss : g.foes[0];
     if (it.tipo === 'jefe' && sujeto) {
       sujeto.x = L.camMin + VW / 2;
+      // los jefes de piso se paran donde hay suelo: el centro de la arena es un foso y se quedaban flotando sobre el vacío
+      if (['jaguar', 'golem', 'cocodrilo'].includes(sujeto.tipo)) {
+        const m = sujeto.tipo === 'golem' ? 30 : 18, piso = x => [-m, -m / 2, 0, m / 2, m].every(dx => SOLID(x + dx, JEFES_EXT.FLOOR + 4));
+        for (let d = 0; d < 260; d += 4) { const c = [sujeto.x - d, sujeto.x + d].find(piso); if (c !== undefined) { sujeto.x = c; break; } }
+      }
       if (sujeto.y < 0) sujeto.y = 85;
       if (sujeto.tipo === 'golem') { sujeto.drop = 0; sujeto.landed = 1; if (modelosMascaron) sujeto.modeloMascaron = modeloMascaron; }
       if (sujeto.tipo === 'jaguar') { sujeto.y = JEFES_EXT.FLOOR; sujeto.vy = 0; }
@@ -460,12 +472,12 @@ function acercarEscena(it) {
   }
   const nombres = {reflejo:'Reflejo',sombras:'Sombras',danza:'Danza',orbes:'Orbes',tentaculo:'Tentáculo',rayo:'Rayo',pisoton:'Pisotón',rocas:'Rocas',embestida:'Embestida',picada:'Picada',fuego:'Fuego',cola:'Cola',acecho:'Acecho',garras:'Garras',rugido:'Rugido',secuestro:'Secuestro',polvo:'Polvo',espejos:'Espejos',emboscada:'Emboscada',coletazo:'Coletazo',escupe:'Escupitajo',golpe:'Golpe',onda:'Onda',calderas:'Calderas',canones:'Cañones',ancla:'Ancla',loros:'Loros',rayos:'Rayos',aguacero:'Aguacero',ventarron:'Ventarrón',chillido:'Chillido',oscuridad:'Oscuridad',enjambre:'Enjambre',miel:'Miel',aguijon:'Aguijón',laser:'Láser',fragmentos:'Fragmentos',aplastar:'Aplastar',raices:'Raíces',barridaRaiz:'Barrida de raíz',filaBaja:'Fila baja',filaAlta:'Fila alta',hormigas:'Escarabajos'};
   function ataquesActuales() { return formasRuptura ? [...new Set(formasRuptura[formaActual].ataques)] : JEFES[it.clave].ataques; }
-  function boton(nombre, clave) { const b = document.createElement('button'); b.textContent = nombre; fila.appendChild(b); b.onclick = () => { fila.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); preparar(); accion = !!clave; inicio = performance.now(); if (clave && it.tipo === 'jefe' && sujeto) { sujeto.st = 'ataque'; sujeto.at = 0; sujeto.atk = clave; sujeto.ai = ataquesActuales().indexOf(clave); sujeto.dur = 0; } }; return b; }
+  function boton(nombre, clave) { const b = document.createElement('button'); b.textContent = nombre; fila.appendChild(b); b.onclick = () => { fila.querySelectorAll('button').forEach(x => x.classList.remove('on')); b.classList.add('on'); preparar(); accion = !!clave; inicio = performance.now(); if (clave && it.tipo === 'jefe' && sujeto) { sujeto.st = 'ataque'; sujeto.at = 0; sujeto.atk = clave; sujeto.ai = ataquesActuales().indexOf(clave); sujeto.dur = 0; } else if (clave === 'atacar' && sujeto && it.clave === 'abordador') sujeto.ataqueVisual = .001; }; return b; }
   let quieto;
   function crearBotones() {
     fila.innerHTML = ''; quieto = boton('Quieto', null); quieto.classList.add('on');
     if (it.tipo === 'jefe') for (const a of ataquesActuales()) boton(nombres[a] || a.replace(/([a-z])([A-Z])/g, '$1 $2').replace(/^\p{Ll}/u, ch => ch.toLocaleUpperCase('es')), a);
-    else boton('Movimiento', 'mover');
+    else { boton('Movimiento', 'mover'); if (it.tipo === 'enemigo' && it.clave === 'abordador') boton('Ataque', 'atacar'); }
   }
   crearBotones();
   for (const [selector, dir] of [['.pp-ant', -1], ['.pp-sig', 1]]) caja.querySelector(selector).onclick = () => {
@@ -535,6 +547,12 @@ function acercarEscena(it) {
   raf = requestAnimationFrame(cuadro);
 }
 const MINIS = new Map(), cola = [];
+// imágenes que se están descargando (se cuentan para saber cuándo una miniatura ya puede pintarse con todos sus assets)
+const PENDIENTES = new Set();
+(() => { const Nativa = window.Image; function Imagen(w, h) { const im = new Nativa(w, h); PENDIENTES.add(im); return im; } Imagen.prototype = Nativa.prototype; window.Image = Imagen; })();
+const hayPendientes = () => { let n = 0; for (const im of PENDIENTES) { if (im.complete || !im.getAttribute('src')) { if (im.complete) PENDIENTES.delete(im); continue; } n++; } return n > 0; };
+// ?calienta=1: el juego abre esta página escondida al empezar solo para que el navegador baje y compile los scripts; no pinta miniaturas
+const CALIENTA = new URLSearchParams(location.search).has('calienta');
 let sucio = true, roto = false;
 
 $('titulo').src = BORDADO.text('Enciclopedia', 5);
@@ -558,7 +576,7 @@ function abrirCat() {
     generos.forEach(g => { const o = document.createElement('option'); o.value = o.textContent = g; select.appendChild(o); });
     select.value = generos.includes(anterior) ? anterior : '';
   }
-  $('indice').innerHTML = c.items.map((it, i) => `<div class="sello ${i === itemActual || (c.id === 'mundos' && /^(subida|bajada)_/.test(c.items[itemActual].nivel || '') && !it.nivel && it.mundo === c.items[itemActual].mundo) ? 'on' : ''} ${visto(it) ? '' : 'oculto'}" style="--r:${((i * 37) % 7 - 3) * .5}deg" data-i="${i}"><span class="cinta"></span><canvas width="240" height="180"></canvas><small>${i + 1}</small><b>${visto(it) ? it.nombre : '¿?'}</b></div>`).join('');
+  $('indice').innerHTML = c.items.map((it, i) => `<div class="sello ${i === itemActual || (c.id === 'mundos' && /^(subida|bajada)_/.test(c.items[itemActual].nivel || '') && !suelto(c.items[itemActual]) && !it.nivel && it.mundo === c.items[itemActual].mundo) ? 'on' : ''} ${visto(it) ? '' : 'oculto'}" style="--r:${((i * 37) % 7 - 3) * .5}deg" data-i="${i}"><span class="cinta"></span><canvas width="240" height="180"></canvas><small>${i + 1}</small><b>${visto(it) ? it.nombre : '¿?'}</b></div>`).join('');
   cola.length = 0;
   document.querySelectorAll('.sello').forEach((el, i) => {
     el.onclick = () => { itemActual = i; ladoSeleccionado = 'derecha'; variante = null; skinSel = 0; abrirItem(); document.querySelectorAll('.sello').forEach(s => s.classList.toggle('on', s === el)); };
@@ -577,6 +595,9 @@ function abrirCat() {
   if (modoTarjetas) abrirTarjetas();
   abrirItem();
 }
+// un nivel alterno va en su propia tarjeta si es de otro género que el nivel principal de su mundo (o si se marcó independiente)
+const generoDe = it => (it.datos.find(([a]) => a === 'Género') || [])[1] || 'Plataformas 2D';
+const suelto = it => { if (!it || !it.nivel) return false; if (it.def && it.def.independiente) return true; const b = CATS.find(c => c.id === 'mundos').items.find(q => !q.nivel && q.mundo === it.mundo); return !!b && generoDe(b) !== generoDe(it); };
 const tipoMundo = it => ((it.datos.find(([a]) => a === 'Género') || [])[1] || 'Plataformas 2D') === 'Plataformas 2D' ? 'Plataformero' : 'Especiales';
 // la versi\u00f3n de cada nivel: el principal (de lado), la subida, la bajada u otro nivel alterno del mismo mundo
 const versionMundo = it => !it.nivel ? 'lado' : /^subida_/.test(it.nivel) ? 'subida' : /^bajada_/.test(it.nivel) ? 'bajada' : 'otros';
@@ -589,9 +610,9 @@ function filtrarMundos() {
   $('indice').querySelectorAll('.sello').forEach(el => {
     const it = c.items[+el.dataset.i], disponible = visto(it), g = tipoMundo(it);
     // sin filtros cada mundo es una sola tarjeta: sus otras versiones se escogen desde ella (o con el filtro de versión)
-    const agrupado = !version && ((!busca && !genero && !!it.nivel) || (/^(subida|bajada)_/.test(it.nivel || '') && c.items.some(q => !q.nivel && q.mundo === it.mundo)));
+    const agrupado = !version && !suelto(it) && ((!busca && !genero && !!it.nivel) || (/^(subida|bajada)_/.test(it.nivel || '') && c.items.some(q => !q.nivel && q.mundo === it.mundo)));
     el.hidden = agrupado || !!((busca || genero || version) && (!disponible || (busca && !normaliza(it.nombre).includes(busca)) || (genero && g !== genero) || (version && versionMundo(it) !== version)));
-    if (!el.hidden) total++;
+    if (!el.hidden) { total++; const num = el.querySelector('small'); if (num) num.textContent = total; }   // la numeración sigue corrida entre las tarjetas que se ven (sin saltos como 5 → 7)
   });
   let aviso = $('indice').querySelector('.sin-resultados');
   if (!aviso) { aviso = document.createElement('p'); aviso.className = 'sin-resultados'; aviso.textContent = 'No hay mundos que coincidan con la búsqueda.'; $('indice').appendChild(aviso); }
@@ -613,6 +634,66 @@ function notaAbierta(it) {
   if (extra) t += `\n\nDe verdad: ${extra}`;
   return t.trim();
 }
+// Palabras que identifican una ficha concreta, sin adivinar por palabras genéricas.
+const REFERENCIAS_CAMPECHE = {
+  'hanal-pixan':['Hanal Pixán','Hanal Pixan'], 'choo-baak':['Choo Baak','Pomuch'],
+  'pan-pomuch':['pan de Pomuch'], 'pan-cazon':['pan de cazón'],
+  lorencillo:['Lorencillo','Laurens de Graaf'], toma1685:['toma de 1685'],
+  'isla-tris':['Isla Tris','Isla de Términos'], dampier:['William Dampier'],
+  'flota-pirata':['Cornelius Jol','Jacobo Jackson','William Parker','Bartolomé Portugués'],
+  fundacion:['Francisco de Montejo el Mozo'], 'ultimo-baluarte':['Baluarte de Santiago','Xmuch Haltún'],
+  sancarlos:['Baluarte de San Carlos'], bonete:['El Bonete'], soledad:['Baluarte de la Soledad'],
+  'puerta-tierra':['Puerta de Tierra'], 'puerta-mar':['Puerta de Mar'],
+  teatro:['Teatro Francisco de Paula Toro','Teatro Toro','Teodoro Journot'],
+  'cinco-pisos':['Edificio de los Cinco Pisos'], mascarones:['Templo de los Mascarones','Kinich Ahau'],
+  'mascara-jade':['máscara de Calakmul','máscara de jade'], calakmul:['Calakmul'],
+  chicanna:['Chicanná'], hormiguero:['Hormiguero'], riobec:['Río Bec'], becan:['Becán'],
+  jaina:['Isla de Jaina','Jaina'], 'mala-pelea':['bahía de la Mala Pelea','Moch Couoh'],
+  'cenote-azul':['Cenote Azul','Miguel Colorado'], petenes:['Los Petenes','petenes','petén','peten'],
+  murcielagos:['Volcán de los Murciélagos'], delfines:['delfines nariz de botella'], cayos:['Cayos Arcas'],
+  'palo-tinte':['palo de tinte','Haematoxylum campechianum'], canistel:['canistel','Pouteria campechiana'],
+  'nueve-pozos':['Xtacumbilxunaan','Bolonchén','Frederick Catherwood','Catherwood'], chichonal:['Chichonal'],
+  balamku:['Balamkú'], 'san-jose':['Fuerte de San José el Alto','San José el Alto'],
+  'casa-seis':['Casa No. 6','Casa Seis'], xpujil:['Xpuhil','Xpujil'], hecelchakan:['Hecelchakán'],
+  candelaria:['río Candelaria'], sabancuy:['Sabancuy'], guadalupe:['barrio de Guadalupe'],
+  'puente-perros':['Puente de los Perros'], palizada:['Palizada'], hochob:['Hochob'], xicalango:['Punta Xicalango','Xicalango'],
+  nortes:['los nortes'], 'carnaval-1582':['Carnaval de Campeche'], 'juan-carnaval':['Juan Carnaval'],
+  pintadera:['Martes de Pintadera'], 'cristo-negro':['Cristo Negro'], 'feria-sanroman':['Feria de San Román'],
+  silbatos:['silbatos de Tepakán','silbato de Tepakán','Tepakán'], jipi:['sombreros de jipi','palma de jipi','Bécal'],
+  astilleros:['astilleros de Campeche','astillero de Campeche'], cantarell:['Rudesindo Cantarell'],
+  henequen:['henequén'], xtabay:['Xtabay'], 'opal-roxanne':['Opal y Roxanne'], 'opal-quien':['huracán Opal','Opal']
+};
+const normalizaReferencia = s => s.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+const palabrasReferencia = Object.entries(REFERENCIAS_CAMPECHE).flatMap(([id, palabras]) => palabras.map(palabra => ({ id, palabra }))).sort((a,b) => b.palabra.length-a.palabra.length);
+const patronReferencia = new RegExp('(?<![\\p{L}\\p{N}])(?:' + palabrasReferencia.map(x => x.palabra.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|') + ')(?![\\p{L}\\p{N}])', 'giu');
+function enlazaCampeche(contenedor, actual) {
+  const fichas = CATS.find(c => c.id === 'campeche').items;
+  const nodos = [], caminante = document.createTreeWalker(contenedor, NodeFilter.SHOW_TEXT);
+  while (caminante.nextNode()) nodos.push(caminante.currentNode);
+  for (const nodo of nodos) {
+    const texto = nodo.nodeValue, fragmento = document.createDocumentFragment(); let desde = 0, cambio = false;
+    patronReferencia.lastIndex = 0;
+    for (const m of texto.matchAll(patronReferencia)) {
+      const palabra = palabrasReferencia.find(x => normalizaReferencia(x.palabra) === normalizaReferencia(m[0]));
+      const ficha = palabra && fichas.find(x => x.id === 'campeche:' + palabra.id);
+      if (!ficha || ficha.id === actual.id || !visto(ficha)) continue;
+      fragmento.appendChild(document.createTextNode(texto.slice(desde, m.index)));
+      const enlace = document.createElement('button'); enlace.type = 'button'; enlace.className = 'irCampeche';
+      enlace.dataset.id = ficha.id; enlace.textContent = m[0]; enlace.title = 'Ver en Campeche: ' + ficha.nombre;
+      fragmento.appendChild(enlace); desde = m.index + m[0].length; cambio = true;
+    }
+    if (cambio) { fragmento.appendChild(document.createTextNode(texto.slice(desde))); nodo.replaceWith(fragmento); }
+  }
+}
+$('nota').addEventListener('click', e => {
+  const enlace = e.target.closest('.irCampeche'); if (!enlace) return;
+  const i = CATS.findIndex(c => c.id === 'campeche'), k = CATS[i].items.findIndex(q => q.id === enlace.dataset.id);
+  if (k < 0 || !visto(CATS[i].items[k])) return;
+  catActual = i; itemActual = k; variante = null; skinSel = 0;
+  if (modoTarjetas) ponTarjetas(false); else abrirCat();
+  $('indice').querySelector('.sello.on')?.scrollIntoView({block:'nearest'});
+});
+
 // la galería: una sola imagen en el marco y flechitas para pasar a las demás.
 // En los animales primero sale su dibujo del juego; en los datos de Campeche, las imágenes reales.
 const fotosDe = id => (typeof CAMPECHE_FOTOS !== 'undefined' && CAMPECHE_FOTOS[id]) || [];
@@ -708,6 +789,7 @@ function abrirItem() {
       } else nota.appendChild(document.createTextNode(parte));
     }
   }
+  if (ok) enlazaCampeche(nota, it);
   ponFotoReal(it, ok);
   const jugar = $('irJugar'); jugar.style.display = ok && (it.tipo === 'mundo' || it.tipo === 'modo' || it.tipo === 'jefe') ? '' : 'none'; jugar.href = urlJugar(it);
   jugar.textContent = it.tipo === 'jefe' ? 'Pelear contra este jefe' : 'Jugar este mundo'; jugar.onclick = () => { jugar.href = urlJugar(it); }; // la variante (el mundo) se puede cambiar después
@@ -740,7 +822,7 @@ function abrirItem() {
       + MUNDOS_LIBRO.slice().sort((a, b) => STYLE_MAP[a].name.localeCompare(STYLE_MAP[b].name, 'es')).map(m => { const has = vistos.includes(m); return `<button class="${m === variante ? 'on' : ''} ${has ? '' : 'no'}" data-m="${m}" ${has ? '' : 'disabled'}>${has ? STYLE_MAP[m].name : '¿?'}</button>`; }).join('');
     vv.querySelectorAll('[data-m]').forEach(b => b.onclick = () => { variante = b.dataset.m; abrirItem(); });
     $('deCerca').onclick = () => {
-      const mundos = vistos.slice();
+      const mundos = vistos.slice().sort((a, b) => STYLE_MAP[a].name.localeCompare(STYLE_MAP[b].name, 'es'));   // mismo orden que los botones de estilos
       if (!mundos.includes(variante)) mundos.unshift(variante);
       function datosMundo(m) {
         ponSkinEnci(m);
@@ -753,15 +835,13 @@ function abrirItem() {
         cambiarMundo: dir => elegirMundo(mundos[(mundos.indexOf(variante) + dir + mundos.length) % mundos.length]),
         alCerrar: () => abrirItem() });
     };
-  } else if ((it.tipo === 'mundo' || it.tipo === 'modo') && ok && c.id === 'mundos' && c.items.filter(q => q.mundo === it.mundo).length > 1) {
+  } else if ((it.tipo === 'mundo' || it.tipo === 'modo') && ok && c.id === 'mundos' && !suelto(it) && c.items.filter(q => q.mundo === it.mundo && !suelto(q)).length > 1) {
     // las versiones de este mundo: de lado, hacia arriba, hacia abajo y demás
-    const hermanos = c.items.map((q, i) => ({ q, i })).filter(({ q }) => q.mundo === it.mundo);
+    const hermanos = c.items.map((q, i) => ({ q, i })).filter(({ q }) => q.mundo === it.mundo && !suelto(q));
     vv.innerHTML = `<div style="width:100%;font:italic 500 14px Alegreya;color:#7a5a44">Versiones de este mundo</div>` + hermanos.map(({ q, i }) => {
       const has = visto(q);
-      if (!q.nivel && admiteSentidos(q)) return ['derecha', 'izquierda'].map(lado => `<button class="${i === itemActual && lado === ladoSeleccionado ? 'on' : ''} ${has ? '' : 'no'}" data-lado="${lado}" data-base="${i}" ${has ? '' : 'disabled'}>${has ? (lado === 'derecha' ? 'Izquierda → derecha' : 'Derecha → izquierda') : '¿?'}</button>`).join('');
       return `<button class="${i === itemActual ? 'on' : ''} ${has ? '' : 'no'}" data-k="${i}" ${has ? '' : 'disabled'} title="${has ? q.nombre : ''}">${has ? VERSION_TXT[versionMundo(q)] + (versionMundo(q) === 'otros' ? ': ' + q.nombre : '') : '¿?'}</button>`;
     }).join('');
-    vv.querySelectorAll('[data-lado]').forEach(b => b.onclick = () => { itemActual = +b.dataset.base; ladoSeleccionado = b.dataset.lado; variante = null; skinSel = 0; abrirCat(); });
     vv.querySelectorAll('[data-k]').forEach(b => b.onclick = () => { itemActual = +b.dataset.k; ladoSeleccionado = 'derecha'; variante = null; skinSel = 0; abrirCat(); });
   } else vv.innerHTML = '';
   sucio = true;
@@ -784,9 +864,32 @@ function vistaBoton() { if (!$('vista')) return; $('vista').classList.toggle('on
 if ($('vista')) $('vista').onclick = () => { vistaJugador = !vistaJugador; vistaBoton(); abrirCat(); };
 addEventListener('keydown', e => { if (e.target.matches('input, select, textarea')) return; if (e.key === 'ArrowRight') $('sig').click(); if (e.key === 'ArrowLeft') $('ant').click(); });
 
+// Regenerar todas las vistas (mapas, enemigos, jefes…) con los assets que hay ahora: se borran las miniaturas guardadas y se vuelven a pintar.
+// Se hace solo un par de veces después de abrir (cuando ya llegaron las imágenes) y con el botón «Regenerar vistas».
+function regeneraVistas() { MINIS.clear(); cola.length = 0; abrirCat(); }
+window.regeneraVistas = regeneraVistas;
+// (sin repintado automático: refrescaba la enciclopedia una y otra vez y, dentro de las demostraciones del juego, las hacía tardar; queda el botón)
+{ const cab = document.querySelector('.cabeza'); if (cab && !document.getElementById('regeneraVistas')) {
+    const b = document.createElement('button'); b.id = 'regeneraVistas'; b.type = 'button'; b.textContent = 'Regenerar vistas'; b.title = 'Vuelve a pintar las miniaturas de mapas, enemigos y jefes con los assets actuales';
+    b.style.cssText = 'margin-left:10px;padding:3px 10px;font:600 13px "Alegreya Sans",sans-serif;color:#4a2e20;background:#fff3dc;border:1.5px solid #a84442;border-radius:12px;cursor:pointer';
+    b.onclick = () => { b.textContent = 'Regenerando…'; regeneraVistas(); setTimeout(() => { b.textContent = 'Regenerar vistas'; }, 2500); };
+    cab.appendChild(b); } }
 // miniaturas: se pintan una por cuadro con la escena real y se recorta lo importante
 const off = mkCanvas(VW, VH), offEsc = new Escena(off);
 function miniatura(job) {
+  // La tarjeta no debe capturar el escenario mientras la hoja del abordador carga.
+  if (job.it.tipo === 'enemigo' && job.it.clave === 'abordador' && window.ENEMIGOS_ASSETS) {
+    const hoja = ENEMIGOS_ASSETS.hojaForge('abordador');
+    if (hoja && !hoja.complete) {
+      if (!job.esperaAbordador) {
+        job.esperaAbordador = true;
+        const reintenta = () => { job.esperaAbordador = false; cola.push(job); };
+        hoja.addEventListener('load', reintenta, { once: true });
+        hoja.addEventListener('error', reintenta, { once: true });
+      }
+      return;
+    }
+  }
   // No guardar el dibujo de respaldo mientras aún se cargan los recursos del abordaje.
   if (job.it.def && job.it.def.id === 'abordaje' && MODOS.golpes.listoVista && !MODOS.golpes.listoVista()) {
     // sus hojas aún se descargan: las demás miniaturas siguen y esta vuelve al frente en cuanto estén listas
@@ -794,13 +897,26 @@ function miniatura(job) {
     return;
   }
   offEsc.mostrar(job.it.tipo === 'mundo' ? Object.assign({}, job.it, { tipo: 'vista' }) : job.it); const cuadros = job.it.tipo === 'jefe' ? 150 : job.it.def && job.it.def.id === 'abordaje' ? 170 : 50; for (let i = 0; i < cuadros; i++) offEsc.paso(1 / 60);
+  const hojaAbordador = job.it.tipo === 'enemigo' && job.it.clave === 'abordador' && window.ENEMIGOS_ASSETS ? ENEMIGOS_ASSETS.hojaForge('abordador') : null;
+  const retratoAbordador = hojaAbordador && hojaAbordador.complete && hojaAbordador.naturalWidth;
+  // La escena de fondo se conserva, pero el pirata se dibuja en primer plano
+  // para que la miniatura no lo oculte entre las plantas.
+  if (retratoAbordador) offEsc.g.foes = [];
   const TW = 240, TH = 180, m = mkCanvas(TW, TH), x = m.getContext('2d');
-  if (offEsc.foco && !offEsc.st.base) { off.width = TW; off.height = TH; offEsc.pintar(TW / VW, offEsc.zoom * 1.6); x.drawImage(off, 0, 0); }
+  if (offEsc.foco && !offEsc.st.base) { off.width = TW; off.height = TH; offEsc.pintar(TW / VW, offEsc.zoom * 1.6); const oh = off.height, ow = Math.min(off.width, oh * TW / TH); x.drawImage(off, (off.width - ow) / 2, 0, ow, oh, 0, 0, TW, TH); }   // la escena sale 16:9: se recorta a 4:3 para llenar la tarjeta (antes dejaba una franja gris abajo)
   else { off.width = VW; off.height = VH; offEsc.pintar(1, 1); const fo = offEsc.foco; if (fo) x.drawImage(off, clamp(fo[0] - offEsc.g.cam - 80, 0, VW - 160), clamp(fo[1] - 70, 0, VH - 120), 160, 120, 0, 0, TW, TH); else x.drawImage(off, (VW - 320) / 2, 0, 320, 240, 0, 0, TW, TH); }
+  if (retratoAbordador) x.drawImage(hojaAbordador, 60, 26, 144, 207, 86, 34, 68, 98);
   MINIS.set(job.key, m); for (const cv of job.cvs || [job.cv]) cv.getContext('2d').drawImage(m, 0, 0, cv.width, cv.height);
   // los dibujos de Itzel y Fresita se piden hasta que se pintan por primera vez: la primera pasada sale sin ellos
   // (o con el dibujo de respaldo), así que se repite una vez cuando ya llegaron
   if (job.it.tipo === 'personaje' && !job.repetido) { job.repetido = true; setTimeout(() => cola.push(job), 1500); }
+  // las vistas de mapas y enemigos pintan primero el dibujo de respaldo si sus imágenes aún no llegan: la miniatura se repinta
+  // dos veces más, a los 2.5 y 8 segundos, para que quede igual que en el juego
+  // si al pintar aún había imágenes descargándose (assets del mundo, sprites), se repinta en cuanto terminen de llegar (máx. 3 veces por vista)
+  if (!new URLSearchParams(location.search).has('demo') && hayPendientes() && (job.repintes || 0) < 3) {
+    job.repintes = (job.repintes || 0) + 1; let n = 0;
+    const t = setInterval(() => { if (!hayPendientes() || ++n > 40) { clearInterval(t); MINIS.delete(job.key); cola.push(job); } }, 400);
+  }
 }
 
 // ===================== BUCLE =====================
@@ -819,6 +935,7 @@ function bucle(now) {
   if (cercaActivo) { requestAnimationFrame(bucle); return; }
   const c = CATS[catActual], it = c.items[itemActual];
   // primero la entrada viva; luego las miniaturas, una por cuadro (la escena viva espera)
+  if (CALIENTA) cola.length = 0;
   if (cola.length && !sucio) { const job = cola.shift(); try { miniatura(job); } catch (e) { console.warn('miniatura', job.key, e); } roto = true; }
   else {
     if (sucio || roto) { vivo.mostrar(it, it.tipo === 'jefe' || esIF(it) ? variante : undefined); if (sucio) vivo.pose = null; sucio = false; roto = false; }

@@ -134,7 +134,7 @@
     const v = Math.floor(h1(Math.round(pl.x0 ?? pl.x), 3) * 2), t = TAM['piedra' + v];
     const o = { ay: t.cubierta || .3, w: pl.w + 6, voltea: h1(Math.round(pl.x0 ?? pl.x), 4) < .5 };
     // El negro indica de inmediato que la plataforma tiene colisión.
-    c.save(); c.globalAlpha *= pl.on ? .95 : .18;
+    c.save(); c.globalAlpha *= pl.on ? .95 : pl.alta ? .42 : .18;
     if (pl.on) c.filter = 'brightness(0)';
     spr(c, 'piedra' + v, pl.x + pl.w / 2, pl.y - .4, o);
     c.restore();
@@ -155,7 +155,7 @@
     if (indice >= 0) for (const otra of piezas.slice(0, indice))
       if (otra.look === 'fogstone' && !otra.dead && Math.abs(otra.y - pl.y) < 3) recortar(otra.x, otra.x + otra.w);
     if (!tramos.length) return;
-    c.save(); c.globalAlpha *= pl.on ? .95 : .18; c.beginPath();
+    c.save(); c.globalAlpha *= pl.on ? .95 : pl.alta ? .42 : .18; c.beginPath();
     for (const [x0, x1] of tramos) c.rect(x0, pl.y - 2, x1 - x0, h + 3);
     c.clip(); c.drawImage(im, pl.x, pl.y - 1, w, h); c.restore();
   };
@@ -184,7 +184,9 @@
   }
 
   // ---------------- alux, nahual, bejuco y calaverita ----------------
-  V.fd('alux', (c, e, t, s, antes) => {
+  // los bichos de este nivel se veían muy chicos junto a Itzel: se dibujan más grandes (y sus cajas de golpe crecen en mundos-ampliados2.js)
+  const grande = (k, fn) => (c, e, t, s, antes) => { c.save(); c.scale(k, k); try { return fn(c, e, t, s, antes); } finally { c.restore(); } };
+  V.fd('alux', grande(1, (c, e, t, s, antes) => {
     if (e.st !== 'sleep') {
       if (Math.abs(e.vx || 0) > 3 && (e.fade ?? 1) >= .98 && (e.tt ?? 1) >= .3) {
         const paso = Math.floor((e.anim || t) * 8) % 4, img = aluxCaminarForge[paso];
@@ -194,8 +196,8 @@
     }
     const n = e.aturde > 0 ? 6 : e.st === 'sleep' ? 0 : Math.floor(t * 1.5) % 4 === 3 ? 1 : 0;
     spr(c, 'alux' + n, 0, .6);
-  }, 'alux0');
-  V.fd('nahual', (c, e, t) => {
+  }), 'alux0');
+  V.fd('nahual', grande(1, (c, e, t) => {
     if (e.piedra) { spr(c, 'nahualPiedra', 0, .6, { voltea: true }); return; }
     const anda = Math.abs(e.vx || 0) > 2 || e.st === 'ok';
     if (anda) {
@@ -206,20 +208,20 @@
       }
     }
     spr(c, 'nahual' + (anda ? 1 + Math.floor(((e.anim ?? t) * 60) / 8) % 5 : 0), 0, .6, { alfa: .92, voltea: true });
-  }, 'nahual0');
-  V.fd('bejuco', (c, e, t, s, antes) => {
+  }), 'nahual0');
+  V.fd('bejuco', grande(1, (c, e, t, s, antes) => {
     const hoja = window.ENEMIGOS_ASSETS?.hojaForge('bejuco');
     const n = e.baja ? 2 : e.luz ? 0 : 1, sw = Math.sin(t * 3 + (e.hx || 0)) * .2;
     c.save(); c.rotate(sw);
     if (hoja?.complete && hoja.naturalWidth && e.st !== 'gone') { antes(c, e, t, s); c.restore(); return; }
     spr(c, 'bejuco' + n, 0, 1); c.restore();
-  }, 'bejuco0');
-  V.fd('calavera', (c, e, t, s, antes) => {
+  }), 'bejuco0');
+  V.fd('calavera', grande(1, (c, e, t, s, antes) => {
     const hoja = window.ENEMIGOS_ASSETS?.hojaForge('calavera');
     if (e.st !== 'sleep' && hoja?.complete && hoja.naturalWidth) { antes(c, e, t, s); return; }
     const aire = Math.abs(e.vy || 0) > 1, n = e.st === 'sleep' ? 7 : aire ? 2 + Math.floor((e.anim || t) * 10) % 5 : Math.floor(t * 2) % 2;
     spr(c, 'calavera' + n, 0, .6);
-  }, 'calavera0');
+  }), 'calavera0');
 
   // el tallo del bejuco, en grises (antes verde): el mismo trazo del juego
   const FX = window.FOE_ARTE && FOE_ARTE.FX;

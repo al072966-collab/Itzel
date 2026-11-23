@@ -4,11 +4,22 @@
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.agua) return;
   const V = vestirNivel({ id: 'agua', carpeta: 'fondo-golfo', ver: 1 });
   const { spr } = V;
+  const panorama = new Image();
+  panorama.onload = () => V.rehaz(); panorama.src = '../Roguelike/assets/fondo-golfo/arrecife-panorama-v1.png';
+  const arena = new Image();
+  arena.onload = () => V.rehaz(); arena.src = '../Roguelike/assets/fondo-golfo/arena-cianotipia-v1.png';
   // telón: el lecho del arrecife y el barco-arco lejanos, azul profundo, bajo las burbujas; rayos de luz desde arriba
   V.cielo((c, f, antes) => {
-    antes();
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    const nuevo = id === 'agua' && panorama.complete && panorama.naturalWidth;
+    if (nuevo) {
+      const ancho = 700, alto = f.H || VH, off = ((f.cam * .08 % ancho) + ancho) % ancho;
+      c.save(); c.fillStyle = '#174a80'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) c.drawImage(panorama, 20, 12, 2132, 698, x, 0, ancho, alto);
+      c.restore();
+    } else antes();
     // cardúmenes: grupos de pececitos pálidos que nadan juntos, con su ondulación, y dan la vuelta al salir
-    for (let g = 0; g < 4; g++) {
+    for (let g = 0; g < (nuevo ? 0 : 4); g++) {
       const dir = g % 2 ? -1 : 1, w = VW + 120, base = ((V.h1(g, 11) * w + dir * f.t * (9 + g * 3) - f.cam * .28 * dir * 0 - f.cam * .22) % w + w) % w - 60, y0 = 40 + g * 34 + V.h1(g, 12) * 14;
       for (let i = 0; i < 9; i++) {
         const x = base + (i % 3) * 8 * dir * -1 + (V.h1(g * 10 + i, 13) - .5) * 20, y = y0 + (Math.floor(i / 3) - 1) * 6 + Math.sin(f.t * 2 + i + g) * 2.2;
@@ -30,11 +41,26 @@
     for (let i = 0; i < 5; i++) { const x = ((i * 97 - f.cam * .06) % (VW + 80) + VW + 80) % (VW + 80) - 40, g = c.createLinearGradient(x, 0, x + 40, VH * .8); g.addColorStop(0, 'rgba(120,190,230,.10)'); g.addColorStop(1, 'rgba(120,190,230,0)'); c.fillStyle = g; c.beginPath(); c.moveTo(x, 0); c.lineTo(x + 26, 0); c.lineTo(x + 70, VH * .8); c.lineTo(x + 30, VH * .8); c.fill(); }
     c.restore();
     const u2 = 420, o2 = (f.cam * .1) % u2, b2 = Math.floor(f.cam * .1 / u2);
-    for (let k = -1; k * u2 - o2 < VW + u2; k++) { const i = b2 + k; spr(c, V.h1(i, 3) < .5 ? 'barcoArco' : 'arcoRoca', k * u2 - o2 + 40, 186, { ay: 1, alfa: .3 }); }
+    for (let k = -1; !nuevo && k * u2 - o2 < VW + u2; k++) { const i = b2 + k; spr(c, V.h1(i, 3) < .5 ? 'barcoArco' : 'arcoRoca', k * u2 - o2 + 40, 186, { ay: 1, alfa: .3 }); }
     const u3 = 290, o3 = (f.cam * .2) % u3;
-    for (let k = -1; k * u3 - o3 < VW + u3; k++) spr(c, 'lecho', k * u3 - o3, 200, { ay: 1, ax: 0, alfa: .38 });
+    for (let k = -1; !nuevo && k * u3 - o3 < VW + u3; k++) spr(c, 'lecho', k * u3 - o3, 200, { ay: 1, ax: 0, alfa: .38 });
   });
   V.terreno(ctx => {
+    const id = typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id;
+    if (id === 'agua' && arena.complete && arena.naturalWidth) {
+      // La máscara respeta cada hueco; el borde claro sigue cada superficie.
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip();
+      // Una sola altura evita repetir una unión horizontal bajo el agua.
+      for (let x = 0; x < L.ww; x += 700)
+        ctx.drawImage(arena, 0, 105, 2172, 619, x, 0, 700, VH + 70);
+      for (const r of L.tops) {
+        ctx.save(); ctx.beginPath(); ctx.rect(r.x0, r.y, r.x1 - r.x0, 3); ctx.clip();
+        for (let x = r.x0; x < r.x1; x += 220)
+          ctx.drawImage(arena, 0, 85, 2172, 35, x, r.y, 220, 3);
+        ctx.restore();
+      }
+      ctx.restore();
+    }
     for (const o of L.deco) {
       const x = o.x + 8, y = o.y + .5, i = o.i, v = V.h1(i, 7);
       if (o.k === 'T') { const n = ['abanico', 'alga0', 'coral', 'esponjas', 'alga1', 'tubos', 'helecho0', 'cerebro', 'alga2', 'pasto'][i % 10]; spr(ctx, n, x, y, { alfa: .85, voltea: v < .5 }); }

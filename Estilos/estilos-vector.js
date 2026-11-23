@@ -370,7 +370,7 @@
       allLoopsPath(ctx, L.loops); ctx.fillStyle = RED; ctx.fill();
       ctx.save(); ctx.clip();
       ctx.fillStyle = 'rgba(241,226,189,.55)';
-      for (let y = 0; y < VH + 8; y += 6) for (let x = (y / 6 % 2) * 3; x < L.ww; x += 6) if (L.depth(x, y) > 20) { ctx.beginPath(); ctx.arc(x, y, .85, 0, TAU); ctx.fill(); }
+      if (!(window.CODEX_SIN_PUNTOS && window.CODEX_SIN_PUNTOS())) for (let y = 0; y < VH + 8; y += 6) for (let x = (y / 6 % 2) * 3; x < L.ww; x += 6) if (L.depth(x, y) > 20) { ctx.beginPath(); ctx.arc(x, y, .85, 0, TAU); ctx.fill(); }
       for (const r of L.tops) {
         ctx.fillStyle = JADE; ctx.fillRect(r.x0, r.y, r.x1 - r.x0, 5);
         ctx.fillStyle = OCH; ctx.fillRect(r.x0, r.y + 5, r.x1 - r.x0, 9);

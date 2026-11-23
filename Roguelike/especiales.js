@@ -26,6 +26,29 @@
     let pos = armados.length ? armados.map(e => [e.x, e.y]) : def && !def.modo && typeof ESPECIALES !== 'undefined' && ESPECIALES[def.id];
     if (pos && !armados.length && L.espejo) pos = pos.map(([cx, cy]) => [L.anchoEspejo - cx, cy]); // el nivel va de derecha a izquierda
     g.doblones = (pos || []).map(([cx, cy], i) => ({ i, x: (cx + PAD) * T, y: cy * T, got: false, ya: guardadas(def.id).includes(i), t: i * 1.3 }));
+    // Campeche 1-1: el doblón más fácil de la subida se intercambia con el corazón que premia la ruta alta (arriba de todo va el doblón)
+    if (def && def.id === 'bits8' && g.pickups) {
+      const alto = g.pickups.filter(h => h.k === 'heart' && !h.got && h.y < 0).sort((a, b) => a.y - b.y)[0], d0 = g.doblones.find(d => d.i === 0);
+      if (alto && d0) { const x = alto.x, y = alto.y; alto.x = d0.x; alto.y = d0.y; d0.x = x; d0.y = y; d0.alto = true; }
+    }
+    // red de seguridad: un doblón nunca queda en el aire sin nada que se pueda pisar debajo (los niveles cambian y sus escaleras con ellos)
+    const apoyo = (x, y) => { let m = Infinity; const s = L.surfaceY(Math.floor(x / T), 0) * T; if (s >= y && s < VH) m = s - y; for (const p of g.plats || []) if (!p.dead && x >= p.x - 6 && x <= p.x + p.w + 6 && p.y >= y) m = Math.min(m, p.y - y); return m; };
+    for (const d of g.doblones) {
+      if (apoyo(d.x, d.y) <= 64 || d.alto || (def.id === 'bits8' && d.i === 1)) continue;   // el de Campeche 1-1 está alto a propósito: se alcanza con ladrillos
+      let mejor = null; // la plataforma más alta cerca, y si no hay, el piso
+      for (const p of g.plats || []) if (!p.dead && p.x + p.w >= d.x - 48 && p.x <= d.x + 48 && (!mejor || p.y < mejor.y)) mejor = p;
+      const s = L.surfaceY(Math.floor(d.x / T), 0) * T;
+      d.y = mejor && mejor.y < s ? mejor.y - 36 : (s < VH ? s : 176) - 44;
+      if (mejor && mejor.y < s) d.x = clamp(d.x, mejor.x + 4, mejor.x + mejor.w - 4);
+    }
+    // El cielo de los mayas: bajo cada doblón hay una estrellita para tender, con la constelación de Fresita, el camino que lleva a él
+    if (def && def.id === 'cielo' && g.objs) for (const d of g.doblones) {
+      const estrellas = () => g.objs.filter(o => o.k === 'estrella'), nueva = (x, y) => g.objs.push({ k: 'estrella', x, y, i: estrellas().length });
+      if (estrellas().some(o => Math.hypot(o.x - d.x, o.y - (d.y + 22)) < 14)) continue;
+      nueva(d.x, d.y + 22);
+      // si no hay otra estrella a un tendido de distancia (150 px), una más de apoyo hacia el lado de donde se llega
+      if (!estrellas().some(o => o.x !== d.x && Math.hypot(o.x - d.x, o.y - (d.y + 22)) < 150)) nueva(d.x - 80, d.y + 36);
+    }
     return r;
   };
 

@@ -5,7 +5,7 @@
 //  flores, huipil blanco bordado, short verde, tenis rojos y mochila.
 //  Fresita: ajolote rosa mágico que flota.
 // =====================================================================
-const FAVORITOS = ['pixel', 'ocaso', 'acuarela', 'paper', 'biolum', 'flat', 'sumie', 'neon', 'bruma', 'lowpoly', 'codex', 'oleo', 'vitral', 'cuaderno', 'grabado', 'anime', 'nouveau', 'deco', 'cyber', 'cinema', 'vapor'];
+const FAVORITOS = ['pixel', 'ocaso', 'acuarela', 'paper', 'biolum', 'flat', 'sumie', 'neon', 'bruma', 'lowpoly', 'codex', 'oleo', 'vitral', 'cuaderno', 'grabado', 'anime', 'nouveau', 'deco', 'cyber', 'cinema'];
 
 const ITZEL_BASE = { skin: '#b9784f', hair: '#241718', blouse: '#f6f1e6', emb: ['#e0485a', '#f2b233', '#3fa36b', '#3f7fd6'], shorts: '#3f8f4a', shoes: '#d83a3a', bow: '#e0303f', pack: '#e8a33a', eye: '#241718', cheek: 'rgba(224,72,90,.45)', flowers: true };
 const FRESITA_BASE = { body: '#ffc9e0', belly: '#ffe6f1', gill: '#ff4f95', gillTip: '#ff7fb2', eye: '#2a1020', line: '#a8396a', lw: .7, glow: '#ff8cc6', glowA: .35, cheek: 'rgba(255,90,150,.5)' };
@@ -404,10 +404,3 @@ if (typeof pixelSprite === 'function') {
   setChar('bits64', pixelSprite(I({ glint: '#ffffff' }), { w: 30, h: 32, oy: 27, levels: 16, outline: '#1a1008' }),
     pixelSprite(F({ lw: 0, glowA: .25 }), { w: 30, h: 22, oy: 11, levels: 16, outline: '#4a1030' }));
 }
-
-// Vapor y engranajes (el mundo que era CGA): el mismo diseño de Itzel con colores de taller
-// y unos goggles de latón en la frente; Fresita con branquias de cobre
-setChar('vapor', I({ lw: .7, line: '#2a1810', skin: '#c8865a', hair: '#2a1810', blouse: '#f0e2c4', blouse2: '#d8c8a0', emb: ['#c8203a', '#c8902a', '#2a6a5a'], shorts: '#4a5a3a', shoes: '#c8203a', bow: '#c8203a', pack: '#8a5a2a', eye: '#2a1810', cheek: 'rgba(200,80,60,.35)',
-  extra: (ctx, g) => { const hy = -15 + g.bob; ctx.strokeStyle = '#3a2414'; ctx.lineWidth = .9; ctx.beginPath(); ctx.arc(.6, hy, 4.9, Math.PI * 1.05, Math.PI * 1.95); ctx.stroke();
-    for (const gx of [-.4, 2.8]) { ctx.fillStyle = '#c8902a'; ctx.beginPath(); ctx.arc(gx, hy - 4, 1.55, 0, TAU); ctx.fill(); ctx.strokeStyle = '#5a3a1a'; ctx.lineWidth = .4; ctx.stroke(); ctx.fillStyle = '#9ad8e8'; ctx.beginPath(); ctx.arc(gx, hy - 4, .95, 0, TAU); ctx.fill(); ctx.fillStyle = '#ffffff'; ctx.fillRect(gx - .5, hy - 4.6, .45, .45); } } }),
-  F({ lw: .7, line: '#2a1810', body: '#f0a0b0', belly: '#f8d8c8', gill: '#c8743a', gillTip: '#f2c94c', eye: '#2a1810', glow: '#ffb060', glowA: .2, gillLine: true }));

@@ -6,11 +6,11 @@
 //  libro). Enemigos, objetos y solidos se anotan cuando de verdad entran
 //  a la pantalla, no al empezar el nivel. Salen de una en una, con aire
 //  entre ellas y pocas por mundo; las demás se quedan en el libro y al
-//  terminar el mundo se avisa cuántas fueron. Se apagan en Opciones.
+//  se indica con un pequeño libro animado. Se apagan en Opciones.
 // =====================================================================
 const TARJETAS = (() => {
   const caja = document.createElement('div'); caja.id = 'tarjetas'; document.body.appendChild(caja);
-  const cola = []; let viva = null, mundo = -1, salieron = 0, guardadas = 0;
+  const cola = []; let viva = null, mundo = -1, salieron = 0, guardadas = 0, librosMostrados = 0, libroVivo = null;
   const POR_MUNDO = 3, DURA = 5000, AIRE = 9000, VENCE = 14000, VENCE_SUELTA = 60000;
   // datos y lugares: no vienen de algo que esté a la vista, así que no deben salir en plena acción
   const suelta = id => id.startsWith('campeche:') || id.startsWith('mundo:');
@@ -43,12 +43,25 @@ const TARJETAS = (() => {
     if (!d) return null;
     try { const sk = (CUR && CUR.def && CUR.def.skin || MEC.DEFAULT_SKIN).foe; c.translate(46, 62); c.scale(2.1, 2.1); d(c, { st: 'ok', anim: 0, t: 0, tt: 0, dir: 1, w: 14, h: 12, vy: 0, on: true }, 1, sk); return cv; } catch (e) { return null; }
   }
+  function avisaLibro() {
+    const el = document.createElement('div');
+    el.className = 'descubrimiento-libro';
+    el.setAttribute('role', 'status');
+    el.setAttribute('aria-label', 'Nuevo contenido anotado en la enciclopedia');
+    el.innerHTML = `<svg viewBox="0 0 96 90" aria-hidden="true" focusable="false">
+      <g class="libro-estrellas" fill="#ffe59a"><path d="M13 14l2.4 6.1L21.5 22l-6.1 2.4L13 30.5l-2.4-6.1L4.5 22l6.1-1.9z"/><path d="M80 9l1.8 4.5 4.7 1.8-4.7 1.8L80 22l-1.8-4.9-4.7-1.8 4.7-1.8z"/><circle cx="88" cy="46" r="2"/><circle cx="9" cy="53" r="1.8"/></g>
+      <g class="libro-cuerpo"><path fill="#522615" stroke="#f6d294" stroke-width="2.5" stroke-linejoin="round" d="M17 30q14-8 29 2 15-10 31-2v35q-17-8-31 3-14-11-29-3z"/><path fill="#fff1cf" d="M21 31q12-5 24 3v29q-12-7-24-3zM49 34q13-8 24-3v29q-12-4-24 3z"/><path d="M47 34v32M25 39q8-2 15 2m-15 5q8-2 15 2m14-7q7-4 15-3m-15 10q7-4 15-3" fill="none" stroke="#bf895a" stroke-width="1.6" stroke-linecap="round"/><path d="M62 30v15l-4-2-4 3V33" fill="#c12d4b"/></g></svg>`;
+    caja.appendChild(el); libroVivo = el;
+    setTimeout(() => { el.remove(); if (libroVivo === el) libroVivo = null; }, 3500);
+  }
   function muestra() {
-    if (TURNO.mundo !== mundo) { mundo = TURNO.mundo; salieron = 0; }
+    if (TURNO.mundo !== mundo) { mundo = TURNO.mundo; salieron = 0; guardadas = 0; librosMostrados = 0; if (libroVivo) { libroVivo.remove(); libroVivo = null; } }
     // lo que ya pasó de largo no se enseña tarde: se queda anotado en el libro
     const ahora = performance.now();
     for (let i = cola.length - 1; i >= 0; i--) if (ahora - cola[i].desde > (suelta(cola[i].id) ? VENCE_SUELTA : VENCE) || salieron >= POR_MUNDO) { cola.splice(i, 1); guardadas++; }
-    if (STATE !== 'play' && guardadas) { AVISOS.alFinal('Enciclopedia', guardadas === 1 ? 'Una cosa nueva anotada' : `${guardadas} cosas nuevas anotadas`, 'feather'); guardadas = 0; }
+    // Cada cosa nueva que se anota sin tarjeta hace aparecer el librito animado (si ya hay uno en pantalla, el siguiente espera a que termine).
+    if (STATE !== 'play') { guardadas = 0; librosMostrados = 0; }
+    else if (guardadas > librosMostrados && !libroVivo && !viva && opcion('tarjetas', true)) { librosMostrados = guardadas; avisaLibro(); }
     if (viva || !cola.length || STATE !== 'play' || !TURNO.libre() || !opcion('tarjetas', true)) return;
     // lo que no es de algo que se ve en pantalla (datos de Campeche, el lugar) espera a un momento tranquilo
     const i = cola.findIndex(q => q.desde <= ahora && (!suelta(q.id) || tranquilo(ahora)));

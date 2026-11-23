@@ -2,7 +2,7 @@
 // =====================================================================
 //  TOWER DEFENSE · La defensa de Campeche (la invasión pirata de 1685)
 //  Un plano antiguo de la ciudad visto desde arriba: los piratas bajan del
-//  galeón y marchan hacia la Catedral. Son cinco oleadas con nombre, un
+//  galeón y marchan hacia la Catedral. Son tres oleadas con nombre: un
 //  segundo desembarco y dos capitanes: Grammont y Lorencillo.
 //   · Fresita arma cinco defensas con tres niveles; en el tercero se elige
 //     una de dos especialidades. Clic derecho: canción de cuna.
@@ -62,8 +62,8 @@ MODOS.torres = (() => {
     incendiario: { nombre: 'incendiario', vida: 14, vel: 20, botin: 3 },
     abordador: { nombre: 'abordador', vida: 15, vel: 23, botin: 2, coraza: .4 },
     contramaestre: { nombre: 'contramaestre', vida: 10, vel: 26, botin: 2 },
-    grammont: { nombre: 'Grammont', vida: 190, vel: 14, botin: 10, jefe: true },
-    lorencillo: { nombre: 'Lorencillo', vida: 420, vel: 12, botin: 0, jefe: true },
+    grammont: { nombre: 'Grammont', vida: 150, vel: 14, botin: 10, jefe: true },
+    lorencillo: { nombre: 'Lorencillo', vida: 300, vel: 12, botin: 0, jefe: true },
   };
   // [tipo, cuántos, cada cuánto salen, camino]
   const OLEADAS = [
@@ -71,23 +71,23 @@ MODOS.torres = (() => {
     { nombre: 'Los bucaneros de Isla Tris', grupos: [['pirata', 4, 1.1], ['bucanero', 5, .8]] },
     { nombre: 'Antorchas en la noche', grupos: [['bucanero', 4, .8], ['incendiario', 2, 2.2], ['pirata', 5, 1]] },
     { nombre: 'El tambor del contramaestre', grupos: [['pirata', 5, .9], ['contramaestre', 1, 1], ['bucanero', 6, .6], ['incendiario', 2, 2]] },
-    { nombre: 'Segundo desembarco', aviso: '¡Otro desembarco por el sur! Protejan los dos caminos', grupos: [['pirata', 6, 1, 1], ['bucanero', 6, .7, 0], ['contramaestre', 1, 1, 1], ['incendiario', 2, 2, 1]] },
+    { nombre: 'Segundo desembarco', aviso: '¡Grammont desembarca por el sur! Protejan los dos caminos', grupos: [['pirata', 5, 1, 1], ['bucanero', 5, .7, 0], ['grammont', 1, 3, 1], ['incendiario', 2, 2, 0], ['contramaestre', 1, 1, 1]] },
     { nombre: 'Llega Grammont', aviso: '¡Grammont desembarcó con su gente!', grupos: [['grammont', 1, 3], ['pirata', 8, .9], ['bucanero', 4, .7, 1]] },
     { nombre: 'Corazas de abordaje', grupos: [['abordador', 4, 1.6], ['pirata', 6, .8, 1], ['contramaestre', 1, 1], ['abordador', 2, 1.6, 1]] },
     { nombre: 'Por los dos frentes', grupos: [['incendiario', 3, 1.5, 1], ['abordador', 3, 1.4], ['bucanero', 8, .5, 1], ['contramaestre', 2, 2], ['abordador', 3, 1.4, 1]] },
     { nombre: 'La marea de piratas', grupos: [['bucanero', 10, .35], ['pirata', 10, .45, 1], ['abordador', 4, 1], ['incendiario', 3, 1.2, 1], ['contramaestre', 2, 1.2]] },
-    { nombre: 'Lorencillo en persona', aviso: '¡Lorencillo baja de su galeón!', grupos: [['lorencillo', 1, 4], ['abordador', 4, 1.4], ['contramaestre', 2, 2, 1], ['incendiario', 3, 1.6], ['bucanero', 8, .5, 1], ['abordador', 3, 1.4, 1]] },
-  ].filter((_, i) => [0, 1, 4, 5, 9].includes(i)); // cinco oleadas: lo que dura un nivel normal
+    { nombre: 'Lorencillo en persona', aviso: '¡Lorencillo baja de su galeón!', grupos: [['lorencillo', 1, 4], ['abordador', 3, 1.4], ['contramaestre', 1, 2, 1], ['incendiario', 2, 1.6], ['bucanero', 6, .5, 1], ['abordador', 2, 1.4, 1]] },
+  ].filter((_, i) => [0, 4, 9].includes(i)); // tres oleadas (David, 2026-11-20: «es muy largo, hazlo más corto»)
   const SEGUNDO = OLEADAS.findIndex(o => o.nombre === 'Segundo desembarco') + 1; // desde ahí se usa el camino del sur
   // lo que pasó de verdad, entre oleada y oleada
   const HISTORIA = ['Campeche vivió con miedo a los piratas durante generaciones.', 'Lorencillo es el apodo de Laurens de Graaf, un pirata de origen holandés.', 'La Isla del Carmen se llamó Isla Tris y fue guarida de piratas.', 'Por estas costas también rondaron Cornelius Jol y William Parker.', 'Los piratas también saquearon haciendas cercanas, como Uayamón.', 'En 1685 Lorencillo volvió a la ciudad junto con el corsario Grammont.', 'El palo de tinte de la Laguna de Términos también atraía a los piratas.', 'En 1716 una expedición desalojó a los piratas de la Laguna de Términos.', 'Tras el ataque de 1685 se levantó el recinto amurallado.', 'El último baluarte, el de Santiago, se terminó en 1704.'];
   const FINAL = 'En la historia real, en 1685 la ciudad sí cayó: por eso se amuralló. Aquí la salvaron ustedes.';
-  const ESPERA_1 = 20, ESPERA = 14;
+  const ESPERA_1 = 12, ESPERA = 9;
 
   // «10 bucaneros, 1 contramaestre»: lo que viene en una oleada
   function quienes(O) { const cuenta = {}; for (const [tipo, n] of O.grupos) cuenta[tipo] = (cuenta[tipo] || 0) + n; return Object.entries(cuenta).map(([k, n]) => { const E = ENEM[k]; return E.jefe ? E.nombre : `${n} ${E.nombre}${n > 1 ? (/[aeiou]$/.test(E.nombre) ? 's' : 'es') : ''}`; }).join(', '); }
   function crear(def, st) {
-    return { t: 0, win: 0, shake: 0, bubbles: [], parts: [], def, st, inv: 0, cacao: 14, templo: 10, oleada: 0, fase: 'prep', cola: [], espera: ESPERA_1, salida: 0, enem: [], balas: [], trazos: [], aros: [], textos: [], tiros: [], suelto: [], menu: null, jefe: null, rapido: false, hitCiudad: 0,
+    return { t: 0, win: 0, shake: 0, bubbles: [], parts: [], def, st, inv: 0, cacao: 22, templo: 10, oleada: 0, fase: 'prep', cola: [], espera: ESPERA_1, salida: 0, enem: [], balas: [], trazos: [], aros: [], textos: [], tiros: [], suelto: [], menu: null, jefe: null, rapido: false, hitCiudad: 0,
       torres: PEDESTALES.map(([c, r]) => ({ c, r, x: cx(c), y: cy(r), tipo: null, nivel: 0, rama: null, cd: 0, sopla: 0, ang: 0, retro: 0, quema: 0, gastado: 0, objetivo: 'primero', ayuda: 0, rebato: 0 })),
       arboles: ARBOLES.map(([c, r], i) => ({ x: cx(c), y: cy(r), t: i * 1.3 })),
       p: { x: cx(2) + 28, y: cy(5), face: 1, run: 0, cd: 0 }, pose: poseItzel(), fre: { x: 200, y: 80, cuna: 0 }, aviso: '¡Velas en el horizonte! Armen las defensas', avisoT: 6 };
@@ -99,6 +99,8 @@ MODOS.torres = (() => {
   function pega(j, e, d, arma) {
     const E = ENEM[e.tipo]; if (E.coraza && arma !== 'perfora' && arma !== 'bala') d *= E.coraza;
     e.vida -= d; e.golpe = .09;
+    if (!(e.reacCd > 0)) { e.reac = .3; e.reacCd = .8; }
+    if (arma === 'bala') (j.fxs = j.fxs || []).push({ n: 'impacto', x: e.x, y: e.y - 7, t: 0 });
   }
 
   function siguienteOleada(j, antes) {
@@ -137,7 +139,7 @@ MODOS.torres = (() => {
     // los piratas avanzan por su camino
     const animo = j.enem.filter(e => e.tipo === 'contramaestre' && !e.dormido && !e.aturdido);
     for (const e of j.enem) {
-      const E = ENEM[e.tipo], R = RUTAS[e.ruta]; e.anim += dt; e.t += dt; e.golpe = Math.max(0, (e.golpe || 0) - dt); e.aturdido = Math.max(0, (e.aturdido || 0) - dt); e.dormido = Math.max(0, (e.dormido || 0) - dt);
+      const E = ENEM[e.tipo], R = RUTAS[e.ruta]; e.anim += dt; e.t += dt; e.golpe = Math.max(0, (e.golpe || 0) - dt); e.reac = Math.max(0, (e.reac || 0) - dt); e.reacCd = Math.max(0, (e.reacCd || 0) - dt); e.aturdido = Math.max(0, (e.aturdido || 0) - dt); e.dormido = Math.max(0, (e.dormido || 0) - dt);
       let frena = 1, duele = 0;
       for (const t2 of j.torres) if (t2.tipo === 'sueno' && !t2.quema && Math.hypot(t2.x - e.x, t2.y - e.y) < datos(t2).rango) { frena = Math.min(frena, t2.rama === 'atarraya' ? .25 : t2.nivel > 1 ? .4 : .55); if (t2.rama === 'anzuelos') duele = .9; }
       if (E.jefe) frena = Math.max(frena, .6);
@@ -161,12 +163,15 @@ MODOS.torres = (() => {
         if (j.templo <= 0) { j.templo = 10; dañoModo(j); if (typeof toast === 'function') toast('¡Llegaron a la Catedral! Perdieron un corazón'); }
       }
       if (e.vida <= 0 && e.vida > -50) {
-        RUN.stomps++; chispas(j, e.x, e.y - 6, ['#ffffff', OCRE], E.jefe ? 50 : 12, E.jefe ? 130 : 60); if (E.jefe) { j.jefe = null; j.shake = .5; dice(j, `¡${E.nombre} huye a su barco!`, 3); }
+        RUN.stomps++; chispas(j, e.x, e.y - 6, ['#ffffff', OCRE], E.jefe ? 50 : 12, E.jefe ? 130 : 60);
+        { const R3 = RUTAS[e.ruta], [qx, qy] = enRuta(R3, e.s + 3), [px2, py2] = enRuta(R3, Math.max(0, e.s - 1)); (j.caidos = j.caidos || []).push({ tipo: e.tipo, x: e.x, y: e.y, izq: qx - px2 < -.01, t: 0 }); } if (E.jefe) { j.jefe = null; j.shake = .5; dice(j, `¡${E.nombre} huye a su barco!`, 3); }
         const sueltos = E.botin > 1 ? Math.min(E.botin, 3) : Math.random() < .45 ? 1 : 0; for (let i = 0; i < sueltos; i++) j.suelto.push({ x: e.x + (Math.random() - .5) * 14, y: e.y + (Math.random() - .5) * 8, vida: 13 });
         if (E.botin > 3) ganaPolvora(j, E.botin, e.x, e.y - 18);
       }
     }
     j.enem = j.enem.filter(e => e.vida > 0);
+    if (j.caidos) j.caidos = j.caidos.filter(q => (q.t += dt) < 2.2);
+    if (j.fxs) j.fxs = j.fxs.filter(q => (q.t += dt) < .3);
     // las defensas
     for (const t2 of j.torres) {
       if (!t2.tipo) continue;
@@ -277,7 +282,9 @@ MODOS.torres = (() => {
   }
 
   // ---------- el plano: lo que no se mueve se pinta una sola vez ----------
+  const DM = () => (window.DEFENSA_MAPA && DEFENSA_MAPA.ready() ? DEFENSA_MAPA : null);   // el arte nuevo (defensa-mapa.js); sin él se dibuja lo de antes
   function plano(x, f) {
+    if (DM()) return DEFENSA_MAPA.plano(x, { VW, VH, OY, MAR, MURO, RUTAS, CASAS, PEDESTALES, ARBOLES, cx, cy });
     x.drawImage(paperTex(f, 'plano-campeche', '#e9d6a8', { grain: 14, blot: 18, fibers: 10 }), 0, 0, VW, VH);
     // las manzanas de la ciudad, como en los planos antiguos
     x.lineWidth = .4;
@@ -352,17 +359,17 @@ MODOS.torres = (() => {
 
   function pintar(j, view) {
     const { ctx, f, st } = marcoModo(j, view), sk = j.def.skin, t = j.t;
-    ctx.drawImage(cached(f, 'plano-torres', VW, VH, x => plano(x, f)), 0, 0, VW, VH);
-    if (typeof DEFENSA_DETALLES !== 'undefined') DEFENSA_DETALLES.pinta(ctx);
+    ctx.drawImage(cached(f, DM() ? 'plano-torres-mapa' : 'plano-torres', VW, VH, x => plano(x, f)), 0, 0, VW, VH);
+    if (!DM() && typeof DEFENSA_DETALLES !== 'undefined') DEFENSA_DETALLES.pinta(ctx);
     // lo que se mueve del plano
     ctx.lineCap = 'butt'; ctx.setLineDash([3, 2]); ctx.lineDashOffset = -t * 6; ctx.strokeStyle = rgba(ROJO, .8); ctx.lineWidth = .9;
     RUTAS.forEach((R, i) => { if (i && j.oleada < SEGUNDO) { ctx.strokeStyle = rgba(ROJO, .25); } ctx.beginPath(); R.pts.forEach(([x, y], k) => k ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); }); ctx.setLineDash([]);
     ctx.strokeStyle = 'rgba(236,250,255,.55)'; ctx.lineWidth = .6; ctx.beginPath(); for (let i = 0; i < 16; i++) { const x = 4 + hash1(i, 11) * 30, y = OY + 6 + hash1(i, 12) * (VH - OY - 12) + Math.sin(t + i) * 1.2; ctx.moveTo(x, y); ctx.quadraticCurveTo(x + 3, y - 1.6, x + 6, y); } ctx.stroke();
     // el galeón de Lorencillo
-    { const bx = 15, by = cy(2) + 5 + Math.sin(t * 1.5) * 1.2; ctx.fillStyle = '#5a3418'; ctx.beginPath(); ctx.moveTo(bx - 13, by - 2); ctx.lineTo(bx + 13, by - 3); ctx.lineTo(bx + 9, by + 5); ctx.lineTo(bx - 9, by + 5); ctx.closePath(); ctx.fill(); ctx.strokeStyle = K; ctx.lineWidth = .8; ctx.stroke(); ctx.fillStyle = '#efe6d0'; for (const [mx, h] of [[-5, 15], [5, 18]]) { ctx.beginPath(); ctx.moveTo(bx + mx, by - 3); ctx.lineTo(bx + mx, by - h); ctx.quadraticCurveTo(bx + mx + 7, by - h * .6, bx + mx, by - 5); ctx.fill(); ctx.stroke(); } ctx.fillStyle = K; ctx.fillRect(bx + 5, by - 22, 7, 4); }
-    if (j.oleada >= SEGUNDO) { const bx = 14, by = cy(11) + 7 + Math.sin(t * 1.3 + 1) * 1.2; ctx.fillStyle = '#6a3f22'; ctx.beginPath(); ctx.moveTo(bx - 10, by - 2); ctx.lineTo(bx + 10, by - 2); ctx.lineTo(bx + 7, by + 4); ctx.lineTo(bx - 7, by + 4); ctx.closePath(); ctx.fill(); ctx.strokeStyle = K; ctx.lineWidth = .8; ctx.stroke(); ctx.fillStyle = '#efe6d0'; ctx.beginPath(); ctx.moveTo(bx, by - 2); ctx.lineTo(bx, by - 13); ctx.quadraticCurveTo(bx + 7, by - 8, bx, by - 3); ctx.fill(); ctx.stroke(); }
+    { const bx = 15, by = cy(2) + 5 + Math.sin(t * 1.5) * 1.2; if (DM()) { ctx.fillStyle = 'rgba(10,40,50,.25)'; ctx.beginPath(); ctx.ellipse(bx + 2, by + 3, 6, 15, 0, 0, TAU); ctx.fill(); DEFENSA_MAPA.spr(ctx, 'barco', bx, by, { rot: Math.PI / 2 }); } else { ctx.fillStyle = '#5a3418'; ctx.beginPath(); ctx.moveTo(bx - 13, by - 2); ctx.lineTo(bx + 13, by - 3); ctx.lineTo(bx + 9, by + 5); ctx.lineTo(bx - 9, by + 5); ctx.closePath(); ctx.fill(); ctx.strokeStyle = K; ctx.lineWidth = .8; ctx.stroke(); ctx.fillStyle = '#efe6d0'; for (const [mx, h] of [[-5, 15], [5, 18]]) { ctx.beginPath(); ctx.moveTo(bx + mx, by - 3); ctx.lineTo(bx + mx, by - h); ctx.quadraticCurveTo(bx + mx + 7, by - h * .6, bx + mx, by - 5); ctx.fill(); ctx.stroke(); } ctx.fillStyle = K; ctx.fillRect(bx + 5, by - 22, 7, 4); } }
+    if (j.oleada >= SEGUNDO) { const bx = 14, by = cy(11) + 7 + Math.sin(t * 1.3 + 1) * 1.2; if (DM()) { ctx.fillStyle = 'rgba(10,40,50,.25)'; ctx.beginPath(); ctx.ellipse(bx + 2, by + 3, 6, 13, 0, 0, TAU); ctx.fill(); DEFENSA_MAPA.spr(ctx, 'barco', bx, by, { rot: Math.PI / 2, k: .88 }); } else { ctx.fillStyle = '#6a3f22'; ctx.beginPath(); ctx.moveTo(bx - 10, by - 2); ctx.lineTo(bx + 10, by - 2); ctx.lineTo(bx + 7, by + 4); ctx.lineTo(bx - 7, by + 4); ctx.closePath(); ctx.fill(); ctx.strokeStyle = K; ctx.lineWidth = .8; ctx.stroke(); ctx.fillStyle = '#efe6d0'; ctx.beginPath(); ctx.moveTo(bx, by - 2); ctx.lineTo(bx, by - 13); ctx.quadraticCurveTo(bx + 7, by - 8, bx, by - 3); ctx.fill(); ctx.stroke(); } }
     // el daño de la Catedral
-    { const tx = VW - 28, ty = cy(10); if (j.hitCiudad) { ctx.fillStyle = rgba(ROJO, j.hitCiudad * .7); ctx.fillRect(tx - 17, ty - 32, 34, 50); } ctx.fillStyle = 'rgba(28,22,18,.75)'; ctx.fillRect(tx - 16, ty + 19, 32, 5); for (let i = 0; i < 10; i++) { ctx.fillStyle = i < j.templo ? (j.templo > 3 ? JADE : ROJO) : 'rgba(241,226,189,.2)'; ctx.fillRect(tx - 15 + i * 3, ty + 20, 2.4, 3); } }
+    { const tx = VW - 28, ty = cy(10); if (j.hitCiudad) { ctx.fillStyle = rgba(ROJO, j.hitCiudad * .7); if (DM()) ctx.fillRect(tx - 23, ty - 22, 46, 40); else ctx.fillRect(tx - 17, ty - 32, 34, 50); } ctx.fillStyle = 'rgba(28,22,18,.75)'; ctx.fillRect(tx - 16, ty + 19, 32, 5); for (let i = 0; i < 10; i++) { ctx.fillStyle = i < j.templo ? (j.templo > 3 ? JADE : ROJO) : 'rgba(241,226,189,.2)'; ctx.fillRect(tx - 15 + i * 3, ty + 20, 2.4, 3); } }
     const sobre = hoverTorre(j);
     // el alcance de lo que se está viendo
     const aRango = j.menu ? j.menu.t : sobre;
@@ -373,28 +380,53 @@ MODOS.torres = (() => {
     for (const t2 of j.torres) if (t2.tipo === 'sueno') { const r = datos(t2).rango; ctx.fillStyle = rgba(AZUL, t2.quema ? .03 : .1); ctx.beginPath(); ctx.arc(t2.x, t2.y, r, 0, TAU); ctx.fill(); if (!t2.quema) { ctx.strokeStyle = rgba('#6a4a2a', .28); ctx.lineWidth = .4; ctx.beginPath(); for (let k = -r; k <= r; k += 7) { const w = Math.sqrt(r * r - k * k); ctx.moveTo(t2.x - w, t2.y + k); ctx.lineTo(t2.x + w, t2.y + k); ctx.moveTo(t2.x + k, t2.y - w); ctx.lineTo(t2.x + k, t2.y + w); } ctx.stroke(); } }
     // lo que tiene altura, de arriba a abajo
     const items = [];
-    for (const a of j.arboles) items.push({ y: a.y, f: () => { ctx.strokeStyle = '#6a4a2a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(a.x + 2, a.y - 8, a.x, a.y - 16); ctx.stroke(); ctx.strokeStyle = JADE; ctx.lineWidth = 1.7; for (let q = 0; q < 6; q++) { const an = q / 6 * TAU + .3 + Math.sin(t + a.x) * .05; ctx.beginPath(); ctx.moveTo(a.x, a.y - 16); ctx.quadraticCurveTo(a.x + Math.cos(an) * 7, a.y - 21 + Math.sin(an) * 3, a.x + Math.cos(an) * 11, a.y - 13 + Math.sin(an) * 4); ctx.stroke(); } const lleno = clamp(a.t / 22, 0, 1); ctx.fillStyle = rgba('#5a3418', .35 + lleno * .65); ctx.fillRect(a.x + 3, a.y - 4, 5, 6); ctx.strokeStyle = K; ctx.lineWidth = .5; ctx.strokeRect(a.x + 3, a.y - 4, 5, 6); } });
-    for (const s of j.suelto) items.push({ y: s.y, f: () => { if (s.vida < 3 && Math.sin(t * 20) > 0) return; const b = Math.sin(t * 4 + s.x) * .8; ctx.fillStyle = '#7a4a24'; ctx.beginPath(); ctx.ellipse(s.x, s.y - 3 + b, 3, 4, 0, 0, TAU); ctx.fill(); ctx.strokeStyle = K; ctx.lineWidth = .6; ctx.stroke(); ctx.beginPath(); ctx.moveTo(s.x - 3, s.y - 4.4 + b); ctx.lineTo(s.x + 3, s.y - 4.4 + b); ctx.moveTo(s.x - 3, s.y - 1.6 + b); ctx.lineTo(s.x + 3, s.y - 1.6 + b); ctx.stroke(); ctx.fillStyle = OCRE; ctx.fillRect(s.x - 1, s.y - 7.6 + b, 2, 1); } });
+    for (const a of j.arboles) items.push({ y: a.y, f: () => { if (DM()) { ctx.fillStyle = 'rgba(40,26,14,.3)'; ctx.beginPath(); ctx.ellipse(a.x + 1, a.y + 2, 7, 2.2, 0, 0, TAU); ctx.fill(); DEFENSA_MAPA.spr(ctx, (Math.round(a.x) & 1) ? 'palma1' : 'palma0', a.x, a.y - 5, { k: .82, rot: Math.sin(t * .9 + a.x) * .04 }); } else { ctx.strokeStyle = '#6a4a2a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(a.x, a.y); ctx.quadraticCurveTo(a.x + 2, a.y - 8, a.x, a.y - 16); ctx.stroke(); ctx.strokeStyle = JADE; ctx.lineWidth = 1.7; for (let q = 0; q < 6; q++) { const an = q / 6 * TAU + .3 + Math.sin(t + a.x) * .05; ctx.beginPath(); ctx.moveTo(a.x, a.y - 16); ctx.quadraticCurveTo(a.x + Math.cos(an) * 7, a.y - 21 + Math.sin(an) * 3, a.x + Math.cos(an) * 11, a.y - 13 + Math.sin(an) * 4); ctx.stroke(); } } const lleno = clamp(a.t / 22, 0, 1); ctx.fillStyle = rgba('#5a3418', .35 + lleno * .65); ctx.fillRect(a.x + 3, a.y - 4, 5, 6); ctx.strokeStyle = K; ctx.lineWidth = .5; ctx.strokeRect(a.x + 3, a.y - 4, 5, 6); } });
+    for (const s of j.suelto) items.push({ y: s.y, f: () => { if (s.vida < 3 && Math.sin(t * 20) > 0) return; const b = Math.sin(t * 4 + s.x) * .8; if (DM()) { ctx.fillStyle = 'rgba(40,26,14,.3)'; ctx.beginPath(); ctx.ellipse(s.x + 1, s.y, 3.4, 1.2, 0, 0, TAU); ctx.fill(); DEFENSA_MAPA.spr(ctx, 'polvora', s.x, s.y - 3 + b); return; } ctx.fillStyle = '#7a4a24'; ctx.beginPath(); ctx.ellipse(s.x, s.y - 3 + b, 3, 4, 0, 0, TAU); ctx.fill(); ctx.strokeStyle = K; ctx.lineWidth = .6; ctx.stroke(); ctx.beginPath(); ctx.moveTo(s.x - 3, s.y - 4.4 + b); ctx.lineTo(s.x + 3, s.y - 4.4 + b); ctx.moveTo(s.x - 3, s.y - 1.6 + b); ctx.lineTo(s.x + 3, s.y - 1.6 + b); ctx.stroke(); ctx.fillStyle = OCRE; ctx.fillRect(s.x - 1, s.y - 7.6 + b, 2, 1); } });
     for (const t2 of j.torres) items.push({ y: t2.y + 2, f: () => torre(t2, t2 === sobre) });
     for (const e of j.enem) items.push({ y: e.y, f: () => {
       const E = ENEM[e.tipo], esc = E.jefe ? 1.75 : 1.15, quieto = e.dormido || e.aturdido;
       ctx.fillStyle = 'rgba(28,22,18,.25)'; ctx.beginPath(); ctx.ellipse(e.x, e.y + 1, E.jefe ? 12 : 8, E.jefe ? 3.4 : 2.4, 0, 0, TAU); ctx.fill();
-      const FA = window.FAUNA_ARTE, conArte = FA && (E.jefe ? FA.listo('capitanT') : e.tipo === 'pirata' && FA.listo('pirataT'));
+      const dm = DM(); let sprN = dm && e.tipo !== 'abordador' && ({ pirata: 'pirata' + (Math.floor(e.anim * 5) % 2), bucanero: 'bucanero' + (Math.floor(e.anim * 6) % 2), abordador: 'abordador', incendiario: 'incendiario', grammont: 'grammont', lorencillo: 'lorencillo' })[e.tipo];
+      // piezas nuevas: el contramaestre con sus estados y la reacción al golpe de cada pirata (si no hay arte, queda lo de antes)
+      const DANO = { pirata: 1, bucanero: 1, abordador: 1, incendiario: 1, grammont: 1, lorencillo: 1 };
+      if (dm && e.tipo === 'contramaestre') sprN = 'contra' + (e.dormido ? 8 : e.golpe > 0 ? 6 : e.aturdido ? 5 : [1, 2][Math.floor(e.anim * 5) % 2]);
+      let vertical = false;
+      if (dm && e.reac > 0 && DANO[e.tipo] && dm.hay('dano_' + e.tipo)) { sprN = 'dano_' + e.tipo; vertical = true; }
+      const FA = window.FAUNA_ARTE, conArte = !(sprN && dm.hay(sprN)) && FA && (E.jefe ? FA.listo('capitanT') : e.tipo === 'pirata' && FA.listo('pirataT'));
       ctx.save(); ctx.translate(e.x, e.y);
       if (conArte) {
         const n = (E.jefe ? 'capitanT' : 'pirataT') + (quieto ? 0 : Math.floor(e.anim * 5) % 2);
         const o = { h: E.jefe ? 28 : 19, voltea: e.dir < 0, rot: quieto ? -.1 : 0 };
         if (e.tipo === 'grammont') o.filtro = 'hue-rotate(200deg) saturate(.8)'; else if (quieto) o.filtro = 'saturate(.6) brightness(.85)';
         FA.pieza(ctx, n, 0, 1, o);
-      } else ctx.scale(e.dir * esc, esc);
+      } else if (sprN && dm.hay(sprN)) {} else ctx.scale(e.dir * esc, esc);
       if (conArte) {}
+      else if (sprN && dm.hay(sprN)) {
+        // rumbo real del tramo: de lado (voltea si va a la izquierda) o hacia arriba/abajo, girando el dibujo
+        const R2 = RUTAS[e.ruta], [qx, qy] = enRuta(R2, e.s + 3), [px, py] = enRuta(R2, Math.max(0, e.s - 1)), vx = qx - px, vy = qy - py, izq = vx < -.01;
+        const propio = vertical || sprN.startsWith('contra');
+        if (vertical) { ctx.translate(0, 1); if (izq) ctx.scale(-1, 1); dm.spr(ctx, sprN, 0, 0, { ax: .5, ay: 1 }); }
+        else {
+        ctx.translate(0, propio ? 1 : -5); if (izq) ctx.scale(-1, 1); if (!propio || (Math.abs(vy) > Math.abs(vx) && !sprN.endsWith('8'))) ctx.rotate(Math.atan2(vy, izq ? -vx : vx)); if (quieto && !propio) { ctx.rotate(-.12); ctx.filter = 'saturate(.55) brightness(.85)'; }
+        dm.spr(ctx, sprN, 0, 0, { ax: .5, ay: propio ? 1 : .5 }); } ctx.filter = 'none';
+        if (e.golpe) { ctx.globalCompositeOperation = 'lighter'; ctx.globalAlpha = .55; dm.spr(ctx, sprN, 0, 0, { ay: (vertical || sprN.startsWith('contra')) ? 1 : .5 }); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over'; }
+      }
       else if (E.jefe) capitan(ctx, e, t, e.tipo === 'lorencillo' ? '#7a1f2a' : '#23406e', OCRE, e.tipo === 'lorencillo' ? '#f2e6c8' : ROJO);
-      else FD[e.tipo](ctx, Object.assign({ st: e.dormido ? 'sleep' : 'ok', h: 10, w: 14, vy: 0 }, e), t, sk.foe);
-      if (e.golpe) { ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-10, -26, 20, 26); ctx.globalCompositeOperation = 'source-over'; }
+      else {
+        // La estocada acompaña la llegada a la Catedral, sin cambiar daño ni velocidad.
+        const ataqueVisual = e.tipo === 'abordador' && !quieto ? Math.max(0, Math.min(.999, 1 - (RUTAS[e.ruta].largo - e.s) / Math.max(1, e.vel * .85))) : 0;
+        FD[e.tipo](ctx, Object.assign({ st: e.dormido ? 'sleep' : 'ok', h: 15, w: 11, vy: 0 }, e, { ataqueVisual }), t, sk.foe);
+      }
+      if (e.golpe && !(sprN && dm.hay(sprN))) { ctx.globalCompositeOperation = 'source-atop'; ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.fillRect(-10, -26, 20, 26); ctx.globalCompositeOperation = 'source-over'; }
       ctx.restore();
       if (e.apura) { ctx.fillStyle = rgba(OCRE, .8); ctx.font = 'bold 5px "Alegreya Sans", sans-serif'; ctx.fillText('♪', e.x - 8, e.y - 15 + Math.sin(t * 8 + e.x)); }
       if (e.vida < e.max && !E.jefe) { ctx.fillStyle = K; ctx.fillRect(e.x - 7, e.y - 21, 14, 2); ctx.fillStyle = E.coraza ? '#8c96a0' : ROJO; ctx.fillRect(e.x - 7, e.y - 21, 14 * clamp(e.vida / e.max, 0, 1), 2); }
       if (quieto) { ctx.fillStyle = '#ffffff'; ctx.font = 'bold 6px "Alegreya Sans", sans-serif'; ctx.fillText(e.dormido ? 'z' : '*', e.x + 5, e.y - 22 + Math.sin(t * 5) * 1.2); } } });
+    // los que cayeron: se quedan tendidos un momento y se desvanecen (efecto solo visual; el enemigo ya salió del juego)
+    for (const q of j.caidos || []) items.push({ y: q.y - .5, f: () => {
+      const dm = DM(); if (!dm) return; const nom = q.tipo === 'contramaestre' ? 'contra7' : 'derrota_' + q.tipo; if (!dm.hay(nom)) return;
+      ctx.save(); ctx.globalAlpha = clamp((2.2 - q.t) / .9, 0, 1) * clamp(q.t / .08, .4, 1); ctx.translate(q.x, q.y + 1); if (q.izq) ctx.scale(-1, 1);
+      ctx.fillStyle = 'rgba(28,22,18,.18)'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 2.4, 0, 0, TAU); ctx.fill(); dm.spr(ctx, nom, 0, 0, { ax: .5, ay: 1 }); ctx.restore(); } });
     items.push({ y: j.p.y, f: () => {
       const p = j.p; ctx.fillStyle = 'rgba(28,22,18,.3)'; ctx.beginPath(); ctx.ellipse(p.x, p.y + 1, 6, 2, 0, 0, TAU); ctx.fill();
       if (j.pisa > 0) { ctx.strokeStyle = rgba(OCRE, j.pisa * 4); ctx.lineWidth = 1.2; ctx.beginPath(); ctx.ellipse(p.x, p.y, 26 * (1 - j.pisa * 2), 9 * (1 - j.pisa * 2), 0, 0, TAU); ctx.stroke(); }
@@ -403,7 +435,8 @@ MODOS.torres = (() => {
     items.sort((a, b) => a.y - b.y); for (const it of items) it.f();
     // tiros de mosquete, balas de cañón, aros y el fuego del galeón
     ctx.strokeStyle = 'rgba(255,240,190,.9)'; ctx.lineWidth = .7; ctx.beginPath(); for (const q of j.trazos) { ctx.moveTo(q.x0, q.y0); ctx.lineTo(q.x1, q.y1); } ctx.stroke();
-    for (const b of j.balas) { ctx.fillStyle = 'rgba(28,22,18,.2)'; ctx.beginPath(); ctx.ellipse(lerp(b.x0, b.tx, Math.min(1, b.u)), lerp(b.y0, b.ty, Math.min(1, b.u)) + 2, 2, 1, 0, 0, TAU); ctx.fill(); ctx.fillStyle = K; ctx.beginPath(); ctx.arc(b.x, b.y, 1.9, 0, TAU); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(b.x - 1, b.y - 1, .8, .8); }
+    for (const b of j.balas) { ctx.fillStyle = 'rgba(28,22,18,.2)'; ctx.beginPath(); ctx.ellipse(lerp(b.x0, b.tx, Math.min(1, b.u)), lerp(b.y0, b.ty, Math.min(1, b.u)) + 2, 2, 1, 0, 0, TAU); ctx.fill(); if (DM()) { DEFENSA_MAPA.spr(ctx, 'bala', b.x, b.y); continue; } ctx.fillStyle = K; ctx.beginPath(); ctx.arc(b.x, b.y, 1.9, 0, TAU); ctx.fill(); ctx.fillStyle = 'rgba(255,255,255,.6)'; ctx.fillRect(b.x - 1, b.y - 1, .8, .8); }
+    for (const q of j.fxs || []) if (DM()) DEFENSA_MAPA.spr(ctx, q.n, q.x, q.y, { k: .8 + q.t * 2, alfa: 1 - q.t / .3 });
     for (const q of j.aros) { const u = q.t / q.d; ctx.strokeStyle = rgba(q.col, 1 - u); ctx.lineWidth = 1.3; ctx.beginPath(); ctx.arc(q.x, q.y, q.r * (.3 + u * .7), 0, TAU); ctx.stroke(); }
     for (const q of j.tiros) { const u = q.t / q.d, x = lerp(q.x0, q.t2.x, u), y = lerp(q.y0, q.t2.y - 8, u) - Math.sin(u * Math.PI) * 70; ctx.strokeStyle = rgba(ROJO, .5 + Math.sin(t * 20) * .4); ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(q.t2.x, q.t2.y - 4, 12 - u * 5, 0, TAU); ctx.moveTo(q.t2.x - 15, q.t2.y - 4); ctx.lineTo(q.t2.x + 15, q.t2.y - 4); ctx.moveTo(q.t2.x, q.t2.y - 19); ctx.lineTo(q.t2.x, q.t2.y + 11); ctx.stroke(); ctx.fillStyle = K; ctx.beginPath(); ctx.arc(x, y, 2.6, 0, TAU); ctx.fill(); }
     pintaChispas(ctx, j);
@@ -465,6 +498,7 @@ MODOS.torres = (() => {
     }
     function torre(t2, sobre2) {
       const x = t2.x, y = t2.y, elegida = j.menu && j.menu.t === t2;
+      if (DM()) return DEFENSA_MAPA.defensa(ctx, t2, t, { x, y, sobre: sobre2, elegida, ico, rgba, OCRE, PAP, K });
       if (!t2.tipo) { ctx.fillStyle = 'rgba(28,22,18,.2)'; ctx.fillRect(x - 7, y + 3, 16, 2); ctx.fillStyle = '#a89070'; ctx.fillRect(x - 7, y - 3, 14, 7); ctx.strokeStyle = K; ctx.lineWidth = .8; ctx.strokeRect(x - 7, y - 3, 14, 7); ctx.fillStyle = 'rgba(28,22,18,.4)'; ctx.fillRect(x - 3, y, 6, 1); ctx.fillRect(x - .5, y - 2.5, 1, 6); if (sobre2 || elegida) { ctx.strokeStyle = OCRE; ctx.lineWidth = 1; ctx.setLineDash([2, 2]); ctx.strokeRect(x - 9, y - 5, 18, 11); ctx.setLineDash([]); } return; }
       const n = t2.nivel, h = 7 + n * 2, base = '#cdb48a';
       ctx.fillStyle = 'rgba(28,22,18,.25)'; ctx.beginPath(); ctx.ellipse(x + 1, y + 4, 11, 3, 0, 0, TAU); ctx.fill();
@@ -499,11 +533,47 @@ MODOS.torres = (() => {
   }
   const hoverTorre = j => MOUSE.active ? j.torres.find(q => Math.abs(q.x - MOUSE.x) < 10 && Math.abs(q.y - 4 - MOUSE.y) < 15) || null : null;
   const botonBajoMouse = j => MOUSE.active ? botones(j).find(q => Math.hypot(MOUSE.x - q.x, MOUSE.y - q.y) < 11) || null : null;
-  return { crear, paso, pintar, botones, clic, OLEADAS };
+  // arriba, en la ventana alta: la cabecera del plano antiguo, con su cartela, la rosa de los vientos y el galeón en el Golfo
+  function extiende(ctx, j, ex, f) {
+    const t = j.t;
+    if (DM()) {
+      // la misma lámina de mar y pergamino, reflejada hacia arriba: la costa y el mar siguen sin costura
+      const im = DEFENSA_MAPA.img('fondo'), kx = (VW + 12) / im.naturalWidth, hh = im.naturalHeight * kx;
+      for (let y0 = 0, i = 0; y0 < ex + 2; y0 += hh, i++) { ctx.save(); ctx.translate(0, -y0); ctx.scale(1, -1); if (i % 2) { ctx.translate(0, -hh); ctx.scale(1, -1); ctx.translate(0, -hh); ctx.scale(1, -1); } ctx.drawImage(im, -12, 0, VW + 12, hh); ctx.restore(); }
+    } else {
+    ctx.fillStyle = '#e4cf9e'; ctx.fillRect(0, -ex, VW, ex + 1);
+    for (let i = 0; i < 90; i++) { const a = hash1(i, 41) * VW, b = -ex + hash1(i, 42) * ex; ctx.fillStyle = 'rgba(150,110,60,.08)'; ctx.fillRect(a, b, 8 + hash1(i, 43) * 20, .5); }
+    // el Golfo sigue por la orilla izquierda, con sus olas de grabado
+    ctx.fillStyle = '#3f8f9a'; ctx.beginPath(); ctx.moveTo(0, -ex); ctx.lineTo(MAR, -ex); for (let y = -ex; y <= 0; y += 6) ctx.lineTo(MAR + Math.sin(y * .2) * 2, y); ctx.lineTo(0, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(236,250,255,.5)'; ctx.lineWidth = .5; for (let y = -ex + 8; y < 0; y += 11) { ctx.beginPath(); for (let x = 3; x < MAR - 4; x += 3) ctx.lineTo(x, y + Math.sin(x * .5 + t * 1.5 + y) * .8); ctx.stroke(); }
+    }
+    // el galeón pirata que espera mar adentro
+    if (DM()) { const gx = MAR * .5, gy = -ex * .55 + Math.sin(t * 1.2) * 1.5; ctx.fillStyle = 'rgba(10,40,50,.25)'; ctx.beginPath(); ctx.ellipse(gx + 2, gy + 3, 6, 15, 0, 0, TAU); ctx.fill(); DEFENSA_MAPA.spr(ctx, 'barco', gx, gy, { rot: Math.PI / 2 + Math.sin(t * 1.2) * .05 }); }
+    else { const gx = MAR * .5, gy = -ex * .55 + Math.sin(t * 1.2) * 1.5; ctx.save(); ctx.translate(gx, gy); ctx.rotate(Math.sin(t * 1.2) * .05);
+      ctx.fillStyle = '#3a2418'; ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(12, 0); ctx.lineTo(9, 5); ctx.lineTo(-9, 5); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = '#3a2418'; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(-3, 0); ctx.lineTo(-3, -20); ctx.moveTo(5, 0); ctx.lineTo(5, -16); ctx.stroke();
+      ctx.fillStyle = '#f4ead0'; ctx.beginPath(); ctx.moveTo(-3, -19); ctx.quadraticCurveTo(3, -14, -3, -6); ctx.fill(); ctx.beginPath(); ctx.moveTo(5, -15); ctx.quadraticCurveTo(10, -11, 5, -5); ctx.fill();
+      ctx.fillStyle = K; ctx.fillRect(-3, -24, 5, 3); ctx.restore(); }
+    // la cartela del título, con sus volutas
+    const cx0 = (MURO + VW) / 2, cy0 = -ex * .58, w = 190, h = 34;
+    ctx.fillStyle = 'rgba(28,22,18,.12)'; ctx.fillRect(cx0 - w / 2 + 2, cy0 - h / 2 + 3, w, h);
+    ctx.fillStyle = '#f1e2bd'; ctx.fillRect(cx0 - w / 2, cy0 - h / 2, w, h); ctx.strokeStyle = K; ctx.lineWidth = 1; ctx.strokeRect(cx0 - w / 2, cy0 - h / 2, w, h); ctx.strokeStyle = ROJO; ctx.lineWidth = .6; ctx.strokeRect(cx0 - w / 2 + 3, cy0 - h / 2 + 3, w - 6, h - 6);
+    for (const sx of [-1, 1]) { ctx.strokeStyle = K; ctx.lineWidth = .8; ctx.beginPath(); ctx.arc(cx0 + sx * (w / 2 + 6), cy0, 6, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(cx0 + sx * (w / 2 + 6), cy0, 2.4, 0, TAU); ctx.stroke(); }
+    ctx.textAlign = 'center'; ctx.fillStyle = K; ctx.font = 'italic 700 9px Alegreya, Georgia, serif'; ctx.fillText('Plano de la Villa de San Francisco de Campeche', cx0, cy0 - 2);
+    ctx.font = 'italic 6.5px Alegreya, Georgia, serif'; ctx.fillStyle = ROJO; ctx.fillText('con el camino de los piratas · año de 1685', cx0, cy0 + 9); ctx.textAlign = 'left';
+    // la rosa de los vientos
+    { const rx = VW - 34, ry = -ex * .55, r = Math.min(20, ex * .25); ctx.save(); ctx.translate(rx, ry); ctx.rotate(Math.sin(t * .3) * .03);
+      ctx.strokeStyle = K; ctx.lineWidth = .5; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke(); ctx.beginPath(); ctx.arc(0, 0, r * .72, 0, TAU); ctx.stroke();
+      for (let k = 0; k < 8; k++) { const an = k / 8 * TAU, L = k % 2 ? r * .55 : r; ctx.fillStyle = k % 2 ? OCRE : (k === 0 ? ROJO : K); ctx.beginPath(); ctx.moveTo(Math.cos(an) * L, Math.sin(an) * L); ctx.lineTo(Math.cos(an + .3) * r * .18, Math.sin(an + .3) * r * .18); ctx.lineTo(Math.cos(an - .3) * r * .18, Math.sin(an - .3) * r * .18); ctx.fill(); }
+      ctx.font = 'bold 6px Alegreya, Georgia, serif'; ctx.textAlign = 'center'; ctx.fillStyle = K; ctx.fillText('N', 0, -r - 3); ctx.textAlign = 'left'; ctx.restore(); }
+    // la orilla de abajo: el filo del pliego, contra la cabecera del juego
+    ctx.fillStyle = 'rgba(28,22,18,.18)'; ctx.fillRect(MAR + 2, -6, VW, 4); ctx.fillStyle = K; ctx.fillRect(MAR + 2, -2, VW, 2);
+  }
+  return { crear, paso, pintar, botones, clic, OLEADAS, extiende };
 })();
 MEC.POW.torre = { name: 'Defensas de la ciudad', help: 'Clic en un pedestal para armar una defensa; clic sobre ella para mejorarla, escoger su especialidad o venderla. Itzel junta la pólvora y, parada junto a una defensa, la hace disparar más rápido.', cd: .3, click() { return false; } };
 nivel('templo', {
-  nombre: 'La defensa de Campeche', lema: 'Cinco oleadas de piratas rumbo a la Catedral, con Grammont y Lorencillo al frente. Fresita arma las defensas; Itzel junta la pólvora y apaga los incendios.',
+  nombre: 'La defensa de Campeche', lema: 'Tres oleadas de piratas rumbo a la Catedral, con Grammont y Lorencillo al frente. Fresita arma las defensas; Itzel junta la pólvora y apaga los incendios.',
   modo: 'torres', foe: 'pirata', fauna: ['pirata', 'bucanero', 'incendiario', 'abordador', 'contramaestre'], power: 'torre', plat: NIVELES.fuego.plat, W: 30, skin: NIVELES.fuego.skin,
 });
 (NIVELES_ALT.fuego = NIVELES_ALT.fuego || []).push('templo');

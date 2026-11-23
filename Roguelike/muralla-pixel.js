@@ -49,6 +49,23 @@
   };
   const h1 = (a, b = 0) => { let h = (a * 374761393 + b * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
 
+  const FONDO_MURALLA = {};
+  for (const [n, archivo] of Object.entries({ cielo:'cielo-mar-muralla-v1', ciudad:'ciudad-muralla-v1', piedra:'sillares-muralla-v1' })) {
+    const im = FONDO_MURALLA[n] = new Image(); im.decoding = 'async'; im.onload = rehaz; im.src = RUTA + archivo + '.png';
+  }
+  const murallaPrincipal = f => ((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'pixel';
+  const fondoMurallaListo = () => Object.values(FONDO_MURALLA).every(im => im.complete && im.naturalWidth);
+  window.MURALLA_TELON_LISTO = fondoMurallaListo;
+  const cieloMurallaAntes = ST.sky;
+  ST.sky = function (c, f) {
+    if (!esPixel(f.st) || !murallaPrincipal(f) || !fondoMurallaListo()) return cieloMurallaAntes.call(this,c,f);
+    const im = FONDO_MURALLA.cielo, H = f.H || VH, sw = Math.min(im.naturalWidth, im.naturalHeight * VW / H);
+    const max = Math.max(0, im.naturalWidth - sw), sx = max * (.5 + .25 * Math.sin((f.cam || 0) * .0007));
+    c.save(); c.imageSmoothingEnabled = false; c.drawImage(im,sx,0,sw,im.naturalHeight,0,0,VW,H);
+    const w = 560, h = w * 346 / 2156, off = (((f.cam || 0) * .1) % w + w) % w, base = H * .81;
+    for (let x = -off - w; x < VW + w; x += w) c.drawImage(FONDO_MURALLA.ciudad,8,188,2156,346,Math.round(x),Math.round(base-h),w,h);
+    c.restore();
+  };
   // ---------------- el terreno: sillares con cornisa ----------------
   // los colores de las piezas de muralla del asset: sillar anaranjado, junta oscura, cornisa clara
   const PIEDRA = ['#c96f3c', '#bb6434', '#d27b44', '#c0683a', '#d8864c', '#b45e32'].map(hex);
@@ -91,6 +108,13 @@
       set(x, y, c);
     }
     { const tmp = mkCanvas(W, H); tmp.getContext('2d').putImageData(im, 0, 0); ctx.drawImage(tmp, 0, 0); }
+    if (murallaPrincipal() && fondoMurallaListo()) {
+      ctx.save(); allLoopsPath(ctx, L.loops); ctx.clip(); ctx.imageSmoothingEnabled = false;
+      const p = ctx.createPattern(FONDO_MURALLA.piedra, 'repeat'); p.setTransform(new DOMMatrix().scale(112 / FONDO_MURALLA.piedra.naturalWidth));
+      ctx.fillStyle = p; ctx.fillRect(0, 0, W, H); ctx.restore();
+      // La misma pieza de plataforma remata los bordes sin cambiar su colisión.
+      if (listo('plat-entera')) for (const t of L.tops) if (t.x1 - t.x0 >= 12) tira(ctx,'plat-entera',t.x0,t.y - 1,t.x1 - t.x0);
+    }
     // lo de arriba de la muralla: pasto entre las piedras, piedritas y, en las esquinas altas, garitas
     const SUELO = ['pasto-chico', 'pasto', 'pasto-espiga', 'pasto-rocas', 'piedrita', 'rocas'];
     for (const r of L.tops) {

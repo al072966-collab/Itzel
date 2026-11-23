@@ -23,16 +23,18 @@ MODOS.planos = (() => {
   const suena = n => { if (typeof SONIDO !== 'undefined' && SONIDO.fx) SONIDO.fx(n); };
 
   // ---------------- la muralla, de la Puerta de Mar a la Puerta de Tierra ----------------
-  function armar() {
+  function armar(variante = 0) {
     const W = 126, V = new Uint8Array(W * HM * D);
     const caja = (x0, x1, y0, y1, z0, z1, m) => { for (let x = x0; x < x1; x++) for (let y = y0; y < y1; y++) for (let z = z0; z < z1; z++) V[(x * HM + y) * D + z] = m; };
     const hueco = (x0, x1, z0 = 0, z1 = D) => caja(x0, x1, 0, 1, z0, z1, 0);
     caja(0, W, 0, 1, 0, D, SUELO);
     caja(0, 1, 1, 8, 0, D, MURO);                                   // Puerta de Mar, a la espalda
     // I. de la Puerta de Mar al foso: un muro bajo, uno alto con paso al fondo y el foso
-    caja(6, 8, 1, 2, 0, D, MURO);
-    caja(11, 13, 1, 6, 0, 5, MURO);
-    hueco(16, 19);
+    // Piezas intercambiables: el muro bajo y el paso lateral cambian de sitio.
+    const desplazamiento = variante % 2;
+    caja(6 + desplazamiento, 8 + desplazamiento, 1, 2, 0, D, MURO);
+    caja(11 + desplazamiento, 13 + desplazamiento, 1, 6, 0, 5, MURO);
+    hueco(16 + desplazamiento, 19 + desplazamiento);
     // II. el baluarte de San Carlos: escalera en un solo carril y el adarve que zigzaguea sobre el foso
     caja(23, 24, 1, 2, 1, 2, MURO); caja(24, 26, 1, 3, 1, 2, MURO);
     caja(26, 34, 1, 4, 0, D, MURO);
@@ -42,19 +44,21 @@ MODOS.planos = (() => {
     caja(44, 49, 0, 4, 2, 3, MURO); caja(48, 49, 0, 4, 2, 7, MURO); caja(49, 54, 0, 4, 6, 7, MURO);
     caja(54, 58, 1, 4, 0, D, MURO); caja(58, 59, 1, 3, 0, D, MURO); caja(59, 60, 1, 2, 0, D, MURO);
     // III. la batería: cañones que ruedan balas hacia el frente y muros que obligan a zigzaguear
-    caja(65, 66, 1, 5, 0, 4, MURO); caja(70, 71, 1, 5, 3, 7, MURO); caja(75, 76, 1, 5, 0, 4, MURO);
+    const alterna = variante % 2;
+    caja(65 + alterna, 66 + alterna, 1, 5, 0, 4, MURO); caja(70 - alterna, 71 - alterna, 1, 5, 3, 7, MURO); caja(75 + alterna, 76 + alterna, 1, 5, 0, 4, MURO);
     hueco(82, 84, 0, 4);
     // IV. el puente de vigas sobre el foso grande y la Puerta de Tierra
     hueco(90, 101);
     caja(92, 95, 2, 3, 2, 3, MADERA); caja(94, 95, 2, 3, 2, 6, MADERA); caja(95, 97, 2, 3, 5, 6, MADERA); caja(99, 100, 2, 3, 5, 6, MADERA);
     caja(112, 115, 1, 8, 0, D, MURO); caja(112, 115, 1, 4, 2, 5, 0);
     const m = (x, y, z) => ({ x, y, z, got: false });
-    return {
-      W, V, meta: 120, puerta: { x: 112, x1: 115, z0: 2, z1: 5, alto: 4 },
+    const nivel = {
+      W, V, variante, meta: 120, puerta: { x: 112, x1: 115, z0: 2, z1: 5, alto: 4 },
       inicio: { x: 2.5, y: 1, z: 3.5 },
       monedas: [m(7, 3, 3.5), m(12.5, 1.6, 6.5), m(14.5, 1.6, 5.5), m(17.5, 3.4, 5.5), m(24.5, 3.6, 1.5), m(28.5, 4.6, 3.5), m(31.5, 4.6, 5.5),
         m(36.5, 4.6, 1.5), m(38.5, 4.6, 3.5), m(41, 5.8, 5.5), m(46.5, 4.6, 2.5), m(48.5, 4.6, 4.5), m(51.5, 4.6, 6.5),
         m(64.5, 1.6, 5.5), m(69.5, 1.6, 1.5), m(74.5, 1.6, 5.5), m(83, 3.2, 2.5), m(93.5, 3.6, 2.5), m(94.5, 3.6, 4), m(98, 4.6, 5.5), m(106, 1.6, 1.5), m(113.5, 1.6, 3.5)],
+      cangrejos: [[64, 68, 5], [70, 74, 1], [103, 110, 3]].map(([x0, x1, z], i) => ({ x: (x0 + x1) / 2, x0, x1, z: z + .5, y: 1, dir: i % 2 ? -1 : 1, t: i * .7, duerme: 0, huye: 0 })),
       embestidores: [[79.5, 2.5], [86.5, 2.5], [103.5, 3.5], [105.5, 5.5]].map(([x, z], i) => ({ x, z, y: 1, dir: -1, t: i * .7, duerme: 0, fase: 'espera', tiempo: .5 + i * .2, vx: 0, vz: 0, caida: 0 })),
       canones: [[63, 0], [68, .9], [73, 1.8]].map(([x, fase]) => ({ x, fase, per: 2.8 })),
       notas: [{ x: 1.6, ya: 8.4, txt: 'Puerta de Mar' }, { x: 17.5, ya: 2.6, txt: 'Foso' }, { x: 29.5, ya: 5.4, txt: 'Baluarte de San Carlos' }, { x: 44, ya: 5.4, txt: 'Adarve' },
@@ -68,6 +72,16 @@ MODOS.planos = (() => {
         { id: 'vigas', x0: 86, x1: 90, txt: 'Súbete a la viga en alzado y síguela en planta.' },
       ],
     };
+    // Reflejar los carriles crea otra disposición sin romper la geometría 3D.
+    if (variante >= 2) {
+      for (let x=0; x<W; x++) for (let y=0; y<HM; y++) for (let z=0; z<Math.floor(D/2); z++) {
+        const a=(x*HM+y)*D+z, b=(x*HM+y)*D+(D-1-z); [V[a],V[b]]=[V[b],V[a]];
+      }
+      for (const q of [...nivel.monedas, ...nivel.cangrejos, ...nivel.embestidores]) q.z = D - q.z;
+      nivel.inicio.z = D - nivel.inicio.z;
+      const puerta = nivel.puerta, z0 = puerta.z0; puerta.z0 = D - puerta.z1; puerta.z1 = D - z0;
+    }
+    return nivel;
   }
   const celda = (n, x, y, z) => x < 0 || x >= n.W || y < 0 || y >= HM || z < 0 || z >= D ? 0 : n.V[(x * HM + y) * D + z];
   const duro = (n, x, y, z) => x < 0 || x >= n.W || z < 0 || z >= D ? 1 : celda(n, x, y, z);
@@ -106,7 +120,8 @@ MODOS.planos = (() => {
   }
 
   function crear(def, st) {
-    const n = armar(), i = n.inicio;
+    const semilla = typeof RUN !== 'undefined' && RUN ? ((RUN.seed || 0) ^ Math.imul(RUN.world || 1, 0x9e3779b1)) >>> 0 : 1;
+    const n = armar(Math.floor(rng(semilla)() * 4)), i = n.inicio;
     return { t: 0, tm: 0, win: 0, shake: 0, bubbles: [], parts: [], def, st, n, inv: 0, pose: poseItzel(),
       p: { x: i.x, y: i.y, z: i.z, vx: 0, vy: 0, vz: 0, on: true, face: 1, run: 0 }, safe: { x: i.x, y: i.y, z: i.z },
       plano: 'alzado', ang: 0, giro: null, cam: 0, coyote: 0, buf: 0, saltaAntes: false, fre: { x: 120, y: 90 },
@@ -131,7 +146,7 @@ MODOS.planos = (() => {
     for (const c of MOUSE.clicks) {
       if (c.up) continue;
       if (c.b === 2) {
-        for (const q of n.embestidores) { const [qx, qy] = proy(j, q.x, q.y, q.z); if (Math.hypot(qx - j.fre.x, qy - j.fre.y) < 50) q.duerme = 5; }
+        for (const q of (j.plano === 'alzado' ? n.cangrejos : n.embestidores)) { const [qx, qy] = proy(j, q.x, q.y, q.z); if (Math.hypot(qx - j.fre.x, qy - j.fre.y) < 50) q.duerme = 5; }
         chispas(j, j.fre.x, j.fre.y, ['#b9a7ff', '#ffffff'], 14, 50); suena('arrullo'); continue;
       }
       girar(j);
@@ -172,7 +187,7 @@ MODOS.planos = (() => {
     if (p.y < -1.4) { if (dañoModo(j)) suena('herida'); Object.assign(p, { x: j.safe.x, y: j.safe.y, z: j.safe.z, vx: 0, vy: 0, vz: 0 }); if (j.plano === 'alzado') alCarril(j); }
     // Jabalíes: avisan, fijan el rumbo y no frenan al llegar al borde.
     for (const q of n.embestidores) {
-      if (q.fuera) continue;
+      if (alz || q.fuera) continue;
       q.t += dt; q.duerme = Math.max(0, q.duerme - dt);
       if (q.fase === 'caida') {
         q.caida += dt; q.y -= (2 + q.caida * 12) * dt;
@@ -183,7 +198,7 @@ MODOS.planos = (() => {
         q.tiempo -= dt;
         const dist = Math.hypot(p.x - q.x, p.z - q.z);
         if (q.fase === 'espera' && q.tiempo <= 0 && dist < 6 && Math.abs(p.y - q.y) < 1.5) {
-          q.fase = 'aviso'; q.tiempo = .8; q.dir = Math.sign(p.x - q.x) || q.dir;
+          q.fase = 'aviso'; q.tiempo = .8; q.dir = Math.sign(p.x - q.x) || q.dir; q.miraX = p.x - q.x; q.miraZ = p.z - q.z;
         } else if (q.fase === 'aviso' && q.tiempo <= 0) {
           const dx = p.x - q.x, dz = p.z - q.z, largo = Math.hypot(dx, dz) || 1;
           q.vx = dx / largo * 9; q.vz = dz / largo * 9; q.dir = Math.sign(q.vx) || q.dir; q.fase = 'embiste'; q.tiempo = 1.5;
@@ -202,11 +217,27 @@ MODOS.planos = (() => {
       const toca = Math.abs(p.x - q.x) < AN + .42 && Math.abs(p.z - q.z) < AN + .36 && p.y < q.y + .75 && p.y + ALTO > q.y;
       if (toca && !q.duerme && dañoModo(j)) { suena('herida'); p.vy = 7; if (alz) mover(j, 'x', (Math.sign(p.x - q.x) || -1) * .7); else mover(j, 'z', (Math.sign(p.z - q.z) || -1) * .7, true); }
     }
+    // En alzado regresan los cangrejos: caminan por su carril y se vencen de un pisotón.
+    if (alz) for (const q of n.cangrejos) {
+      if (q.fuera) continue; q.t += dt; q.duerme = Math.max(0, q.duerme - dt);
+      if (q.huye) { q.huye -= dt; q.x += q.dir * 5 * dt; if (q.huye <= 0) q.fuera = true; continue; }
+      if (!q.duerme) {
+        const nx = q.x + q.dir * 1.7 * dt, fx = Math.floor(nx + q.dir * .45), lz = Math.floor(q.z);
+        if (nx < q.x0 || nx > q.x1 || celda(n, fx, q.y, lz) || !celda(n, fx, q.y - 1, lz)) q.dir *= -1; else q.x = nx;
+      }
+      const toca = Math.abs(p.x - q.x) < AN + .42 && Math.abs(p.z - q.z) < AN + .36 && p.y < q.y + .62 && p.y + ALTO > q.y;
+      if (!toca) continue;
+      if (cae < -1 && p.y > q.y + .3) { q.huye = 1.6; q.dir = Math.sign(q.x - p.x) || 1; p.vy = 11; p.on = false; RUN.stomps++; suena('pisa'); chispas(j, ...proy(j, q.x, q.y + .6, q.z), ['#b5533c', '#ffffff', TINTA], 14, 70); }
+      else if (!q.duerme && dañoModo(j)) { suena('herida'); p.vy = 7; mover(j, 'x', (Math.sign(p.x - q.x) || -1) * .7); }
+    }
     // balas de la batería: ruedan del fondo hacia el frente
     for (const b of balas(j)) if (Math.abs(p.x - b.x) < AN + .34 && Math.abs(p.z - b.z) < AN + .34 && p.y < b.y + .72 && dañoModo(j)) { suena('herida'); p.vy = 8; p.on = false; chispas(j, ...proy(j, b.x, b.y + .4, b.z), [TINTA, '#ffffff'], 10, 60); }
     // canisteles
     // el canistel se recoge con lo que se ve: en alzado no importa el fondo y en planta no importa la altura
-    for (const c of n.monedas) if (!c.got && Math.abs(p.x - c.x) < .55 && (alz ? c.y > p.y - .2 && c.y < p.y + ALTO + .35 : Math.abs(p.z - c.z) < .55)) { c.got = true; RUN.coins++; suena('canistel'); chispas(j, ...proy(j, c.x, c.y, c.z), ['#f2c94c', '#ffffff', ALZ.borde]); }
+    // la caja de recoger sigue lo que se ve en pantalla: el cuerpo de Itzel proyectado (de los pies a la cabeza) contra el canistel dibujado, en planta y en alzado
+    const [pX, pY] = proy(j, p.x, p.y, p.z), [, hY] = proy(j, p.x, p.y + ALTO, p.z), RM = 7;   // RM: radio del canistel dibujado, en px
+    const cuerpoX = AN * C + RM * .8, arriba = Math.min(pY, hY) - RM * .8, abajo = Math.max(pY, hY) + RM * .8;
+    for (const c of n.monedas) if (!c.got && (() => { const [cX, cY] = proy(j, c.x, c.y, c.z); return Math.abs(cX - pX) < cuerpoX && cY > arriba && cY < abajo; })()) { c.got = true; RUN.coins++; suena('canistel'); chispas(j, ...proy(j, c.x, c.y, c.z), ['#f2c94c', '#ffffff', ALZ.borde]); }
     // la Puerta de Tierra
     if (!j.win && p.x >= n.meta) { j.win = j.t; suena('meta'); chispas(j, ...proy(j, p.x, p.y + 2, p.z), [ALZ.borde, PLA.borde, '#f2c94c', '#ffffff'], 60, 140); }
     pasoChispas(j, dt); camara(j, dt);
@@ -293,7 +324,16 @@ MODOS.planos = (() => {
         if (f === 0 && k === 5) { ctx.fillStyle = 'rgba(232,215,175,.5)'; ctx.strokeStyle = 'rgba(70,64,60,.4)'; ctx.beginPath(); ctx.rect(x + 14, y - h + 2, 18, h - 6); ctx.rect(x + 6, y - h + 12, 34, 8); ctx.fill(); ctx.stroke(); for (const tx of [x + 10, x + 32]) { ctx.beginPath(); ctx.rect(tx, y - 9, 6, 6); ctx.fill(); ctx.stroke(); } ctx.beginPath(); ctx.arc(x + 23, y - h + 16, 4, 0, TAU); ctx.stroke(); continue; }
         ctx.fillStyle = 'rgba(232,170,155,.1)'; ctx.fillRect(x, y - h, w, h); ctx.strokeStyle = 'rgba(70,64,60,.22)'; ctx.strokeRect(x, y - h, w, h);
         // las casas dan a la calle y guardan su patio adentro
-        let cx = x; while (cx < x + w - 4) { const cw = 8 + hash2(k * 9 + cx, f, 2) * 8, ww = Math.min(cw, x + w - cx); ctx.fillStyle = rgba(CAMP.FACHADAS[(hash2(k, cx | 0, 8) * 8) | 0], .32); ctx.fillRect(cx, y - 3, ww, 3); ctx.fillRect(cx, y - h, ww, 2.4); ctx.beginPath(); ctx.moveTo(cx, y); ctx.lineTo(cx, y - 9); ctx.moveTo(cx, y - h); ctx.lineTo(cx, y - h + 8); ctx.stroke(); cx += cw; }
+        // La posición y el color de cada casa dependen de su manzana,
+        // no de la cámara: así sus divisiones no cambian mientras caminas.
+        let avance = 0, casa = 0;
+        while (avance < w - 4) {
+          const cw = 8 + hash2(k * 31 + casa, f, 2) * 8, ww = Math.min(cw, w - avance), cx = x + avance;
+          ctx.fillStyle = rgba(CAMP.FACHADAS[(hash2(k * 31 + casa, f, 8) * CAMP.FACHADAS.length) | 0], .32);
+          ctx.fillRect(cx, y - 3, ww, 3); ctx.fillRect(cx, y - h, ww, 2.4);
+          ctx.beginPath(); ctx.moveTo(cx, y); ctx.lineTo(cx, y - 9); ctx.moveTo(cx, y - h); ctx.lineTo(cx, y - h + 8); ctx.stroke();
+          avance += cw; casa++;
+        }
         ctx.fillStyle = 'rgba(150,190,120,.16)'; ctx.fillRect(x + 10 + hash2(k, f, 4) * 6, y - h + 11, w - 26, h - 22);
       }
     }
@@ -443,19 +483,23 @@ MODOS.planos = (() => {
   }
 
   // ---------------- personajes y cosas ----------------
-  // Jabalí visto desde arriba o de lado; rojo cuando prepara la embestida.
-  function embestidor(ctx, X, Y, q, t, deArriba) {
-    ctx.save(); ctx.translate(X, Y); if (!deArriba) ctx.scale(q.dir || 1, 1);
-    ctx.lineWidth = .8; ctx.strokeStyle = TINTA; ctx.fillStyle = q.fase === 'aviso' ? '#c9654d' : '#8b624d';
-    if (q.fase === 'caida') ctx.globalAlpha = Math.max(0, 1 - q.caida);
-    const pata = q.fase === 'embiste' ? Math.sin(t * 24) * 2 : Math.sin(t * 5) * .6;
-    for (const lado of [-1,1]) { ctx.beginPath(); ctx.moveTo(lado*4,-3); ctx.lineTo(lado*7,2+pata*lado); ctx.stroke(); }
-    ctx.beginPath(); ctx.ellipse(0,-5,7,4.5,0,0,TAU); ctx.fill(); ctx.stroke();
-    ctx.fillStyle='#b98a6a'; ctx.beginPath(); ctx.ellipse(deArriba ? 0 : 6, deArriba ? -10 : -5, 3.4, 2.6,0,0,TAU); ctx.fill(); ctx.stroke();
-    ctx.fillStyle='#fff3d5'; for (const lado of [-1,1]) { ctx.beginPath(); ctx.arc(deArriba ? lado*2.3 : 7, deArriba ? -10 : -6+lado*1.5, .75,0,TAU); ctx.fill(); }
-    if (q.fase === 'aviso') { ctx.fillStyle='#b42035'; ctx.font='bold 9px Alegreya Sans'; ctx.textAlign='center'; ctx.fillText('!',0,-15); }
-    if (q.duerme) { ctx.fillStyle=TINTA; ctx.font='italic 6px Alegreya'; ctx.fillText('z',8,-12); }
-    ctx.restore();
+  // pecarí visto desde arriba (lámina de David, v2 sin halos): cuadros 0 reposo · 1 caminar · 2 embestir · 3 dormir, hocico a la derecha
+  const artePecari = new Image(); artePecari.src = '../Roguelike/assets/planos-enemigos/pecari-poses-v2.png?v=1';
+  function embestidor(ctx, X, Y, q, t) {
+    if (!artePecari.complete || !artePecari.naturalWidth) return;
+    const cuadro = q.duerme ? 3 : q.fase === 'caida' ? 2 : q.fase === 'embiste' ? (Math.floor(t * 12) % 2 ? 2 : 1) : 0;   // dormido: enroscado; embistiendo: alterna estirarse y caminar
+    const sw = artePecari.naturalWidth / 2, sh = artePecari.naturalHeight / 2;
+    const vx = q.fase === 'embiste' ? q.vx : q.miraX || q.dir, vz = q.fase === 'embiste' ? q.vz : q.miraZ || 0;
+    ctx.save(); ctx.translate(X, Y); ctx.rotate(Math.atan2(-vz, vx));
+    if (q.fase === 'caida') { ctx.globalAlpha *= Math.max(0,1-q.caida); ctx.scale(1-q.caida*.45,1-q.caida*.45); }
+    if (q.duerme) ctx.filter = 'brightness(.9)';
+    const pulso = q.fase === 'aviso' ? 1 + Math.sin(t*20)*.04 : 1;
+    ctx.imageSmoothingEnabled = true; ctx.imageSmoothingQuality = 'high'; ctx.drawImage(artePecari, (cuadro%2)*sw, Math.floor(cuadro/2)*sh, sw, sh, -17*pulso, -17*pulso, 34*pulso, 34*pulso); ctx.restore();
+    if (q.fase === 'aviso') { ctx.save(); ctx.fillStyle='#b42035'; ctx.font='bold 9px Alegreya Sans'; ctx.textAlign='center'; ctx.fillText('!',X,Y-18); ctx.restore(); }
+  }
+  function dibujaCangrejo(ctx, X, Y, q, t) {
+    const FA = window.FAUNA_ARTE, alfa = q.huye ? clamp(q.huye/1.6,0,1) : 1;
+    if (FA && FA.listo('cangrejoAlzado')) FA.dib(ctx, 'cangrejoAlzado', q.duerme ? 0 : t, X, Y + 1, {w:18, fps:7, alfa, filtro:q.duerme?'saturate(.6) brightness(.85)':undefined});
   }
   function bala(ctx, X, Y, z, fantasma) {
     const r = .36 * C;
@@ -498,7 +542,8 @@ MODOS.planos = (() => {
     // cañones del fondo
     for (const c of n.canones) { const u = (j.tm + c.fase) % c.per; pon(c.x + .5, 1.6, D + .6, () => { const [X, Y] = proy(j, c.x + .5, 1.2, D + .6); ctx.save(); if (alz) ctx.globalAlpha = .35; canon(ctx, X, pla ? Y : Y + 2, pla, u < .35 ? 1 - u / .35 : 0); ctx.restore(); }); }
     for (const c of n.monedas) if (!c.got) pon(c.x, c.y, c.z, () => { const [X, Y] = proy(j, c.x, c.y, c.z); ctx.save(); monedaItzel(ctx, X, Y, t, f); ctx.restore(); });
-    for (const q of n.embestidores) if (!q.fuera) pon(q.x, q.y, q.z, () => { const [X, Y] = proy(j, q.x, q.y, q.z); ctx.save(); if (!presente(q.y, q.z)) ctx.globalAlpha = .3; embestidor(ctx, X, Y, q, j.tm, pla || (j.giro && j.ang > .8)); ctx.restore(); });
+    if (pla) for (const q of n.embestidores) if (!q.fuera) pon(q.x, q.y, q.z, () => { const [X, Y] = proy(j, q.x, q.y, q.z); embestidor(ctx, X, Y, q, j.tm); });
+    if (alz) for (const q of n.cangrejos) if (!q.fuera) pon(q.x, q.y, q.z, () => { const [X, Y] = proy(j, q.x, q.y, q.z); ctx.save(); if (!presente(q.y,q.z)) ctx.globalAlpha = .3; dibujaCangrejo(ctx,X,Y,q,j.tm); ctx.restore(); });
     for (const b of balas(j)) pon(b.x, b.y, b.z, () => { const [X, Y] = proy(j, b.x, b.y, b.z); if (alz && Math.floor(b.z) !== zi) { const cerca = b.z - (zi + .5); if (cerca > 0) bala(ctx, X, Y, b.z, clamp(.7 - (cerca - .5) * .18, .12, .7)); return; } bala(ctx, X, Y, b.z, 0); });
     pon(n.meta + 1, 1, 3.5, () => { const [X, Y] = proy(j, n.meta + 1, 1, 3.5); st.goal(ctx, X, Y, t, f); });
     pon(p.x, p.y, p.z, () => itzel(ctx, j, f));
@@ -590,7 +635,7 @@ nivel('planos', {
   nombre: 'Planta y alzado de la muralla', lugar: 'La muralla, de la Puerta de Mar a la Puerta de Tierra',
   lema: 'Itzel cruza la lámina del ingeniero que trazó la muralla y Fresita la gira entre planta y alzado: los muros altos se rodean desde arriba y los fosos se saltan de lado.',
   dato: 'La muralla de Campeche se levantó entre 1686 y 1704 contra los piratas, con el trazo del ingeniero francés Luis Bouchard de Becour. Tenía ocho baluartes y cuatro puertas; los ingenieros militares dibujaban cada fuerte en planta y en alzado.',
-  modo: 'planos', foe: 'jabali', fauna: ['jabali'], power: 'planos', plat: NIVELES.cuaderno.plat, W: 30, skin: NIVELES.cuaderno.skin,
+  modo: 'planos', foe: 'cangrejo', fauna: ['cangrejo', 'jabali'], power: 'planos', plat: NIVELES.cuaderno.plat, W: 30, skin: NIVELES.cuaderno.skin,
 });
 (NIVELES_ALT.cuaderno = NIVELES_ALT.cuaderno || []).push('planos');
 

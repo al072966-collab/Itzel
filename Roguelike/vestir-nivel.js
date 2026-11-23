@@ -67,7 +67,9 @@
     let faltan = 1;
     const listo = n => { const im = IMG[n]; return !!(im && im.complete && im.naturalWidth && TAM[n]); };
     function rehaz() { if (typeof CACHE !== 'undefined') for (const k of [...CACHE.keys()]) if (k.startsWith(id + '@')) CACHE.delete(k); }
-    const manifiesto = cfg.manifiesto ? Promise.resolve(cfg.manifiesto) : fetch(RUTA + (cfg.json || cfg.carpeta + '.json') + '?v=' + ver).then(r => r.json());
+    const nombreJson = cfg.json || cfg.carpeta + '.json';
+    const local = cfg.manifiesto || window.ASSETS_MANIFIESTOS_LOCALES?.[cfg.carpeta + '/' + nombreJson];
+    const manifiesto = local ? Promise.resolve(local) : fetch(RUTA + nombreJson + '?v=' + ver).then(r => r.json());
     manifiesto.then(m => {
       Object.assign(TAM, m); faltan = Object.keys(m).length;
       for (const n of Object.keys(m)) { const im = new Image(); im.decoding = 'async'; im.onload = im.onerror = () => { if (--faltan === 0) { rehaz(); if (V.alCargar) V.alCargar(); } }; im.src = RUTA + n + '.png?v=' + ver; IMG[n] = im; }

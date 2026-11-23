@@ -2,8 +2,34 @@
 // Taller de alfarería: decoración y criaturas; la plastilina conserva su física.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.barro) return;
-  const V = vestirNivel({ id: 'barro', carpeta: 'alfareria', ver: 4 });
+  const V = vestirNivel({ id: 'barro', carpeta: 'alfareria', ver: 4, manifiesto: window.ALFARERIA_MANIFIESTO });
   const { spr, h1 } = V;
+  const panorama = new Image();
+  panorama.onload = () => V.rehaz(); panorama.src = '../Roguelike/assets/alfareria/taller-panorama-v1.png';
+  const paredBaja = new Image();
+  paredBaja.onload = () => V.rehaz(); paredBaja.src = '../Roguelike/assets/alfareria/pared-baja-v1.png';
+  const barroEstirable = new Image();
+  barroEstirable.onload = () => V.rehaz(); barroEstirable.src = '../Roguelike/assets/alfareria/plastilina-estirable-v1.png';
+  V.solido('clay', (c, s, f) => {
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    if (id !== 'barro' || !barroEstirable.complete || !barroEstirable.naturalWidth) return false;
+    const { x, y, w, h } = s;
+    c.save();
+    if (s.glow > .05) { c.shadowColor = '#fff3c4'; c.shadowBlur = 6 * f.S * s.glow; }
+    if (s.axis === 'x') c.drawImage(barroEstirable, 45, 284, 2085, 155, x, y, w, h);
+    else { c.translate(x + w, y); c.rotate(Math.PI / 2); c.drawImage(barroEstirable, 45, 284, 2085, 155, 0, 0, h, w); }
+    c.restore();
+    // La flecha sigue avisando la dirección en la que se puede estirar.
+    if (s.glow > .05 || (f.t % 2 < 1 && s.len <= s.min + 1)) {
+      const ax = s.axis === 'x' ? (s.dir > 0 ? x + w + 4 : x - 4) : x + w / 2;
+      const ay = s.axis === 'x' ? y + h / 2 : y - 4;
+      c.save(); c.globalAlpha = .6; c.fillStyle = '#fff'; c.beginPath();
+      if (s.axis === 'x') { c.moveTo(ax, ay - 2.5); c.lineTo(ax + s.dir * 3, ay); c.lineTo(ax, ay + 2.5); }
+      else { c.moveTo(ax - 2.5, ay); c.lineTo(ax, ay - 3); c.lineTo(ax + 2.5, ay); }
+      c.closePath(); c.fill(); c.restore();
+    }
+    return true;
+  }, 'puente');
 
   // ================================================================
   //  EL TALLER DE TEPAKÁN (2026-11-15): por dentro, como en fondo-taller.png.
@@ -72,10 +98,26 @@
     }
   }
   V.cielo((c, f) => {
-    screenLayer(c, f, 'tallerMuro', x => muro(x, VW));
-    strip(c, f, 'tallerArcos', .18, (x, w) => arcos(x, w));
-    picado(c, f);
-    strip(c, f, 'tallerVigas', .45, (x, w) => vigas(x, w));
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    if (id === 'barro' && panorama.complete && panorama.naturalWidth) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .10 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#a85a3e'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(panorama, 0, 0, 2172, 585, x, arriba, ancho, base - arriba);
+        if (paredBaja.complete && paredBaja.naturalWidth && base < alto) {
+          c.save(); c.filter = 'brightness(.68) saturate(.8)';
+          c.drawImage(paredBaja, x, base, ancho, alto - base);
+          c.restore();
+        }
+      }
+      c.restore();
+    } else {
+      screenLayer(c, f, 'tallerMuro', x => muro(x, VW));
+      strip(c, f, 'tallerArcos', .18, (x, w) => arcos(x, w));
+      picado(c, f);
+      strip(c, f, 'tallerVigas', .45, (x, w) => vigas(x, w));
+    }
     // polvo de barro flotando en la luz de las ventanas
     const t = f.t; c.save(); c.globalCompositeOperation = 'lighter';
     for (let i = 0; i < 18; i++) { const w = VW + 40, x = ((h1(i, 51) * w - f.cam * .2 + Math.sin(t * .7 + i) * 6) % w + w) % w - 20, y = ((h1(i, 52) * 130 - t * (3 + h1(i, 53) * 4)) % 130 + 130) % 130 + 30; c.globalAlpha = .35 * Math.sin(Math.PI * (y - 30) / 130); c.fillStyle = '#ffe0b0'; c.fillRect(x, y, 1, 1); }

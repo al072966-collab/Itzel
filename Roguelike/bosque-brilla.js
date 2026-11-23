@@ -23,7 +23,7 @@
   const TAM = {}, IMG = {};
   const listo = n => { const im = IMG[n]; return !!(im && im.complete && im.naturalWidth && TAM[n]); };
   let faltan = 1;
-  fetch(RUTA + 'bosque.json?v=6').then(r => r.json()).then(m => {
+  (window.BOSQUE_MANIFIESTO ? Promise.resolve(window.BOSQUE_MANIFIESTO) : fetch(RUTA + 'bosque.json?v=6').then(r => r.json())).then(m => {
     Object.assign(TAM, m); faltan = Object.keys(m).length;
     for (const n of Object.keys(m)) { const im = new Image(); im.decoding = 'async'; im.onload = im.onerror = () => { if (--faltan === 0) rehaz(); }; im.src = RUTA + n + '.png?v=6'; IMG[n] = im; }
   }).catch(() => { faltan = -1; });
@@ -42,6 +42,20 @@
   }
   const h1 = (a, b = 0) => { let h = (a * 374761393 + b * 668265263) | 0; h = (h ^ (h >>> 13)) * 1274126177; return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
 
+  const FONDO_BOSQUE = {};
+  for (const [n, archivo] of Object.entries({ fondo:'manglar-nocturno-v1', dosel:'dosel-brillante-v1', tierra:'tierra-brillante-v1', borde:'borde-brillante-v1' })) {
+    const im = FONDO_BOSQUE[n] = new Image(); im.decoding = 'async'; im.onload = rehaz; im.src = RUTA + archivo + '.png';
+  }
+  const bosquePrincipal = f => ((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'biolum';
+  const bosqueFondoListo = () => Object.values(FONDO_BOSQUE).every(im => im.complete && im.naturalWidth);
+  function bosqueIlustrado(c, f) {
+    const im=FONDO_BOSQUE.fondo,H=f.H||VH,sw=Math.min(im.naturalWidth,im.naturalHeight*VW/H),max=Math.max(0,im.naturalWidth-sw);
+    const sx=max*(.5+.3*Math.sin((f.cam||0)*.0007)); c.save(); c.imageSmoothingEnabled=true; c.imageSmoothingQuality='high';
+    c.drawImage(im,sx,0,sw,im.naturalHeight,0,0,VW,H);
+    const w=540,h=78,off=(((f.cam||0)*.35)%w+w)%w;
+    for(let x=-off-w;x<VW+w;x+=w) c.drawImage(FONDO_BOSQUE.dosel,0,0,2172,315,x,0,w,h);
+    c.restore();
+  }
   // ---------------- el telón: el bosque de antes, con luna y dosel ----------------
   function dosel(x, f, w) {
     // hojas oscuras arriba, lianas que cuelgan y flores blancas que brillan
@@ -64,13 +78,16 @@
   const cieloAntes = ST.sky;
   ST.sky = function (ctx, f) {
     if (!esBosque(f.st)) return cieloAntes.call(this, ctx, f);
-    cieloAntes.call(this, ctx, f);
+    const ilustrado = bosquePrincipal(f) && bosqueFondoListo();
+    if (ilustrado) bosqueIlustrado(ctx, f); else cieloAntes.call(this, ctx, f);
     // los rayos que bajan de la luna de siempre (fija en la pantalla, en 110, 40) entre los árboles
     const t = f.t;
+    if (!ilustrado) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     const rayos = cached(f, 'bosqueRayos', VW, VH, x => { x.filter = `blur(${5 * f.S}px)`; for (let k = 0; k < 4; k++) { const g = x.createLinearGradient(0, 40, 0, VH); g.addColorStop(0, 'rgba(170,240,255,.16)'); g.addColorStop(1, 'rgba(170,240,255,0)'); x.fillStyle = g; x.beginPath(); x.moveTo(104 + k * 4, 44); x.lineTo(112 + k * 4, 44); x.lineTo(150 + k * 34 + 30, VH); x.lineTo(150 + k * 34 - 12, VH); x.closePath(); x.fill(); } });
     ctx.globalAlpha = .7 + Math.sin(t * .5) * .3; ctx.drawImage(rayos, 0, 0, VW, VH); ctx.restore();
     strip(ctx, f, 'bosqueDosel', .55, (x, w) => dosel(x, f, w));
+    }
     // una ola de luz que recorre el bosque: un frente que avanza y enciende, un instante, todo lo que toca
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     const fr = ((t * 38) % (VW + 220)) - 110;
@@ -91,6 +108,16 @@
     if (window.estiloArteDerivado || faltan !== 0) return terrenoAntes.call(this, ctx, f);
     const deco = L.deco; L.deco = [];
     try { terrenoAntes.call(this, ctx, f); } finally { L.deco = deco; }
+    if (bosquePrincipal(f) && bosqueFondoListo()) {
+      ctx.save(); allLoopsPath(ctx,L.loops); ctx.clip();
+      const p=ctx.createPattern(FONDO_BOSQUE.tierra,'repeat'); p.setTransform(new DOMMatrix().scale(150/FONDO_BOSQUE.tierra.naturalWidth));
+      ctx.fillStyle=p; ctx.fillRect(0,0,L.ww,VH+40); ctx.restore();
+      for(const r of L.tops) {
+        ctx.save(); ctx.beginPath(); ctx.rect(r.x0,r.y-5,r.x1-r.x0,9); ctx.clip();
+        for(let x=r.x0;x<r.x1;x+=110) ctx.drawImage(FONDO_BOSQUE.borde,0,320,2171,59,x,r.y-2,110,3);
+        ctx.restore();
+      }
+    }
     const hueco = (x, y) => !L.solid(Math.floor(x / T), Math.floor(y / T));
     for (const b of L.bottoms) for (let x = b.x0 + 10; x < b.x1 - 10; x += 22 + h1(x | 0, 5) * 30) {   // lianas bajo los techos
       if (b.y > VH - 4 || h1(x | 0, 6) < .4) continue;

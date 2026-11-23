@@ -191,8 +191,9 @@ const PROPIO = (() => {
     Lk.tops = Lk.tops.filter(t => t.y >= T - .5 && t.y <= FR * T + .5); Lk.bottoms = Lk.bottoms.filter(b => b.y >= 2 * T - .5 && b.y <= (FR + 1) * T + .5);
     Lk.deco = Lk.deco.filter(o => o.y >= T - .5 && o.y <= FR * T + .5);
     c = mkCanvas(Lk.ww * S, (FR + 2) * T * S); const x = c.getContext('2d'); x.scale(S, S); x.imageSmoothingEnabled = !j.st.pixel;
-    try { L = Lk; j.st.terrain(x, { S, st: j.st, key: j.st.id + '@' + S.toFixed(3) + '|franja' + k + '|' + j.def.id, t: 0, cam: 0, franja: true }); } catch (e) { /* si un estilo truena con una franja, se queda sin pintar */ }
+    try { L = Lk; if (j.def.terreno) j.def.terreno(x, { S, st: j.st, t: 0, cam: 0, franja: true }, j); else j.st.terrain(x, { S, st: j.st, key: j.st.id + '@' + S.toFixed(3) + '|franja' + k + '|' + j.def.id, t: 0, cam: 0, franja: true }); } catch (e) { /* si un estilo truena con una franja, se queda sin pintar */ }
     finally { L = antes; }
+    if (j.def.terrenoListo && !j.def.terrenoListo()) return c;   // las imágenes del terreno propio aún no llegan: se pinta sin guardar
     j.franjas.set(k, c); return c;
   }
   function pintar(j, view) {
@@ -257,7 +258,7 @@ const PROPIO = (() => {
       v.x = j.fre.x; v.y = j.fre.y; v.atrapada = j.fre.atrapada; v.daze = j.fre.daze;
       st.fresita(ctx, v, f);
     }
-    if (st.over) { ctx.save(); ctx.setTransform(S, 0, 0, S * Hv / VH, 0, 0); st.over(ctx, f); ctx.restore(); }
+    if (st.over && !def.sinOver) { ctx.save(); ctx.setTransform(S, 0, 0, S * Hv / VH, 0, 0); st.over(ctx, f); ctx.restore(); }
     L = antes;
     hud(ctx, j, Hv);
   }

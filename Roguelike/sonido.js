@@ -125,7 +125,7 @@ const SONIDO = (() => {
     aviso(A, t) { nota(A, A.fx, { t, f: hz(79), d: .14, tipo: 'triangle', v: .15 }); nota(A, A.fx, { t: t + .13, f: hz(84), d: .22, tipo: 'triangle', v: .15 }); },
     abre(A, t) { nota(A, A.fx, { t, f: hz(74), d: .16, tipo: 'square', v: .05, corte: 2400 }); nota(A, A.fx, { t: t + .12, f: hz(81), d: .22, tipo: 'square', v: .05, corte: 2400 }); },
     rugidoJefe(A, t, tipo) {
-      const metal = ['brawbot', 'golem', 'mascaron'].includes(tipo), agudo = tipo === 'serpiente' || tipo === 'camazotz';
+      const metal = ['golem', 'mascaron'].includes(tipo), agudo = tipo === 'serpiente' || tipo === 'camazotz';
       const base = agudo ? 190 : metal ? 85 : 115;
       soplo(A, A.fx, { t, d: .72, v: .22, corte: agudo ? 1400 : 650, filtro: 'bandpass', q: .8 });
       nota(A, A.fx, { t, f: base, f2: base * .68, d: .76, tipo: 'sawtooth', v: .14, ataque: .08, corte: metal ? 650 : 1100 });
@@ -189,7 +189,8 @@ const SONIDO = (() => {
     cuenta['cue:' + d.tipo] = (cuenta['cue:' + d.tipo] || 0) + 1;
     if (A && A.ctx.state === 'running' && volFx() > 0) CUES[d.tipo](conGanancia(A, d.tipo), A.ctx.currentTime + .005, String(d.nombre || '').toLowerCase());
   }
-  addEventListener('cine-cue', e => { const d = e.detail; if (d && d.cine === 'entrada') return; if (d && d.tipo === 'silencio') { if (A) apaga = A.ctx.currentTime + 1.4; cuenta['cue:silencio'] = (cuenta['cue:silencio'] || 0) + 1; return; } cue(d); });
+  addEventListener('cine-cue', e => { const d = e.detail; if (d && (d.cine === 'entrada' || /^jefe-/.test(d.cine))) return; // (la entrada y las de jefe suenan con archivos: audio-archivos.js)
+     if (d && d.tipo === 'silencio') { if (A) apaga = A.ctx.currentTime + 1.4; cuenta['cue:silencio'] = (cuenta['cue:silencio'] || 0) + 1; return; } cue(d); });
 
   // ---------------- el motor ----------------
   let A = null, id = null, T = null, proxT = 0, barra = 0, apaga = 0, U = null, racha = 0, rachaT = 0;
@@ -248,7 +249,7 @@ const SONIDO = (() => {
     MODOS.campechanidad.paso = function (j, dt) {
       _p.call(this, j, dt); if (!j.compases) return;
       while (j.compasI < j.compases.length && j.compases[j.compasI].t <= j.t + .02) { const q = j.compases[j.compasI++]; compasDeJuego(q.dur, q.tres); }
-      if (Uj && Uj.j === j) { if (j.aciertos > Uj.a) fx('zapateo'); if (j.caidas > Uj.c) fx('herida'); } Uj = { j, a: j.aciertos, c: j.caidas };
+      if (Uj && Uj.j === j) { if (j.caidas > Uj.c) fx('herida'); } Uj = { j, a: j.aciertos, c: j.caidas };
     };
   }
   // ---------------- revisión en silencio ----------------

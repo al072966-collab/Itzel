@@ -18,7 +18,7 @@
   const TAU2 = Math.PI * 2;
 
   // ======================= FARO (bruma) =======================
-  const LARGO = 185, ABRE = .36, DURA = 10;
+  const LARGO = 185, ABRE = .36, DURA = 11;
   const origenFaro = g => ({ x: g.fre.x + (g.fre.face || 1) * 6.5, y: g.fre.y - .8 + Math.sin(g.t * 2) * .45 });
   MEC.ponLuzExtra((g, x, y) => {
     const h = g.haz; if (!h) return false;
@@ -26,7 +26,7 @@
     let da = Math.atan2(dy, dx) - h.ang; da = Math.atan2(Math.sin(da), Math.cos(da));
     return Math.abs(da) < ABRE + 10 / d;
   });
-  POW.farol = { name: 'Faro', help: 'Mueve a Fresita con el cursor. Mantén el clic para detenerla y apuntar el faro. Dentro del haz aparecen las piedras de la niebla y los aluxes huyen. Dura hasta 10 segundos.', cd: .2, drag: true,
+  POW.farol = { name: 'Faro', help: 'Mueve a Fresita con el cursor. Mantén el clic para detenerla y apuntar el faro. Dentro del haz aparecen las piedras de la niebla y los aluxes huyen. Dura hasta 11 segundos.', cd: .2, drag: true,
     click(g, x, y, c) {
       if (c.up) { if (g.haz) { g.haz.dead = true; g.haz = null; g.fre.cool = .35; return true; } return false; }
       const z = { k: 'faro', tx: x, ty: y, t: 0, ang: Math.atan2(y - g.fre.y, x - g.fre.x) }; g.fre.face = Math.cos(z.ang) < 0 ? -1 : 1; g.zones.push(z); g.haz = z; return true;
@@ -34,7 +34,12 @@
   ZONAS.faro = {
     paso(z, g, dt) {
       z.t += dt; if (z.t > DURA || g.haz !== z) { z.dead = true; if (g.haz === z) { g.haz = null; g.fre.cool = 1.2; } return; }
-      if (MOUSE.active) { z.tx = g.cam + MOUSE.x; z.ty = MOUSE.y + (g.camY || 0); } // el haz sigue al cursor mientras se mantiene el clic
+      // el haz sigue al cursor solo cuando el cursor se mueve; si la cámara avanza con Itzel y el cursor se queda quieto,
+      // la mira se queda donde estaba en el mundo (antes se iba con la cámara y era incómodo apuntar)
+      if (MOUSE.active) {
+        if (z.mx !== undefined && (z.mx !== MOUSE.x || z.my !== MOUSE.y)) { z.tx = g.cam + MOUSE.x; z.ty = MOUSE.y + (g.camY || 0); }
+        z.mx = MOUSE.x; z.my = MOUSE.y;
+      }
       const ax = z.tx - g.fre.x, ay = z.ty - g.fre.y; if (Math.hypot(ax, ay) < 14) return; // tan cerca de Fresita no hay dirección: se queda como iba
       let da = Math.atan2(ay, ax) - z.ang; da = Math.atan2(Math.sin(da), Math.cos(da)); z.ang += da * Math.min(1, dt * 18); if (Math.abs(Math.cos(z.ang)) > .05) g.fre.face = Math.cos(z.ang) < 0 ? -1 : 1;
     },

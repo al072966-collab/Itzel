@@ -48,6 +48,8 @@ const MEC = (() => {
       let x0 = ax + dx * i / pasos, y0 = ay + dy * i / pasos, x1 = ax + dx * (i + 1) / pasos, y1 = ay + dy * (i + 1) / pasos;
       const mx = (x0 + x1) / 2, my = (y0 + y1) / 2;
       if (SOLID(x0, y0) || SOLID(mx, my) || SOLID(x1, y1)) continue;
+      // en el cuaderno el lápiz gasta tinta (g.tinta, ver cuaderno-dibujos.js): sin tinta no se dibuja
+      if (g.tintaMax !== undefined) { const ds = Math.hypot(x1 - x0, y1 - y0); if (g.tinta < ds) { g.sinTintaT = 1.2; break; } g.tinta -= ds; }
       // No insertar tinta dentro del cuerpo de Itzel.
       const p = g.p;
       if (p && mx > p.x - p.w / 2 && mx < p.x + p.w / 2 && my > p.y - p.h && my < p.y) continue;
@@ -137,7 +139,13 @@ const MEC = (() => {
           else if (pl.path === 'circle') { pl.x = pl.x0 + Math.cos(a) * A; pl.y = pl.y0 + Math.sin(a) * A; }
           break;
         }
-        case 'reveal': { const c = pl.x + pl.w / 2, soloFaro = g.def && g.def.id === 'bruma'; pl.on = (!soloFaro && Math.hypot(g.fre.x - c, g.fre.y - pl.y) < g.lightR + pl.w * .5) || luzExtra(g, c, pl.y); pl.glow = (pl.glow || 0) + ((pl.on ? 1 : 0) - (pl.glow || 0)) * Math.min(1, dt * 8); break; }
+        case 'reveal': {
+          const c = pl.x + pl.w / 2, soloFaro = g.def && g.def.id === 'bruma';
+          // la luz cuenta desde el punto del borde de la plataforma más cercano a Fresita (no desde su centro), con un poco de holgura
+          const nx = clamp(g.fre.x, pl.x, pl.x + pl.w), luz = Math.hypot(g.fre.x - nx, g.fre.y - (pl.y + 2)) < g.lightR + 8;
+          const encima = g.p && g.p.plat === pl;   // si Itzel está parada encima no se le apaga debajo
+          pl.keep = luz || encima ? .45 : Math.max(0, (pl.keep || 0) - dt);   // y se queda tangible un instante al irse la luz
+          pl.on = (soloFaro && pl.alta) || (!soloFaro && (luz || pl.keep > 0)) || luzExtra(g, c, pl.y); /* en Aluxes las rutas altas (monedas) se ven siempre: sin luz parecían monedas inalcanzables */ pl.glow = (pl.glow || 0) + ((pl.on ? 1 : 0) - (pl.glow || 0)) * Math.min(1, dt * 8); break; }
         case 'plane': pl.x += 46 * (pl.dir || 1) * d; break;
         case 'cloud': pl.x += (pl.vx || 0) * d; break;
         default: if (PK[pl.k]) PK[pl.k](pl, g, d, dt);
@@ -193,20 +201,8 @@ const MEC = (() => {
     if (p.vy >= 0) for (const pl of g.plats) if (pl.on && pl.k === 'bounce' && p.x > pl.x - 3 && p.x < pl.x + pl.w + 3 && p.y >= pl.y && p.y <= pl.y + 9) { p.vy = -(pl.pow || 600); p.noCut = true; p.y = pl.y; p.on = false; p.plat = null; pl.sq = 1; p.sq = -.3; }
     for (const z of g.zones) if (ZONAS[z.k]) ZONAS[z.k].paso(z, g, dt);
     for (const z of g.zones) if (!ZONAS[z.k] && p.x > z.x0 && p.x < z.x1 && p.y > z.y0 && p.y - 8 < z.y1) {
-      if (z.k === 'vapor' && (p.vaporT || 0) > g.t) continue; // recién saltó del vapor: lo deja ir
       p.noCut = true; p.on = false; p.plat = null; p.coyote = 0;
-      if (z.k === 'vapor') {
-        // saltar dentro del vapor suma su empuje al salto: más alto y más lejos
-        if (p.jb > 0) {
-          p.jb = 0; const dir = Math.sign(p.vx) || p.face || 1;
-          p.vy = Math.max(-640, Math.min(0, p.vy) - JUMP * .95); p.vx = dir * 215; p.boost = .55; p.vaporT = g.t + .45;
-          spawn(g, 14, p.x, p.y, { ang: Math.PI / 2, spread: 1.4, v: 70, life: .6, s: 2.6, k: 'dust', cols: ['#f0e8e0', '#d8d0c8'], g: -30 }); p.sq = -.3;
-          continue;
-        }
-        // flotando: el vapor la sube y la baja sin parar (se puede mover a los lados)
-        const flota = z.y0 + 20 + Math.sin(g.t * 3.4) * 14 + Math.sin(g.t * 1.3) * 4, objetivo = p.y > flota + 26 ? -230 : (flota - p.y) * 6;
-        p.vy += (objetivo - p.vy) * Math.min(1, dt * 7); p.vy -= G * dt; // (la gravedad se suma después en el mismo cuadro)
-      } else p.vy = Math.max(p.vy - 2600 * dt, -250);
+      p.vy = Math.max(p.vy - 2600 * dt, -250);
     }
   }
 
@@ -272,13 +268,41 @@ const MEC = (() => {
   }
   function stepFoes(g, dt, prevY) {
     const p = g.p, ts = g.slowT > 0 ? .3 : 1;
+    // contacto de un enemigo con Itzel (también los dormidos: sólidos pero inofensivos)
+    function contactoItzel(e) {
+      if (e.st === 'gone' || e.st === 'off' || !p.vis) return;   // los dormidos (e.st 'sleep') son sólidos pero inofensivos: no lastiman, estorban de lado y se pisan
+      if (Math.abs(p.x - e.x) < (e.w + p.w) / 2 - 1 && p.y > e.y - e.h && p.y - p.h < e.y) {
+        if (e.st === 'shell') { e.st = 'slide'; e.dir = p.x < e.x ? 1 : -1; p.vy = Math.min(p.vy, -200); return; }
+        const dormido = e.st === 'sleep';
+        if (e.spiky && e.spiky(e) && !dormido) { hurtFn(g, p.x < e.x ? -1 : 1); return; }
+        if (dormido && !(p.vy > 40 && prevY <= e.y - e.h + 5)) {   // de lado, el dormido hace de pared: Itzel no lo atraviesa ni sale lastimada
+          const lado = p.x < e.x ? -1 : 1; p.x = e.x + lado * ((e.w + p.w) / 2 - .5); if (p.vx * lado < 0) p.vx = 0; return;
+        }
+        if (p.vy > 40 && prevY <= e.y - e.h + 5) {
+          p.vy = reboteEnemigo(); p.noCut = true; p.on = false; p.plat = null; p.air = RUN.upg.dbl; RUN.stomps++;
+          if (!e.sub && typeof sueltaCorazon === 'function') sueltaCorazon(g, e.x, e.y - (e.h || 10) / 2);
+          if (e.hp > 1) {
+            VIDA.golpe(e, g);
+            // un dormido aguanta el primer golpe sin despertar; el siguiente golpe lo despierta
+            if (dormido) { e._golpesDormido = (e._golpesDormido || 0) + 1; if (e._golpesDormido >= 2) { e._golpesDormido = 0; e.st = 'ok'; e.tt = 0; ring(g, e.x, e.y - (e.h || 10) / 2, '#ffffff', (e.w || 10) + 6, .35); } }
+            return;
+          }
+          if (e.shell && e.st !== 'slide') { e.st = 'shell'; spawn(g, 8, e.x, e.y - 6, { v: 60, life: .4, s: 1.8, k: 'dust', cols: ['#ffffff'] }); return; }
+          e.st = 'gone'; e.tt = 0; spawn(g, 12, e.x, e.y - 6, { v: 80, life: .5, s: 2, k: 'dust', cols: ['#ffffff', '#ffe0a0'] });
+        } else {
+          if (e.k === 'abordador' && !dormido && !(p.inv > 0) && !(e.ataqueVisual > 0)) e.ataqueVisual = .001;
+          hurtFn(g, p.x < e.x ? -1 : 1);
+        }
+      }
+    }
     for (const e of g.foes) {
       if (!e.listo) { e.listo = true; if (VIDA.prepara) VIDA.prepara(e, g); }
       const d = dt * ts * (e.pasoK || 1); // pasoK: si alguno va más rápido o más lento
+      if (e.k === 'abordador' && e.ataqueVisual > 0) { e.ataqueVisual += d / .7; if (e.ataqueVisual >= 1) e.ataqueVisual = 0; }
       e.t += d; e.anim += d;
       if (e.st === 'gone') { e.tt += dt; e.y -= 30 * dt; continue; }
       if (e.aturde > 0) { e.aturde -= dt; if (e.k === 'pelicano') { e.vy = 0; e.st = 'up'; if (e.y > e.hy) e.y = Math.max(e.hy, e.y - 40 * d); } else if (e.vy) gravity(e, d); continue; } // recibió un pisotón y aguantó
-      if (e.st === 'sleep') { e.tt -= dt; if (e.tt <= 0) e.st = 'ok'; continue; }
+      if (e.st === 'sleep') { e.tt -= dt; if (e.tt <= 0) e.st = 'ok'; else contactoItzel(e); continue; }   // dormido: no se mueve, pero sí tiene cuerpo
       if (e.st === 'glass') { e.tt -= dt; if (e.tt <= 0) { e.st = 'ok'; e.solid.dead = true; e.solid = null; } continue; }
       if (e.st === 'off') { e.tt -= dt; gravity(e, dt); if (e.tt <= 0) { e.st = 'ok'; e.y = e.hy; } continue; }
       const toP = p.x - e.x, near = Math.abs(toP) < 120 && Math.abs(p.y - e.y) < 60;
@@ -316,20 +340,38 @@ const MEC = (() => {
         case 'swoop': {
           if (e.k === 'pelicano') { vueloPelicano(e, p, d, toP); break; }
           if (e.st === 'dive') { const ax = e.tx - e.x, ay = e.ty - e.y, dd = Math.hypot(ax, ay) || 1, sp = e.fast ? 200 : 150; e.x += ax / dd * sp * d; e.y += ay / dd * sp * d; e.dir = Math.sign(ax) || e.dir; if (dd < 6) { e.st = 'up'; } break; }
-          if (e.st === 'up') { e.y -= 90 * d; e.x += (e.hx - e.x) * Math.min(1, d * 1.5); if (e.y <= e.hy) { e.y = e.hy; e.st = 'ok'; e.tt = 1.4; } break; }
-          e.tt -= d; e.x = e.hx + Math.sin(e.t * 1.1) * 40; e.y = e.hy + Math.sin(e.t * 2.2) * 4; e.dir = Math.cos(e.t * 1.1) >= 0 ? 1 : -1;
-          if (e.tt <= 0 && Math.abs(toP) < (e.high ? 110 : 80) && p.y > e.y + 10) { e.st = 'dive'; e.tx = p.x; e.ty = p.y - 4; }
+          if (e.st === 'up') { e.y -= 90 * d; e.x += (e.hx - e.x) * Math.min(1, d * 1.5); if (e.y <= e.hy) { e.st = 'ok'; e.tt = e.k === 'avispaMini' ? 2.8 : 1.4; } break; }
+          // rondar: se acerca suave a su vuelo en vaivén (antes se le ponía de golpe en su sitio y parecía teletransportarse al volver de una picada)
+          if (e.tw > 0) {                       // aviso: sube y se voltea hacia Itzel un instante antes de lanzarse
+            e.tw -= d; e.y -= 34 * d; e.dir = Math.sign(p.x - e.x) || e.dir;
+            if (e.tw <= 0) { e.st = 'dive'; e.tx = p.x; e.ty = p.y - 4; }
+            break;
+          }
+          e.tt -= d; const k = Math.min(1, d * 3.5);
+          e.x += (e.hx + Math.sin(e.t * 1.1) * 40 - e.x) * k; e.y += (e.hy + Math.sin(e.t * 2.2) * 4 - e.y) * k; e.dir = Math.cos(e.t * 1.1) >= 0 ? 1 : -1;
+          if (e.tt <= 0 && Math.abs(toP) < (e.high ? 110 : 80) && p.y > e.y + 10 && !(e.k === 'avispaMini' && g.seda)) { if (e.high) e.tw = .35; else { e.st = 'dive'; e.tx = p.x; e.ty = p.y - 4; } }
           break;
         }
         case 'teleport': {
           const lit = (g.lightR && Math.hypot(g.fre.x - e.x, g.fre.y - (e.y - 6)) < g.lightR) || luzExtra(g, e.x, e.y - 6);
+          // se queda en su sitio hasta que Itzel lo encuentra por primera vez; desde entonces la sigue apareciendo y desapareciendo
+          if (!e.visto) {
+            e.fade = 1; e.dir = Math.sign(p.x - e.x) || e.dir;
+            if (Math.hypot(p.x - e.x, p.y - e.y) < 120) { e.visto = true; e.tt = 1.2; ring(g, e.x, e.y - 6, '#ffffff', 22, .5); }
+            break;
+          }
+          if (e.oculto > 0) {                     // desaparecido: no estorba ni se ve hasta que reaparece cerca
+            e.oculto -= d; e.fade = clamp((e.fade ?? 1) - dt * 4, 0, 1);
+            if (e.oculto <= 0) {
+              const side = lit ? -Math.sign(g.fre.x - e.x) || 1 : (Math.random() < .5 ? 1 : -1), nx = (lit ? e.x : p.x) + side * (lit ? 90 : 40), sy = surf(nx, p.y - 40);
+              if (sy < VH && !SOLID(nx, sy - 4)) { e.x = nx; e.y = sy; }
+              e.tt = lit ? 2 : 2.6; e.dir = Math.sign(p.x - e.x) || 1;
+            }
+            continue;
+          }
           e.tt -= d; e.fade = clamp((e.fade ?? 1) + (e.tt < .3 ? -dt * 4 : dt * 4), 0, 1);
           if (lit && e.tt > .3) e.tt = .3;
-          if (e.tt <= 0) {
-            const side = lit ? -Math.sign(g.fre.x - e.x) || 1 : (Math.random() < .5 ? 1 : -1), nx = (lit ? e.x : p.x) + side * (lit ? 90 : 36), sy = surf(nx, p.y - 40);
-            if (sy < VH && !SOLID(nx, sy - 4)) { e.x = nx; e.y = sy; }
-            e.tt = lit ? 2 : 2.6; e.dir = Math.sign(p.x - e.x) || 1;
-          }
+          if (e.tt <= 0) e.oculto = lit ? 1.6 : 3.2;   // antes reaparecía casi al instante
           break;
         }
         case 'drone': {
@@ -341,19 +383,7 @@ const MEC = (() => {
         case 'formation': { const step = Math.floor(e.t * 2); e.x = e.hx + (Math.floor(step / 1) % 16 < 8 ? step % 8 : 8 - step % 8) * 6 - 24; e.y = e.hy + (Math.floor(step / 8) % 2) * 6; e.dir = 1; break; }
         default: if (BEH[e.beh] && BEH[e.beh](e, g, d, toP, near) === 'skip') continue;
       }
-      // contacto con Itzel
-      if (e.st === 'gone' || e.st === 'off' || !p.vis) continue;
-      if (Math.abs(p.x - e.x) < (e.w + p.w) / 2 - 1 && p.y > e.y - e.h && p.y - p.h < e.y) {
-        if (e.st === 'shell') { e.st = 'slide'; e.dir = p.x < e.x ? 1 : -1; p.vy = Math.min(p.vy, -200); continue; }
-        if (e.spiky && e.spiky(e)) { hurtFn(g, p.x < e.x ? -1 : 1); continue; }
-        if (p.vy > 40 && prevY <= e.y - e.h + 5) {
-          p.vy = -425; p.noCut = true; p.on = false; p.plat = null; p.air = RUN.upg.dbl; RUN.stomps++;
-          if (!e.sub && typeof sueltaCorazon === 'function') sueltaCorazon(g, e.x, e.y - (e.h || 10) / 2);
-          if (e.hp > 1) { VIDA.golpe(e, g); continue; }
-          if (e.shell && e.st !== 'slide') { e.st = 'shell'; spawn(g, 8, e.x, e.y - 6, { v: 60, life: .4, s: 1.8, k: 'dust', cols: ['#ffffff'] }); continue; }
-          e.st = 'gone'; e.tt = 0; spawn(g, 12, e.x, e.y - 6, { v: 80, life: .5, s: 2, k: 'dust', cols: ['#ffffff', '#ffe0a0'] });
-        } else hurtFn(g, p.x < e.x ? -1 : 1);
-      }
+      contactoItzel(e);
     }
     g.foes = g.foes.filter(e => !(e.st === 'gone' && e.tt > .7));
   }
@@ -465,7 +495,7 @@ const MEC = (() => {
       case 'stone': { ctx.fillStyle = sk.plat; ctx.fillRect(x, y, w, 9); ctx.strokeStyle = sk.line; ctx.lineWidth = 1; ctx.strokeRect(x, y, w, 9); ctx.beginPath(); for (let i = 3; i < w - 3; i += 8) { ctx.moveTo(x + i, y + 2); ctx.lineTo(x + i, y + 7); ctx.lineTo(x + i + 4, y + 7); ctx.lineTo(x + i + 4, y + 4); } ctx.lineWidth = .7; ctx.stroke(); break; }
       case 'swirlplat': { ctx.fillStyle = sk.plat; ctx.beginPath(); roundRect(ctx, x, y, w, 6, 3); ctx.fill(); ctx.strokeStyle = sk.accent; ctx.lineWidth = 1.1; ctx.lineCap = 'round'; for (let i = 0; i < 4; i++) { const a = t * 2 + i; ctx.beginPath(); ctx.arc(x + w / 2, y + 3, 6 + i * 2, a, a + 1); ctx.stroke(); } break; }
       case 'ice': { const gr = ctx.createLinearGradient(x, y, x + w, y + 8); gr.addColorStop(0, '#d8f0ff'); gr.addColorStop(.5, '#8fc8f0'); gr.addColorStop(1, '#c8e8ff'); ctx.fillStyle = gr; ctx.fillRect(x, y, w, 7); ctx.strokeStyle = '#141414'; ctx.lineWidth = 1.2; ctx.strokeRect(x, y, w, 7); ctx.beginPath(); for (let i = 10; i < w; i += 12) { ctx.moveTo(x + i, y); ctx.lineTo(x + i - 3, y + 7); } ctx.lineWidth = .8; ctx.stroke(); ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillRect(x + 2, y + 1, w * .3, .8); break; }
-      case 'pencil': { const x2 = pl.k === 'seg' ? pl.x2 : x + w, y2 = pl.k === 'seg' ? pl.y2 : y; ctx.strokeStyle = sk.line; ctx.lineCap = 'round'; for (let k = 0; k < 2; k++) { ctx.lineWidth = 1 - k * .3; ctx.beginPath(); ctx.moveTo(x + k * .4, y + k * .5); ctx.lineTo(x2 - k * .3, y2 + k * .4); ctx.stroke(); } ctx.globalAlpha *= .4; ctx.lineWidth = .4; ctx.beginPath(); for (let i = 0; i < 1; i += .08) { const px = lerp(x, x2, i), py = lerp(y, y2, i); ctx.moveTo(px, py + 1); ctx.lineTo(px + 2, py + 4); } ctx.stroke(); break; }
+      case 'pencil': { const x2 = pl.k === 'seg' ? pl.x2 : x + w, y2 = pl.k === 'seg' ? pl.y2 : y; ctx.strokeStyle = sk.line; ctx.lineCap = 'round'; for (let k = 0; k < 2; k++) { ctx.lineWidth = .55 - k * .15; ctx.beginPath(); ctx.moveTo(x + k * .4, y + k * .5); ctx.lineTo(x2 - k * .3, y2 + k * .4); ctx.stroke(); } ctx.globalAlpha *= .4; ctx.lineWidth = .25; ctx.beginPath(); for (let i = 0; i < 1; i += .12) { const px = lerp(x, x2, i), py = lerp(y, y2, i); ctx.moveTo(px, py + .8); ctx.lineTo(px + 1.4, py + 2.6); } ctx.stroke(); break; }
       case 'plank': { ctx.fillStyle = sk.plat; ctx.fillRect(x, y, w, 6); ctx.strokeStyle = sk.line; ctx.lineWidth = .5; ctx.beginPath(); for (let i = 0; i < w; i += 3) { ctx.moveTo(x + i, y + 1); ctx.lineTo(x + i + 2, y + 5); } ctx.stroke(); if (pl.cx !== undefined) { ctx.strokeStyle = sk.plat; ctx.lineWidth = .8; ctx.beginPath(); ctx.moveTo(pl.cx, pl.cy); ctx.lineTo(x + w / 2, y + 3); ctx.stroke(); } break; }
       case 'switchblk': break;
       case 'spring': { const sq = pl.sq || 0; pl.sq = sq * .85; const top = y - 2 + sq * 3; ctx.strokeStyle = '#7a8a9a'; ctx.lineWidth = 1.2; ctx.beginPath(); for (let i = 0; i < 4; i++) { ctx.moveTo(x + 1, top + 2 + i * 1.6); ctx.lineTo(x + w - 1, top + 2.8 + i * 1.6); } ctx.stroke(); ctx.fillStyle = sk.accent; ctx.beginPath(); roundRect(ctx, x - 1, top - 1, w + 2, 3, 1.2); ctx.fill(); ctx.strokeStyle = '#2a1e2e'; ctx.lineWidth = .7; ctx.stroke(); ctx.fillStyle = '#5a6a7a'; ctx.fillRect(x - 1, y + 5, w + 2, 1.5); break; }
@@ -532,7 +562,13 @@ const MEC = (() => {
     invasor(c, e, t, s) { const fr = Math.floor(t * 2) % 2, rows = fr ? ['0010000100', '0001001000', '0011111100', '0110110110', '1111111111', '1011111101', '1010000101', '0001101100'] : ['0010000100', '1001001001', '1011111101', '1110110111', '1111111111', '0111111110', '0010000100', '0100000010']; c.fillStyle = s.main; rows.forEach((r, j) => { for (let i = 0; i < 10; i++) if (r[i] === '1') c.fillRect(-6 + i * 1.2, -10 + j * 1.2, 1.2, 1.2); }); },
   };
   let foeArte = null;   // enemigos-arte.js pone aquí el dibujo con acabado (sombra, gestos y técnica del mundo)
+  // cada enemigo puede traer su escala (e.esc, ver tamanos-enemigos.js): se dibuja más grande desde donde pisa
   function drawFoe(ctx, e, f, sk) {
+    const esc = e.esc || 1;
+    if (esc === 1 || e.st === 'gone') return drawFoe0(ctx, e, f, sk);
+    ctx.save(); ctx.translate(e.x, e.y); ctx.scale(esc, esc); ctx.translate(-e.x, -e.y); drawFoe0(ctx, e, f, sk); ctx.restore();
+  }
+  function drawFoe0(ctx, e, f, sk) {
     if (foeArte) { foeArte(ctx, e, f, sk, FD, zz); if (VIDA.dibuja) VIDA.dibuja(ctx, e, f); return; }
     ctx.save(); ctx.translate(e.x, e.y); ctx.scale(e.dir || 1, 1);
     if (e.st === 'gone') { ctx.globalAlpha = clamp(1 - e.tt / .7, 0, 1); ctx.rotate(e.tt * 4); }

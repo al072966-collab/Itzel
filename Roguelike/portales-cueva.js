@@ -2,18 +2,31 @@
 // Portales de Fresita: solo dibujo; no toca la física ni los pares de tele.
 (function () {
   if (typeof vestirNivel !== 'function' || typeof STYLE_MAP === 'undefined' || !STYLE_MAP.cinema) return;
-  const V = vestirNivel({ id: 'cinema', carpeta: 'portales-cueva', ver: 4 });
+  const V = vestirNivel({ id: 'cinema', carpeta: 'portales-cueva', ver: 4, manifiesto: window.PORTALES_CUEVA_MANIFIESTO });
   const { spr } = V;
+  const panorama = new Image();
+  panorama.onload = () => V.rehaz(); panorama.src = '../Roguelike/assets/portales-cueva/chicanna-panorama-v2.png';
   // telón: montañas lejanas entre bruma y estalactitas colgando del borde de arriba con parallax, que dan techo de cueva
   V.cielo((c, f, antes) => {
-    antes();
+    const id = (f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id);
+    const nuevo = id === 'cinema' && panorama.complete && panorama.naturalWidth;
+    if (nuevo) {
+      const ancho = 700, base = 176 - (f.y0 || 0), alto = f.H || VH, off = ((f.cam * .08 % ancho) + ancho) % ancho;
+      const arriba = Math.min(0, base - 176);
+      c.save(); c.fillStyle = '#24182f'; c.fillRect(0, 0, VW, alto);
+      for (let x = -off - ancho; x < VW + ancho; x += ancho) {
+        c.drawImage(panorama, 0, 0, 2172, 650, x, arriba, ancho, base - arriba);
+        c.drawImage(panorama, 0, 650, 2172, 74, x, base, ancho, Math.max(1, alto - base));
+      }
+      c.restore();
+    } else antes();
     // estrellas que titilan sobre el cielo violeta
     for (let i = 0; i < 64; i++) { const w = VW + 60, x = ((V.h1(i, 11) * w - f.cam * .02) % w + w) % w - 30, y = 6 + V.h1(i, 12) * 120, tw = .5 + .5 * Math.sin(f.t * (1 + V.h1(i, 13) * 2) + i * 3); c.fillStyle = 'rgba(255,238,215,' + ((.25 + .5 * V.h1(i, 14)) * tw).toFixed(2) + ')'; c.fillRect(x, y, V.h1(i, 15) > .85 ? 1.6 : 1, V.h1(i, 15) > .85 ? 1.6 : 1); }
     const u = 400, off = (f.cam * .08) % u, base = Math.floor(f.cam * .08 / u);
-    for (let k = -1; k * u - off < VW + u; k++) spr(c, 'f_montanas', k * u - off, 180, { ay: 1, ax: 0, alfa: .35, k: .9 });
+    for (let k = -1; !nuevo && k * u - off < VW + u; k++) spr(c, 'f_montanas', k * u - off, 180, { ay: 1, ax: 0, alfa: .35, k: .9 });
     const u2 = 220, o2 = (f.cam * .3) % u2, b2 = Math.floor(f.cam * .3 / u2);
     // copas de la selva en dos capas de silueta, con bruma entre ellas, al pie del horizonte
-    for (let capa = 0; capa < 2; capa++) {
+    for (let capa = 0; capa < (nuevo ? 0 : 2); capa++) {
       c.fillStyle = capa ? 'rgba(34,20,52,.78)' : 'rgba(58,34,76,.55)'; c.beginPath(); c.moveTo(0, 215);
       const par = capa ? .22 : .12; for (let x = 0; x <= VW + 8; x += 8) { const wx = x + f.cam * par; c.lineTo(x, 176 - capa * 8 - (Math.sin(wx * .045 + capa * 2) * 7 + Math.sin(wx * .11 + capa) * 4 + Math.abs(Math.sin(wx * .019)) * 9)); }
       c.lineTo(VW, 215); c.closePath(); c.fill();
