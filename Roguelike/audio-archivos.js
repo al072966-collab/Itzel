@@ -167,7 +167,13 @@ window.AUDIO_ARCHIVOS = (() => {
   const variantes = { salto: Array.from({length: 3}, (_, i) => `variantes/salto-${String(i + 1).padStart(2, '0')}.mp3`), paso: ['pasto', 'suelo'].flatMap(tipo => Array.from({length: 12}, (_, i) => `variantes/paso-${tipo}-${String(i + 1).padStart(2, '0')}.mp3`)) };
   const ultimaVariante = {};
   function variante(tipo) { const lista = variantes[tipo]; if (!lista || !lista.length) return; let i = Math.floor(Math.random() * lista.length); if (lista.length > 1 && i === ultimaVariante[tipo]) i = (i + 1 + Math.floor(Math.random() * (lista.length - 1))) % lista.length; ultimaVariante[tipo] = i; efecto(lista[i]); }
+  // La apertura se instala después de este archivo: reservar silencio desde el inicio.
+  const qsApertura = new URLSearchParams(location.search);
+  let esperaApertura = (qsApertura.has('gdapertura') || window.MODO_PUBLICO || qsApertura.has('intro')) && !['propuesta', 'jugar', 'gd', 'mundo', 'nivel', 'jefe', 'fotos', 'mudo', 'fijo', 'sinintro'].some(k => qsApertura.has(k));
   function pista() {
+    if (window.enApertura) { esperaApertura = false; return ''; }
+    if (esperaApertura && !window.inicioAperturaRegistrado) return '';
+    esperaApertura = false;
     if (STATE === 'title') return 'menu theme.mp3';
     if (STATE === 'over') return CUR && CUR.isBoss ? 'loss by boss.mp3' : 'loss.mp3';
     if (STATE === 'win') return 'win.mp3';

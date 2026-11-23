@@ -1086,7 +1086,7 @@ function hud() {
   $('semillasHUD').innerHTML = `<img style="filter:hue-rotate(${COOP.tono(CUR.def).hue}deg)" src="${ico('semilla', 3)}" alt="Semillas de Fresita">${RUN.semillas || 0}`;
   $('bubbles').innerHTML = aire === null ? '' : `<img src="${ico('bubble', 3)}" alt="Aire"><span>${aire}%</span>`;
   $('bubbles').title = 'Aire de Itzel';
-  $('where').innerHTML = CUR.isBoss && CUR.boss ? `${JEFES[CUR.boss.tipo].nombre} <b>· Fresita: ${MEC.POW[CUR.def.power].name}</b>` : CUR.def ? `${CUR.def.nombre} <b>· Fresita: ${MEC.POW[CUR.def.power].name}</b>` : `Mundo ${RUN.world}: <b>${curStyle().name}</b>`;
+  $('where').innerHTML = CUR.isBoss && CUR.boss ? `<span class="where-nombre">${JEFES[CUR.boss.tipo].nombre}</span> <b>· Fresita: ${MEC.POW[CUR.def.power].name}</b>` : CUR.def ? `<span class="where-nombre">${CUR.def.nombre}</span> <b>· Fresita: ${MEC.POW[CUR.def.power].name}</b>` : `<span class="where-nombre">Mundo ${RUN.world}:</span> <b>${curStyle().name}</b>`;
   $('perks').innerHTML = Object.keys(RUN.taken).map(k => { const mejora = BLESS.find(b => b.id === k); return mejora ? `<img src="${ico(mejora.icon, 3)}">`.repeat(RUN.taken[k]) : ''; }).join('');
 }
 

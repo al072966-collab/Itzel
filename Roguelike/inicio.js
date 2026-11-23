@@ -4,6 +4,7 @@
 // «¡A jugar!» manda directo al primer mundo (ver cine-entrada.js).
 // No sale cuando se entra a un mundo concreto (enciclopedia, GDevelop) ni en las pruebas (?mudo, ?fijo, ?fotos…).
 (() => {
+  window.inicioAperturaRegistrado = true;
   const q = new URLSearchParams(location.search);
   if (q.has('propuesta')) window.presentacionPropuesta = true;
   // Mientras se depura la apertura (logos, cinemática 1 y portada) está escondida: se entra directo al menú del juego.
@@ -47,9 +48,9 @@
   let etapa = 'logos'; // logos → cine → portada
   // mientras el juego carga, la página se congela por ratos y la subida del logo se salta; se espera a que haya 8 cuadros seguidos fluidos (máx. 8 s)
   function esperaQuieto(sigue) {
-    let ant = performance.now(), buenos = 0; const limite = ant + 8000;
+    let ant = performance.now(), buenos = 0; const movil = matchMedia('(pointer:coarse)').matches; const limite = ant + (movil ? 600 : 8000);
     (function cuadro(t) { buenos = t - ant < 40 ? buenos + 1 : 0; ant = t;
-      if (buenos >= 8 || t > limite) sigue(); else requestAnimationFrame(cuadro); })(ant);
+      if (buenos >= (movil ? 3 : 8) || t > limite) sigue(); else requestAnimationFrame(cuadro); })(ant);
   }
   function mostrar() {
     clearTimeout(temporizador);
