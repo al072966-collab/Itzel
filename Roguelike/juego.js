@@ -181,9 +181,10 @@ function newRun(seed) {
   if (PRESENTACION.activa() && !pedido('mundo')) {   // la run fija de los jueces
     const ST = id => ORDERED.find(s => s.id === id) || styles[0]; PRESENTACION.PLAN.forEach((m, i) => { elegidos[i] = ST(m.estilo); });
     RUN.styles = elegidos; RUN.presentacion = true; RUN.formaRupturaEntrada = (PRESENTACION.PLAN[3] || {}).forma;
+    PRESENTACION.marcaPrimera();   // (en la versión publicada solo la primera partida es la fija)
   }
   RUN.desdeEnciclopedia = !!(PIDE && PIDE.desdeEnciclopedia);
-  RUN.jugadores = (MULTI.forzar || opcion('jugadores', PRESENTACION.activa() ? 2 : 1)) === 2 ? 2 : 1; MULTI.forzar = 0;   // dos personas: una Itzel (teclado) y otra Fresita (mouse)
+  RUN.jugadores = (MULTI.forzar || opcion('jugadores', PRESENTACION.explicita() ? 2 : 1)) === 2 ? 2 : 1; MULTI.forzar = 0;   // dos personas: una Itzel (teclado) y otra Fresita (mouse)
   RUN.dif = DIFS[opcion('dificultad', 'tranquila')] ? opcion('dificultad', 'tranquila') : 'tranquila'; RUN.hearts = RUN.maxHearts = DIFS[RUN.dif].corazones;
   // el jefe del mundo 3 sale al azar; al final siempre espera la Ruptura
   const otros = Object.keys(JEFES).filter(k => k !== 'ruptura'); RUN.jefeOrden = [otros[Math.floor(rand() * otros.length)], 'ruptura'];
@@ -775,7 +776,8 @@ function abrirEnci() {
   let fr = box.querySelector('iframe');
   if (!fr) { fr = document.createElement('iframe'); fr.title = 'Enciclopedia'; fr.src = '../Estilos/index.html?v=jefes-local-2'; box.prepend(fr); }
   else try { fr.contentWindow.ENCI_REFRESCA && fr.contentWindow.ENCI_REFRESCA(); } catch (e) {}
-  box.classList.add('on');
+  box.classList.remove('precarga'); box.classList.add('on');
+  if (fr) try { fr.removeAttribute('aria-hidden'); fr.tabIndex = 0; } catch (e) {}
 }
 // al cerrar, el teclado vuelve al juego (si no, las teclas se quedan en la enciclopedia e Itzel no se mueve)
 function cerrarEnci() { $('enci').classList.remove('on'); try { const fr = $('enci').querySelector('iframe'); if (fr) fr.blur(); if (document.activeElement && document.activeElement !== document.body) document.activeElement.blur(); } catch (e) {} window.focus(); }

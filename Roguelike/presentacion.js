@@ -14,6 +14,12 @@ const PRESENTACION = (() => {
   ];
   const q = new URLSearchParams(location.search).get('presentacion');
   try { if (q === '1') localStorage.setItem('itzel-presentacion', '1'); else if (q === '0') localStorage.removeItem('itzel-presentacion'); } catch (e) {}
-  const activa = () => { if (q === '0') return false; if (q === '1') return true; try { return localStorage.getItem('itzel-presentacion') === '1'; } catch (e) { return false; } };
-  return { PLAN, activa, mundo: w => (activa() ? PLAN[w - 1] : null) };
+  const explicita = () => { if (q === '0') return false; if (q === '1') return true; try { return localStorage.getItem('itzel-presentacion') === '1'; } catch (e) { return false; } };
+  // En la versión publicada, la PRIMERA partida de cada persona es esta misma run (la que se probó: empieza en el mundo anime); desde la
+  // segunda, los mundos vuelven a salir al azar. Se marca al empezar esa primera partida. (?presentacion=0 la apaga; =1 la deja fija siempre.)
+  const primera = () => { if (q === '0' || !window.MODO_PUBLICO) return false; try { return !localStorage.getItem('itzel-primera-run'); } catch (e) { return false; } };
+  const activa = () => explicita() || primera();
+  const marcaPrimera = () => { try { if (primera()) localStorage.setItem('itzel-primera-run', '1'); } catch (e) {} };
+  const enCurso = () => !!((typeof RUN !== 'undefined' && RUN && RUN.presentacion) || activa());
+  return { PLAN, activa, enCurso, explicita, marcaPrimera, mundo: w => ((typeof RUN !== 'undefined' && RUN && RUN.presentacion) || activa() ? PLAN[w - 1] : null) };
 })();

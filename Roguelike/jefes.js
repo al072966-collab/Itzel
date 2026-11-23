@@ -18,7 +18,7 @@ const JEFES = {
 };
 const PODER_ALCANCE = new Set(['bloque', 'nenufar', 'avion', 'nube', 'cristal', 'lapiz', 'resorte', 'asidero', 'semilla', 'viento', 'remolino', 'rafaga', 'cargar', 'portal', 'ladrillo', 'moldear', 'constelacion']);
 const modoJefe = power => PODER_ALCANCE.has(power) ? 'alcance' : 'control';
-const JEFE_EN = w => typeof TIPOS_RUN !== 'undefined' ? (typeof PRESENTACION !== 'undefined' && PRESENTACION.activa() ? w === 1 : w === 3) : w === 2 || w === WORLDS; // en el mundo 3 (el 4 es solo la Ruptura)
+const JEFE_EN = w => typeof TIPOS_RUN !== 'undefined' ? (typeof PRESENTACION !== 'undefined' && PRESENTACION.enCurso() ? w === 1 : w === 3) : w === 2 || w === WORLDS; // en el mundo 3 (el 4 es solo la Ruptura)
 
 // ---------------- la arena: misma forma en todos los mundos, con las piezas que el poder necesita ----------------
 function construirArena(def, tipo) {

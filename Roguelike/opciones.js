@@ -58,7 +58,7 @@
   // ---------------------------------------------------------------------
   //  PANTALLA: OPCIONES
   // ---------------------------------------------------------------------
-  const jug = () => O.jugadores === undefined ? (typeof PRESENTACION !== 'undefined' && PRESENTACION.activa() ? 2 : 1) : (O.jugadores === 2 ? 2 : 1);   // sin elegir, la run de presentación viene en dos
+  const jug = () => O.jugadores === undefined ? (typeof PRESENTACION !== 'undefined' && PRESENTACION.explicita() ? 2 : 1) : (O.jugadores === 2 ? 2 : 1);   // sin elegir, la run de presentación viene en dos
   const porcentaje = (v, d = 60) => typeof v === 'number' ? v : ({ alta: 100, media: 60, baja: 28, no: 0 }[v] ?? d);
   const volumen = (id, icono, titulo, desc, defecto = 60) => `<div class="op-fila"><img src="${ico(icono, 5)}" alt=""><div class="op-txt"><b>${titulo}</b><span>${desc}</span></div><label class="op-vol"><input type="range" min="0" max="100" step="1" value="${porcentaje(O[id], defecto)}" data-vol="${id}" aria-label="${titulo}"><output>${porcentaje(O[id], defecto)}%</output></label></div>`;
   function conectarVolumen() { document.querySelectorAll('[data-vol]').forEach(slider => slider.oninput = () => { O[slider.dataset.vol] = Number(slider.value); slider.nextElementSibling.value = slider.value + '%'; guarda(); if (window.AUDIO_ARCHIVOS) window.AUDIO_ARCHIVOS.actualiza(); }); }
@@ -148,12 +148,13 @@
       <p class="cr-chico">Un juego de</p><h2>David Cervantes Malfavon</h2>
       <p>Proyecto final · 7.º semestre de ITS<br>Universidad Autónoma de Campeche</p>
       <img class="cr-flor" src="${ico('flor', 4)}">
-      <h3>Idea, diseño y dirección de arte</h3><p>David Cervantes Malfavon<br><small>con ayuda de ChatGPT</small></p>
-      <h3>Programación</h3><p>David Cervantes Malfavon<br><small>con ayuda de Claude (Anthropic)</small></p>
+      <h3>Director</h3><p>David Cervantes Malfavon</p>
+      <h3>Idea, diseño y dirección de arte</h3><p>David Cervantes Malfavon<br>Iker Sanchez Gallegos<br><small>con ayuda de ChatGPT</small></p>
+      <h3>Programación</h3><p>David Cervantes Malfavon<br>Oziel David Canul Xool<br><small>con ayuda de Claude (Anthropic)</small></p>
       <h3>Personajes</h3><p>Itzel · Fresita, la ajolote rosa<br>los ajolotes azul, naranja y violeta</p>
       <img class="cr-flor" src="${ico('flor', 4)}">
-      <h3>Música</h3><p>David Cervantes Malfavon<br><small>con ayuda de Epidemic Sound</small></p>
-      <h3>Efectos de sonido y voces</h3><p>David Cervantes Malfavon<br><small>con ayuda de ElevenLabs</small></p>
+      <h3>Música</h3><p>David Cervantes Malfavon<br>Kevin Javier Ruiz Tillit<br><small>con ayuda de Epidemic Sound</small></p>
+      <h3>Efectos de sonido y voces</h3><p>David Cervantes Malfavon<br>Bryan Arturo Moran Escalante<br><small>con ayuda de ElevenLabs</small></p>
       <img class="cr-flor" src="${ico('flor', 4)}">
       <img class="cr-gracias" alt="Gracias por jugar" src="${stitched('Gracias por jugar', 8)}">
     </div></div><button class="patch volver-esquina" id="crVolver">Volver</button></div>`);

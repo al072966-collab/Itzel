@@ -129,7 +129,10 @@ const CINE = (() => {
   function subtitulos(t, fr) {
     if (!act.esc.subs) return;
     for (const s of act.esc.subs) {
-      const [t0, t1, quien, texto, o = {}] = s; if (t < t0 - .05 || t > t1 + .35) continue;
+      const [t0, t1, quien, texto, o = {}] = s;
+      // la voz de cada línea sale en cuanto empieza su subtítulo (audio-archivos.js la escucha con 'cine-voz')
+      if (t >= t0 && t <= t1 && !(act._voz || (act._voz = new Set())).has(texto)) { act._voz.add(texto); try { dispatchEvent(new CustomEvent('cine-voz', { detail: { cine: act.id, t: t0, quien, texto } })); } catch (e) {} }
+      if (t < t0 - .05 || t > t1 + .35) continue;
       const a = Math.min(tramo(t, t0, t0 + .22, 'out2'), 1 - tramo(t, t1, t1 + .3, 'in2'));
       const n = Math.floor((t - t0) * 46), vis = texto.slice(0, Math.max(0, n));
       const cy = fr.bot + (M.h - M.extra - fr.bot) / 2 + k * 1.5, sub = (1 - a) * 4 * k;
