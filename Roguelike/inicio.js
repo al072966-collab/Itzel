@@ -9,7 +9,10 @@
   // Mientras se depura la apertura (logos, cinemática 1 y portada) está escondida: se entra directo al menú del juego.
   // Para volver a verla: poner APERTURA_VISIBLE en true, o abrir el juego con ?intro=1.
   const APERTURA_VISIBLE = !!window.MODO_PUBLICO;   // visible en el sitio publicado; en local, con ?intro=1
-  if (!APERTURA_VISIBLE && !q.has('intro')) return;
+  // «Itzel final» (GDevelop) muestra su logo de GDevelop mientras este juego carga escondido en un marco (?gdapertura=1);
+  // aquí la apertura sigue desde el logo de la empresa, en cuanto GDevelop avise (mensaje «inicia»)
+  const desdeGD = q.has('gdapertura');
+  if (!desdeGD && !APERTURA_VISIBLE && !q.has('intro')) return;
   if (['propuesta', 'jugar', 'gd', 'mundo', 'nivel', 'jefe', 'fotos', 'mudo', 'fijo', 'sinintro'].some(k => q.has(k))) return;
   window.enApertura = true;
   const style = document.createElement('style');
@@ -38,7 +41,7 @@
   document.body.classList.add('presentando-inicio');
   capa.id = 'apertura'; capa.setAttribute('aria-label', 'Presentación de Itzel');
   document.body.appendChild(capa);
-  let fase = 0, temporizador;
+  let fase = desdeGD ? 1 : 0, temporizador;
   // cada logo dura lo que su sonido (gdevelop 2seg.mp3 y sphynx 2seg.mp3): ms que se queda en pantalla
   const marcas = [ ['assets/inicio/gdevelop.png', 'GDevelop', 4300], ['assets/inicio/sphynx.png', 'Sphynx', 7900] ];
   let etapa = 'logos'; // logos → cine → portada
@@ -93,5 +96,13 @@
     requestAnimationFrame(control);
   }
   requestAnimationFrame(control);
-  mostrar();
+  if (!desdeGD) mostrar();
+  else {
+    // se queda en negro hasta que GDevelop termine su logo y muestre este marco; entonces arranca el logo de la empresa
+    let arrancada = false;
+    const arranca = () => { if (arrancada) return; arrancada = true; mostrar(); };
+    addEventListener('message', e => { if (e.data && e.data.itzelGD === 'inicia') arranca(); });
+    const avisaListo = () => setTimeout(() => { try { parent.postMessage({ itzelGD: 'listo' }, '*'); } catch (er) {} }, 300);
+    if (document.readyState === 'complete') avisaListo(); else addEventListener('load', avisaListo);
+  }
 })();

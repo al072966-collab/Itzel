@@ -17,7 +17,7 @@
       o.t = (o.t || 0) + dt; o.vy += (o.grav || 0) * dt; o.x += o.vx * dt; o.y += o.vy * dt;
       if (o.t > (o.vida || 6) || o.y > VH + 20) { o.dead = true; return; }
       if (SOLID(o.x + Math.sign(o.vx) * (o.r || 2), o.y)) { o.dead = true; spawn(g, 8, o.x, o.y, { v: 50, life: .4, s: 1.6, k: 'dust', cols: o.polvo || ['#ffffff', '#9badb7'] }); return; }
-      const p = g.p; if (p.vis && Math.abs(p.x - o.x) < (o.r || 2) + 4 && o.y > p.y - p.h - (o.r || 2) && o.y < p.y + (o.r || 2)) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); }
+      const p = g.p; if (!MEC.protegePisoton(g, o) && p.vis && Math.abs(p.x - o.x) < (o.r || 2) + 4 && o.y > p.y - p.h - (o.r || 2) && o.y < p.y + (o.r || 2)) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); }
     },
     draw(c, o, f) { if (OBJ.bala.dibujos[o.dib]) OBJ.bala.dibujos[o.dib](c, o, f); else { c.fillStyle = '#222'; c.beginPath(); c.arc(o.x, o.y, o.r || 2, 0, TAU2); c.fill(); } },
     dibujos: {},
@@ -345,7 +345,7 @@
       if (Math.abs(nx - e.hx) > 18 || !SOLID(nx + dir * 5, e.y + 2)) e.dir = -dir;
       else { e.x = nx; e.dir = dir; }
     }
-    if (e.tt <= 0) { e.tt = 2.8; e.infla = .4; g.objs.push({ k: 'esporas', x: e.x, y: e.y - 8, t: 0 }); }
+    if (e.tt <= 0) { e.tt = 2.8; e.infla = .4; g.objs.push({ k: 'esporas', x: e.x, y: e.y - 8, t: 0, origen: e }); }
     return;
   };
   FD.esporin = (c, e, t) => {
@@ -355,7 +355,7 @@
     c.fillStyle = NEO; for (let i = 0; i < 5; i++) { c.beginPath(); c.arc(-5 + i * 2.5, -8 - (i % 2) * 2, .9, 0, TAU2); c.fill(); }
   };
   OBJ.esporas = {
-    step(o, g, dt) { o.t += dt; if (o.t > 1.8) { o.dead = true; return; } const r = 6 + o.t * 12, p = g.p; if (o.t < 1.5 && Math.hypot(p.x - o.x, p.y - 7 - (o.y - o.t * 8)) < r) MEC.hurt(g, p.x < o.x ? -1 : 1); },
+    step(o, g, dt) { o.t += dt; if (o.t > 1.8) { o.dead = true; return; } const r = 6 + o.t * 12, p = g.p, e = o.origen; const pisando = e && e.st !== 'gone' && p.vy > 0 && p.y <= e.y - e.h + 5 && Math.abs(p.x - e.x) < (p.w + e.w) / 2; if (!pisando && o.t < 1.5 && Math.hypot(p.x - o.x, p.y - 7 - (o.y - o.t * 8)) < r) MEC.hurt(g, p.x < o.x ? -1 : 1); },
     draw(c, o) { const r = 6 + o.t * 12, a = Math.max(0, 1 - o.t / 1.8); c.save(); c.globalCompositeOperation = 'lighter'; for (let i = 0; i < 9; i++) { const an = i * .7 + o.t * 2, rr = r * (.4 + (i % 3) * .3); c.fillStyle = `rgba(95,255,224,${.25 * a})`; c.beginPath(); c.arc(o.x + Math.cos(an) * rr, o.y - o.t * 8 + Math.sin(an) * rr * .7, 2.4, 0, TAU2); c.fill(); } c.restore(); },
   };
   // hongo de luz: un elevador vivo que crece mientras Fresita lo alumbra y se encoge en lo oscuro
@@ -427,7 +427,7 @@
   FOE.bucanero = { beh: 'bucanero', w: 10, h: 15, v: 0 };
   BEH.bucanero = (e, g, d, toP, near) => {
     e.tt -= d; e.tiro = Math.max(0, (e.tiro || 0) - d); if (Math.abs(toP) > 4) e.dir = Math.sign(toP);
-    if (near && e.tt <= 0 && Math.abs(toP) < 170) { e.tt = 2.4; e.tiro = .35; const tv = .9, dx = g.p.x - e.x, dy = (g.p.y - 8) - (e.y - 16); dispara(g, { x: e.x, y: e.y - 16, vx: dx / tv, vy: dy / tv - 250 * tv, grav: 500, r: 2.6, dib: 'coco', polvo: ['#7a4a2a', '#f4efe6'] }); }
+    if (near && e.tt <= 0 && Math.abs(toP) < 170) { e.tt = 2.4; e.tiro = .35; const tv = .9, dx = g.p.x - e.x, dy = (g.p.y - 8) - (e.y - 16); dispara(g, { origen: e, x: e.x, y: e.y - 16, vx: dx / tv, vy: dy / tv - 250 * tv, grav: 500, r: 2.6, dib: 'coco', polvo: ['#7a4a2a', '#f4efe6'] }); }
     if (e.vy !== 0 || !SOLID(e.x, e.y + 1)) MEC.gravity(e, d);
   };
   OBJ.bala.dibujos.coco = (c, o) => { c.fillStyle = '#7a4a2a'; c.beginPath(); c.arc(o.x, o.y, 2.8, 0, TAU2); c.fill(); c.fillStyle = '#2a1a10'; c.beginPath(); c.arc(o.x - .8, o.y - .8, .6, 0, TAU2); c.arc(o.x + .6, o.y - .9, .6, 0, TAU2); c.fill(); };

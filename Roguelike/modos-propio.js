@@ -245,8 +245,9 @@ const PROPIO = (() => {
     if (!(j.inv > 0 && Math.floor(j.inv * 14) % 2)) {
       const pared = j.colgado && !p.on && !j.trepa ? j.colgado : 0;
       Object.assign(j.pose, { x: p.x, y: p.y, face: pared || p.face, on: p.on || j.trepa, vx: j.trepa ? 0 : p.vx, vy: p.vy * j.g, run: p.run, vis: true, sq: p.sq, pared: pared ? 1 : 0 });
-      if (j.g < 0) { ctx.save(); ctx.translate(p.x, p.y); ctx.scale(1, -1); Object.assign(j.pose, { x: 0, y: 0 }); st.player(ctx, j.pose, fw); ctx.restore(); }
-      else st.player(ctx, j.pose, fw);
+      const jugador = def.dibujaJugador ? (c, pose, f) => def.dibujaJugador(c, pose, f, j, st) : st.player;
+      if (j.g < 0) { ctx.save(); ctx.translate(p.x, p.y); ctx.scale(1, -1); Object.assign(j.pose, { x: 0, y: 0 }); jugador(ctx, j.pose, fw); ctx.restore(); }
+      else jugador(ctx, j.pose, fw);
     }
     if (def.pinta) def.pinta(ctx, j, fw, 'frente');
     pintaChispas(ctx, j);

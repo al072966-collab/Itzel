@@ -46,8 +46,13 @@
   for (const [n, archivo] of Object.entries({ fondo:'manglar-nocturno-v1', dosel:'dosel-brillante-v1', tierra:'tierra-brillante-v1', borde:'borde-brillante-v1' })) {
     const im = FONDO_BOSQUE[n] = new Image(); im.decoding = 'async'; im.onload = rehaz; im.src = RUTA + archivo + '.png';
   }
-  const bosquePrincipal = f => ((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id)) === 'biolum';
-  const bosqueFondoListo = () => Object.values(FONDO_BOSQUE).every(im => im.complete && im.naturalWidth);
+  // el fondo ilustrado va en el nivel y también en su subida y su bajada (niveles-verticales.js); antes solo salía en el principal y las otras se veían con el telón viejo
+  const bosquePrincipal = f => /^((subida|bajada)_)?biolum$/.test(String((f && f.g && f.g.def && f.g.def.id) || (typeof CUR !== 'undefined' && CUR && CUR.def && CUR.def.id) || ''));
+  const cargada = im => !!(im && im.complete && im.naturalWidth);
+  // el cielo ilustrado solo necesita su fondo y su dosel; el terreno, su tierra y su borde: cada uno sale en cuanto llegan SUS imágenes
+  // (antes, si una de las cuatro tardaba o fallaba, todo el nivel se quedaba con el dibujo viejo)
+  const bosqueFondoListo = () => cargada(FONDO_BOSQUE.fondo) && cargada(FONDO_BOSQUE.dosel);
+  const bosqueTierraLista = () => cargada(FONDO_BOSQUE.tierra) && cargada(FONDO_BOSQUE.borde);
   function bosqueIlustrado(c, f) {
     const im=FONDO_BOSQUE.fondo,H=f.H||VH,sw=Math.min(im.naturalWidth,im.naturalHeight*VW/H),max=Math.max(0,im.naturalWidth-sw);
     const sx=max*(.5+.3*Math.sin((f.cam||0)*.0007)); c.save(); c.imageSmoothingEnabled=true; c.imageSmoothingQuality='high';
@@ -108,7 +113,7 @@
     if (window.estiloArteDerivado || faltan !== 0) return terrenoAntes.call(this, ctx, f);
     const deco = L.deco; L.deco = [];
     try { terrenoAntes.call(this, ctx, f); } finally { L.deco = deco; }
-    if (bosquePrincipal(f) && bosqueFondoListo()) {
+    if (bosquePrincipal(f) && bosqueTierraLista()) {
       ctx.save(); allLoopsPath(ctx,L.loops); ctx.clip();
       const p=ctx.createPattern(FONDO_BOSQUE.tierra,'repeat'); p.setTransform(new DOMMatrix().scale(150/FONDO_BOSQUE.tierra.naturalWidth));
       ctx.fillStyle=p; ctx.fillRect(0,0,L.ww,VH+40); ctx.restore();

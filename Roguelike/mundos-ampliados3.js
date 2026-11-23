@@ -32,7 +32,7 @@
   FOE.campana = { beh: 'campana', w: 12, h: 12, v: 0 };
   BEH.campana = (e, g, d, toP) => {
     if (e.vy !== 0 || !onGround(e)) { e.aire = true; gravity(e, d); return; }
-    if (e.aire) { e.aire = false; e.repica = .5; for (const s of [1, -1]) g.objs.push({ k: 'repique', x: e.x + s * 7, y: e.y, dir: s, t: 0 }); g.shake = Math.max(g.shake || 0, .05); }
+    if (e.aire) { e.aire = false; e.repica = .5; for (const s of [1, -1]) g.objs.push({ k: 'repique', origen: e, x: e.x + s * 7, y: e.y, dir: s, t: 0 }); g.shake = Math.max(g.shake || 0, .05); }
     e.repica = Math.max(0, (e.repica || 0) - d);
     e.cd = (e.cd ?? 1.2) - d; if (e.cd <= 0 && Math.abs(toP) < 160) { e.dir = Math.sign(toP) || e.dir; e.vy = -240; e.vx = e.dir * 55; e.y -= 1; e.cd = 1.8; }
   };
@@ -92,7 +92,7 @@
   FOE.sacapuntas = { beh: 'sacapuntas', w: 12, h: 10, v: 0 };
   BEH.sacapuntas = (e, g, d, toP) => {
     const p = g.p; e.dir = Math.sign(toP) || e.dir; e.tt = (e.tt ?? 1.8) - d; e.carga = e.tt < .5; e.gira = (e.gira || 0) + d * (e.carga ? 14 : 3);
-    if (e.tt <= 0) { e.tt = 2.4; if (Math.abs(toP) < 170) { const tt = .8, sx = e.x + e.dir * 6, sy = e.y - 7; g.objs.push({ k: 'viruta', x: sx, y: sy, vx: (p.x - sx) / tt, vy: ((p.y - 8 - sy) - .5 * 400 * tt * tt) / tt, t: 0, rot: 0 }); } }
+    if (e.tt <= 0) { e.tt = 2.4; if (Math.abs(toP) < 170) { const tt = .8, sx = e.x + e.dir * 6, sy = e.y - 7; g.objs.push({ k: 'viruta', origen: e, x: sx, y: sy, vx: (p.x - sx) / tt, vy: ((p.y - 8 - sy) - .5 * 400 * tt * tt) / tt, t: 0, rot: 0 }); } }
   };
   OBJ.viruta = {
     step(o, g, dt) {
@@ -100,7 +100,7 @@
       const fin = () => { o.dead = true; spawn(g, 6, o.x, o.y, { v: 40, life: .4, s: 1.4, k: 'dust', cols: ['#e8b880', '#2a4ab0'] }); };
       if (o.t > 3 || o.y > VH + 20 || SOLID(o.x, o.y)) { fin(); return; }
       for (const pl of lineas(g)) { if (o.x < Math.min(pl.x, pl.x2) || o.x > Math.max(pl.x, pl.x2)) continue; const yl = platTop(pl, o.x); if ((oy - yl) * (o.y - yl) <= 0) { fin(); return; } }
-      if (tocaItzel(g, o.x - 2, o.y - 2, o.x + 2, o.y + 2)) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); }
+      if (!MEC.protegePisoton(g, o) && tocaItzel(g, o.x - 2, o.y - 2, o.x + 2, o.y + 2)) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); }
     },
     draw(c, o) { c.save(); c.translate(o.x, o.y); c.rotate(o.rot); c.strokeStyle = '#c89060'; c.lineWidth = 1.2; c.beginPath(); for (let k = 0; k < 14; k++) { const a = k * .55, r = .4 + k * .17; c.lineTo(Math.cos(a) * r, Math.sin(a) * r); } c.stroke(); c.strokeStyle = '#2a4ab0'; c.lineWidth = .5; c.stroke(); c.restore(); },
   };
@@ -298,7 +298,7 @@
       const e = o.dueno; o.t += dt; if (e.st === 'gone') { o.dead = true; return; }
       if (o.t < .75) o.x += o.vx * dt * (1 - o.t / .75 * .6);
       else { const dx = e.x - o.x, dy = (e.y - 16) - o.y, dd = Math.hypot(dx, dy) || 1; o.x += dx / dd * 140 * dt; o.y += dy / dd * 140 * dt; if (dd < 6 || o.t > 4) { o.dead = true; e.conSombrero = true; return; } }
-      if (tocaItzel(g, o.x - 4, o.y - 4, o.x + 4, o.y + 2)) MEC.hurt(g, o.x < g.p.x ? 1 : -1);
+      if (!MEC.protegePisoton(g, o) && tocaItzel(g, o.x - 4, o.y - 4, o.x + 4, o.y + 2)) MEC.hurt(g, o.x < g.p.x ? 1 : -1);
     },
     draw(c, o, f) { c.save(); c.translate(o.x, o.y); c.scale(Math.cos(f.t * 14), 1); c.fillStyle = '#1f1a1c'; c.fillRect(-2.6, -5, 5.2, 5); c.fillRect(-4.4, -.6, 8.8, 1.4); c.fillStyle = '#b3342b'; c.fillRect(-2.6, -1.8, 5.2, .9); c.strokeStyle = '#efe5cf'; c.lineWidth = .3; c.strokeRect(-2.6, -5, 5.2, 5); c.restore(); },
   };

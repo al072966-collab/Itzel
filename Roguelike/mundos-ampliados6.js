@@ -43,13 +43,13 @@
   FOE.muneco = { beh: 'muneco', w: 12, h: 16, v: 0 };
   BEH.muneco = (e, g, d, toP) => {
     const p = g.p; e.dir = Math.sign(toP) || e.dir; e.tt = (e.tt ?? 1.6) - d; e.carga = e.tt < .5;
-    if (e.tt <= 0) { e.tt = 2.4; if (Math.abs(toP) < 170) { const tt = .85, sx = e.x + e.dir * 6, sy = e.y - 12; g.objs.push({ k: 'bolaNieve', x: sx, y: sy, vx: (p.x - sx) / tt, vy: ((p.y - 8 - sy) - .5 * 380 * tt * tt) / tt, t: 0 }); } }
+    if (e.tt <= 0) { e.tt = 2.4; if (Math.abs(toP) < 170) { const tt = .85, sx = e.x + e.dir * 6, sy = e.y - 12; g.objs.push({ k: 'bolaNieve', origen: e, x: sx, y: sy, vx: (p.x - sx) / tt, vy: ((p.y - 8 - sy) - .5 * 380 * tt * tt) / tt, t: 0 }); } }
   };
   OBJ.bolaNieve = {
     step(o, g, dt) {
       o.t += dt; o.vy += 380 * dt; o.x += o.vx * dt; o.y += o.vy * dt;
       const fin = () => { o.dead = true; spawn(g, 8, o.x, o.y, { v: 40, life: .4, s: 1.4, k: 'dust', cols: ['#ffffff', '#bcd7ea'] }); };
-      if (tocaItzel(g, o.x - 2, o.y - 2, o.x + 2, o.y + 2)) { fin(); MEC.hurt(g, o.vx > 0 ? 1 : -1); return; }
+      if (!MEC.protegePisoton(g, o) && tocaItzel(g, o.x - 2, o.y - 2, o.x + 2, o.y + 2)) { fin(); MEC.hurt(g, o.vx > 0 ? 1 : -1); return; }
       const m = marDe(g, o.x); if (m && o.y >= m.y - 2) { fin(); g.plats.push(Object.assign(mkPlat({ k: 'floe', look: 'tempano', x: o.x - 8, y: m.y - 2, w: 16, life: 3.5, vx: 0 }), { w0: 16, max: 3.5 })); return; }
       if (SOLID(o.x, o.y) || o.t > 3 || o.y > VH + 20) fin();
     },

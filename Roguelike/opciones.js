@@ -81,6 +81,7 @@
     showScreen(`<div class="title opciones"><img class="hstitch" alt="Opciones" src="${stitched('Opciones', 8)}">
       <div class="op-lista panel">
         ${fila('dificultad', 'dificultad', 'Dificultad', D.desc + (enPartida && RUN && RUN.dif !== O.dificultad ? ' <i>Se aplica desde la siguiente partida.</i>' : ''), Object.entries(DIFS).map(([k, d]) => [k, d.nombre]), O.dificultad)}
+        ${enPartida && window.FRESITA_AUTO ? fila('fresitaAuto', 'poderFresita', 'Fresita', 'Elige quién controla a Fresita.', [[true, 'Automática'], [false, 'Manual']], window.FRESITA_AUTO.activa) : ''}
         ${fila('jugadores', 'control', 'Jugadores', 'Con dos personas, una es Itzel (teclado o primer control) y la otra es Fresita (mouse o segundo control). Al terminar un mundo cada una escoge el camino y, si no coinciden, decide una moneda.' + (enPartida && RUN && RUN.jugadores !== jug() ? ' <i>Se aplica desde la siguiente partida.</i>' : ''), [[1, 'Una persona'], [2, 'Dos personas']], jug())}
         ${volumen('musica', 'musica', 'Música', 'Volumen de las canciones del juego.', 0)}
         ${volumen('efectos', 'sonido', 'Sonidos del juego', 'Saltos, pasos, botones y poderes.')}
@@ -102,6 +103,7 @@
       <button class="patch volver-esquina" id="oVolver">Volver</button></div>`);
     document.querySelectorAll('.op-elige .chip').forEach(b => b.onclick = () => {
       const id = b.dataset.op, v = JSON.parse(b.dataset.v);
+      if (id === 'fresitaAuto') { window.FRESITA_AUTO.pon(v); pantallaOpciones(volver); return; }
       if (id === 'pantalla') { Promise.resolve(pantallaCompleta(v)).catch(() => {}).finally(() => setTimeout(() => pantallaOpciones(volver), 120)); return; }
       O[id] = v; guarda(); pantallaOpciones(volver);
     });
@@ -170,9 +172,9 @@
     const opc = (id, icono, titulo, txt, fn) => { const b = document.createElement('button'); b.className = 'opcion'; b.id = id; b.innerHTML = `<img src="${ico(icono, 5)}"><b>${titulo}</b><span>${txt}</span>`; b.onclick = fn; lista.appendChild(b); };
     opc('mEst', 'barras', 'Estadísticas', S.partidas ? `${S.partidas} partidas, ${S.victorias || 0} ganadas` : 'Lo que llevan jugado', pantallaEstadisticas);
     opc('mOpc', 'engrane', 'Opciones', `Dificultad: ${(DIFS[O.dificultad] || DIFS.normal).nombre} · ${jug() === 2 ? 'Dos jugadores' : 'Un jugador'}`, () => pantallaOpciones());
-    opc('mMulti', 'control', 'Multijugador', 'Dos personas: una es Itzel y la otra Fresita', () => { MULTI.forzar = 2; pantallaControles(); });
+    opc('mMulti', 'control', 'Multijugador', 'Dos personas: una es Itzel y la otra Fresita', () => pantallaMultijugador());
     opc('mCred', 'flor', 'Créditos', 'Quién hizo Itzel', () => pantallaCreditos());
-    const jugar = document.getElementById('mJugar'); if (jugar) jugar.onclick = () => { MULTI.forzar = 0; pantallaControles(); };   // «Jugar» sigue lo que diga Opciones
+    const jugar = document.getElementById('mJugar'); if (jugar) jugar.onclick = () => { MULTI.forzar = 0; MULTI.config = null; pantallaControles(); };   // «Jugar» sigue lo que diga Opciones
     for (const id of ['mJugar', 'mMulti', 'mEnci', 'mLogros', 'mCine', 'mEst', 'mOpc', 'mCred']) {
       const boton = document.getElementById(id); if (boton) lista.appendChild(boton);
     }
@@ -192,6 +194,30 @@
       caja.appendChild(d);
     } else { const h = document.querySelector('.controles .hint'); if (h) h.insertAdjacentHTML('beforeend', ' También se puede jugar con control: conéctalo y oprime cualquier botón.'); }
   };
+  // ---------- Multijugador: quién maneja a Itzel y quién a Fresita ----------
+  function pantallaMultijugador() {
+    const ps = () => (typeof MANDO !== 'undefined' ? MANDO.conectados() : []);
+    const cfg = MULTI.config = MULTI.config || { itzel: 'teclado', fresita: 'mouse' };
+    const pinta = () => {
+      const n = ps().length;
+      const op = (rol, v, txt, ok) => `<button class="patch ${cfg[rol] === v ? 'verde' : ''}" data-r="${rol}" data-v="${v}" ${ok ? '' : 'disabled style="opacity:.45"'}>${txt}</button>`;
+      showScreen(`<div class="title controles"><img class="hstitch" alt="Multijugador" src="${stitched('Multijugador', 8)}">
+        <p class="sub">Dos personas, una pantalla: cada quien elige con qué juega</p>
+        <div class="ctrl2">
+          <div class="panel"><img src="${ico('heart', 6)}"><b>Itzel · corre y salta</b>
+            <p>${op('itzel', 'teclado', 'Teclado (A D · Espacio)', true)}</p><p>${op('itzel', 'control', 'Control 1', n >= 1)}</p></div>
+          <div class="panel"><img src="${ico('bubble', 6)}"><b>Fresita · poderes</b>
+            <p>${op('fresita', 'mouse', 'Mouse (clic: poder · clic derecho: cuna)', true)}</p><p>${op('fresita', 'control', n >= 2 ? 'Control 2' : 'Control (stick der.)', n >= 1 && !(cfg.itzel === 'control' && n < 2))}</p></div>
+        </div>
+        <p class="hint">${n ? n + ' control' + (n > 1 ? 'es' : '') + ' conectado' + (n > 1 ? 's' : '') + '.' : 'No hay controles conectados: conéctalos y oprime un botón para que aparezcan aquí.'} Esc pausa la partida.</p>
+        <button class="patch" id="mpJugar">¡A jugar!</button><button class="patch verde" id="mpVolver">Volver</button></div>`);
+      document.querySelectorAll('[data-r]').forEach(b => b.onclick = () => { if (b.disabled) return; cfg[b.dataset.r] = b.dataset.v; if (cfg.itzel === 'control' && cfg.fresita === 'control' && n < 2) cfg.fresita = 'mouse'; pinta(); });
+      $('mpJugar').onclick = () => { MULTI.forzar = 2; PIDE = null; empezar(); }; $('mpVolver').onclick = menuPrincipal;
+    };
+    pinta();
+    clearInterval(pantallaMultijugador.t); let antes = ps().length;
+    pantallaMultijugador.t = setInterval(() => { if (!$('mpJugar')) return clearInterval(pantallaMultijugador.t); if (ps().length !== antes) { antes = ps().length; pinta(); } }, 700);
+  }
   window.OPCIONES = { pantallaOpciones, pantallaSonido, pantallaEstadisticas, pantallaCreditos };
   if (STATE === 'title') menuPrincipal();
 })();

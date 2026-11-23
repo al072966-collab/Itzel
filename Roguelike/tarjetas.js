@@ -78,7 +78,7 @@ const TARJETAS = (() => {
     setTimeout(() => el.classList.add('sale'), DURA);
     setTimeout(() => { el.remove(); if (viva === el) viva = null; }, DURA + 600);
   }
-  ENCI.alNuevo = (id, espera = 0) => { if (ficha(id)) cola.push({ id, desde: performance.now() + espera }); };
+  ENCI.alNuevo = (id, espera = 0) => { if (!id.startsWith('poder:') && ficha(id)) cola.push({ id, desde: performance.now() + espera }); };
 
   // lo que está a la vista se anota
   function mira() {

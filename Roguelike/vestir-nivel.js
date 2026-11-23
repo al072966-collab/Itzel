@@ -76,6 +76,8 @@
     }).catch(() => { faltan = -1; });
 
     const activo = () => es(ACTUAL);
+    // para revisar que ningún nivel vestido caiga al dibujo viejo: con window.AUDITA = true se anota cada pieza que falta
+    const falta = (k, pieza) => { if (!window.AUDITA) return; const A = window.VESTIDO_FALTAS = window.VESTIDO_FALTAS || {}; A[id + ':' + nivel + ':' + k + ':' + pieza] = (A[id + ':' + nivel + ':' + k + ':' + pieza] || 0) + 1; };
     function spr(c, n, x, y, o = {}) {
       const t = TAM[n]; if (!t || !listo(n)) return false;
       c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';   // las piezas vienen a 6 px por unidad: que se reduzcan bien
@@ -108,19 +110,19 @@
       // previo: el dibujo de antes cuando ese look vivía en el switch de mecanicas.js (no en LOOK)
       look(k, fn, pieza, previo) {
         const antes = LOOK[k] || previo;
-        LOOK[k] = function (c, pl, f, sk) { if (!activo() || !listo(pieza)) return antes && antes.apply(this, arguments); return fn(c, pl, f, sk, antes); };
+        LOOK[k] = function (c, pl, f, sk) { if (!activo() || !listo(pieza)) { if (activo()) falta('look.' + k, pieza); return antes && antes.apply(this, arguments); } return fn(c, pl, f, sk, antes); };
       },
       fd(k, fn, pieza) {
         const antes = FD[k]; if (!antes) return;
         pieza = pieza || k + '0';
-        const nuevo = function (c, e, t, s) { if (!activo() || e.sub || !listo(pieza)) return antes.call(this, c, e, t, s); return fn(c, e, t, s, antes); };
+        const nuevo = function (c, e, t, s) { if (!activo() || e.sub || !listo(pieza)) { if (activo() && !e.sub) falta('fd.' + k, pieza); return antes.call(this, c, e, t, s); } return fn(c, e, t, s, antes); };
         nuevo._assetNuevo = true;
         nuevo._assetListo = () => (activo() && listo(pieza)) || !!(antes._assetListo && antes._assetListo());
         FD[k] = nuevo;
       },
       obj(k, fn, pieza, campo = 'draw') {
         const o = OBJ[k]; if (!o || !o[campo]) return; const antes = o[campo];
-        o[campo] = function (c, ob, f, sk) { if (!activo() || (pieza && !listo(pieza))) return antes.apply(this, arguments); return fn(c, ob, f, sk, antes); };
+        o[campo] = function (c, ob, f, sk) { if (!activo() || (pieza && !listo(pieza))) { if (activo()) falta('obj.' + k, pieza); return antes.apply(this, arguments); } return fn(c, ob, f, sk, antes); };
       },
       zona(k, fn, pieza) {
         if (!MEC.PINTA_ZONA) return; const antes = MEC.PINTA_ZONA[k];
@@ -145,6 +147,7 @@
       },
       cuadro(seq, t, fps = 8) { return seq[Math.floor(t * fps) % seq.length]; },
     };
+    (window.VESTIDOS = window.VESTIDOS || []).push(V);      // para que la demostración del poder espere a las piezas del mundo (Estilos/enciclopedia.js)
     return V;
   };
 })();

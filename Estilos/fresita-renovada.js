@@ -308,7 +308,7 @@ window.hazFresita = D => {
   function dibujar(c,fr,f){
     const derivado=String(window.estiloArteDerivado||'').split('~')[0];
     if((derivado&&derivado!=='pixel')||!sprite.complete||!sprite.naturalWidth)return anterior(c,fr,f);
-    const t=f.t||0,ancho=25,alto=ancho*sprite.naturalHeight/sprite.naturalWidth;
+    const t=f.t||0,ancho=38,alto=ancho*sprite.naturalHeight/sprite.naturalWidth;
     let estado=reposos.get(fr);
     if(!estado){estado={t,x:fr.x,y:fr.y,quieto:0};reposos.set(fr,estado);}
     const dt=Math.max(0,Math.min(.05,t-estado.t)), desplazamiento=Math.hypot(fr.x-estado.x,fr.y-estado.y);
@@ -323,10 +323,10 @@ window.hazFresita = D => {
     }
     c.save();c.translate(fr.x,fr.y+Math.sin(t*2)*.45);
     // La referencia mira a la izquierda; se invierte cuando avanza a la derecha.
-    c.scale((fr.face||1)>0?-1:1,1);c.imageSmoothingEnabled=false;
+    c.scale((fr.face||1)>0?-1:1,1);c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';
     // Preparar las franjas en una cuadrícula entera evita líneas visibles
     // al dibujar el personaje a la resolución de pixel del mundo.
-    if(!base){base=document.createElement('canvas');base.width=180;base.height=90;const b=base.getContext('2d');b.imageSmoothingEnabled=false;b.drawImage(sprite,0,0,180,90);animada=document.createElement('canvas');animada.width=180;animada.height=100;}
+    if(!base){base=document.createElement('canvas');base.width=180;base.height=90;const b=base.getContext('2d');b.imageSmoothingEnabled=true;b.imageSmoothingQuality='high';{let w=sprite.naturalWidth,h=sprite.naturalHeight,fu=sprite;while(w>360){const q=document.createElement('canvas');q.width=w=Math.ceil(w/2);q.height=h=Math.ceil(h/2);const x=q.getContext('2d');x.imageSmoothingQuality='high';x.drawImage(fu,0,0,w,h);fu=q;}b.drawImage(fu,0,0,180,90);}animada=document.createElement('canvas');animada.width=180;animada.height=100;}
     const a=animada.getContext('2d');a.clearRect(0,0,180,100);a.imageSmoothingEnabled=false;
     for(let i=0;i<36;i++){
       const u=(i+.5)/36,onda=Math.round(Math.sin(t*4.2-u*5)*u*u*5);

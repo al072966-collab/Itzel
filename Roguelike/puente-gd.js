@@ -41,6 +41,15 @@
     try { const d = JSON.parse(localStorage.getItem('itzel-progreso') || '{}'); d.opciones = Object.assign(d.opciones || {}, { [m.k]: m.v }); localStorage.setItem('itzel-progreso', JSON.stringify(d)); } catch (er) {}
     avisa('datos', datos());
   });
+  // GDevelop ya tenía el juego cargado y escondido (se precarga en el segundo logo): al pulsar un botón solo manda la acción
+  function ejecuta(a) {
+    document.body.classList.remove('gd-oculto');
+    if (a === 'empezar') { PIDE = null; empezar(); requestAnimationFrame(() => requestAnimationFrame(() => { try { parent.postMessage({ itzelGD: 'abierto' }, '*'); } catch (e) {} })); return; }   // «¡A jugar!» de la pantalla de Controles de GDevelop
+    const b = document.getElementById(IDS[a] || 'mJugar') || document.getElementById('mJugar');
+    if (b) b.click();
+    requestAnimationFrame(() => requestAnimationFrame(() => { try { parent.postMessage({ itzelGD: 'abierto' }, '*'); } catch (e) {} }));   // ya está lo pedido en pantalla: GDevelop puede mostrar el marco
+  }
+  addEventListener('message', e => { const m = e.data; if (m && m.itzelGD === 'abre') ejecuta(m.accion); });
   const avisa = (tipo, d) => { try { parent.postMessage({ itzelGD: tipo, datos: d }, '*'); } catch (e) {} };
   let primera = true;
   GANCHOS.en('menuPrincipal', _menu => function () {

@@ -104,7 +104,10 @@
       const arriba = Math.min(0, base - 176);
       c.save(); c.fillStyle = '#a85a3e'; c.fillRect(0, 0, VW, alto);
       for (let x = -off - ancho; x < VW + ancho; x += ancho) {
-        c.drawImage(panorama, 0, 0, 2172, 585, x, arriba, ancho, base - arriba);
+        // el panorama conserva SIEMPRE su tamaño (176 de alto, pegado a la línea del suelo); si la cámara sube se estira solo
+        // la fila de arriba para tapar el hueco, así el telón no se deforma cuando Itzel salta o se mueve
+        if (base > 0) c.drawImage(panorama, 0, 0, 2172, 3, x, 0, ancho, Math.max(0, base - 176) + 1);
+        c.drawImage(panorama, 0, 0, 2172, 585, x, base - 176, ancho, 176);
         if (paredBaja.complete && paredBaja.naturalWidth && base < alto) {
           c.save(); c.filter = 'brightness(.68) saturate(.8)';
           c.drawImage(paredBaja, x, base, ancho, alto - base);

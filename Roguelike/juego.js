@@ -196,7 +196,7 @@ const curStyle = () => RUN.styles[RUN.world - 1];
 // mundos, pintando a Itzel una vez en un lienzo aparte, para que ya estén cuando se llegue a cada uno.
 function precargaPersonajes() {
   if (!RUN) return; const c = mkCanvas(8, 8).getContext('2d');
-  for (const st of RUN.styles) { const fn = st.player || (st.base && STYLE_MAP[st.base] && STYLE_MAP[st.base].player); if (typeof fn !== 'function') continue;
+  for (const st of RUN.styles) { if (!st) continue; if (window.precargaItzelMundo) window.precargaItzelMundo(st.id); const fn = st.player || (st.base && STYLE_MAP[st.base] && STYLE_MAP[st.base].player); if (typeof fn !== 'function') continue;
     try { c.save(); fn(c, { x: 4, y: 8, vx: 0, vy: 0, on: true, face: 1, run: 0, inv: 0, sq: 0 }, { t: 0, st }); } catch (e) { /* solo importa que pida la imagen */ } finally { c.restore(); } }
 }
 
@@ -428,7 +428,7 @@ function stepRun(g, inp, dt, st) {
       const nx = e.x + e.dir * 26 * dt, ahead = nx + e.dir * 8;
       if (nx < e.x0 || nx > e.x1 || SOLID(ahead, e.y - 4) || !SOLID(ahead, e.y + 2)) e.dir *= -1; else e.x = nx;
       if (Math.abs(p.x - e.x) < 11 && p.y > e.y - 11 && p.y - p.h < e.y && p.vis !== undefined) {
-        if (p.vy > 40 && prevY <= e.y - 6) { e.state = 'gone'; e.t = 0; e.dir = p.x < e.x ? 1 : -1; p.vy = reboteEnemigo(); p.noCut = true; p.on = false; p.plat = null; p.air = U.dbl; RUN.stomps++; sueltaCorazon(g, e.x, e.y - 8); spawn(g, 12, e.x, e.y - 6, { v: 80, life: .5, s: 2, k: 'dust', cols: dust }); }
+        if ((p.vy > 0 || (p.on && p.y > prevY)) && prevY <= e.y - 6) { p.y = e.y - 11; e.state = 'gone'; e.t = 0; e.dir = p.x < e.x ? 1 : -1; p.vy = reboteEnemigo(); p.noCut = true; p.on = false; p.plat = null; p.air = U.dbl; RUN.stomps++; sueltaCorazon(g, e.x, e.y - 8); spawn(g, 12, e.x, e.y - 6, { v: 80, life: .5, s: 2, k: 'dust', cols: dust }); }
         else hurt(g, p.x < e.x ? -1 : 1);
       }
     } else if (e.state === 'sleep') { e.t -= dt; if (e.t <= 0) e.state = 'walk'; }
@@ -529,14 +529,18 @@ function stepFresita(g, mouse, dt) {
       if (fr.cool > 0) continue;
       // la canción de cuna tiene 3 usos por nivel (para que no se abuse); gasta uno solo si de verdad duerme a alguien
       if (g.arrullos === undefined) g.arrullos = 3;
-      const rad = 40 * U.lullaby;
-      const quienes = [...g.enemies.filter(e => e.state !== 'gone' && Math.hypot(e.x - fr.x, e.y - 6 - fr.y) < rad), ...g.foes.filter(e => (e.st === 'ok' || e.st === 'run' || e.st === 'lunge' || e.st === 'dive') && Math.hypot(e.x - fr.x, e.y - e.h / 2 - fr.y) < rad + 6)];
+      const fuerzaArrullo = Number.isFinite(U.lullaby) && U.lullaby > 0 ? U.lullaby : 1;
+      const rad = 40 * fuerzaArrullo;
+      const cerca = (e, y, extra = 0) => Math.hypot(e.x - fr.x, y - fr.y) < rad + extra;
+      const normales = (g.enemies || []).filter(e => e.state !== 'gone' && e.state !== 'sleep' && cerca(e, e.y - 6));
+      const especiales = (g.foes || []).filter(e => !['gone', 'sleep', 'glass', 'off'].includes(e.st) && !e.sub && cerca(e, e.y - (e.h || 10) / 2, 6));
+      const quienes = normales.length + especiales.length;
       if (g.arrullos <= 0) { g.rings.push({ x: fr.x, y: fr.y, t: 0, d: .4, c: '#ff8080', r: 14 }); fr.cool = .5; if (typeof toast === 'function' && !g.avisoArrullo) { g.avisoArrullo = 1; toast('Ya no quedan canciones de cuna en este nivel', 2400); } continue; }
       fr.cool = .5; g.lull = { x: fr.x, y: fr.y, r: rad, t: g.t };
       g.rings.push({ x: fr.x, y: fr.y, t: 0, d: .7, c: '#b9a7ff', r: rad });
-      if (quienes.length) g.arrullos--;
-      for (const e of g.enemies) if (e.state !== 'gone' && Math.hypot(e.x - fr.x, e.y - 6 - fr.y) < rad) { if (e.state !== 'sleep') RUN.naps++; e.state = 'sleep'; e.t = 5 * U.lullaby; }
-      for (const e of g.foes) if ((e.st === 'ok' || e.st === 'run' || e.st === 'lunge' || e.st === 'dive') && Math.hypot(e.x - fr.x, e.y - e.h / 2 - fr.y) < rad + 6) { RUN.naps++; e._golpesDormido = 0; e.st = 'sleep'; e.tt = 5 * U.lullaby; }
+      if (quienes) g.arrullos--;
+      for (const e of normales) { RUN.naps++; e.state = 'sleep'; e.t = 5 * fuerzaArrullo; }
+      for (const e of especiales) { RUN.naps++; e._golpesDormido = 0; e.aturde = 0; e.st = 'sleep'; e.tt = 5 * fuerzaArrullo; }
     }
   }
   if (g.power === 'lapiz' && g.trazoLapiz && mouse.active) MEC.trazaLapiz(g, g.cam + mouse.x, mouse.y + cy);
@@ -996,7 +1000,7 @@ function stats() {
 }
 function worldsList() {
   if (RUN.desdeEnciclopedia) { const nombre = CUR && CUR.isBoss && CUR.boss ? JEFES[CUR.boss.tipo].nombre : CUR && CUR.def ? CUR.def.nombre : curStyle().name; return `<div class="worlds"><span class="here">${nombre}</span></div>`; }
-  return `<div class="worlds">${RUN.styles.map((s, i) => `<span class="${i + 1 < RUN.world || STATE === 'win' ? 'done' : i + 1 === RUN.world ? 'here' : ''}">${i + 1}. ${(NIVELES[s.id] || s).nombre || s.name}</span>`).join('')}</div>`;
+  return `<div class="worlds">${RUN.styles.map((s, i) => `<span class="${i + 1 < RUN.world || STATE === 'win' ? 'done' : i + 1 === RUN.world ? 'here' : ''}">${i + 1}. ${i + 1 > RUN.world && STATE !== 'win' ? '???' : (NIVELES[s.id] || s).nombre || s.name}</span>`).join('')}</div>`;
 }
 // La última vida rompe el cuadro del mundo por una diagonal que pasa por Itzel.
 function animarDerrota(g) {

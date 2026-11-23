@@ -178,9 +178,12 @@
   // ---------- la carta de lotería ----------
   function carta(ctx, M, S, u, tipo) {
     const k = M.k, img = S.congelado;
-    ctx.save(); ctx.filter = 'saturate(.7) brightness(.62)'; ctx.drawImage(img, 0, 0); ctx.filter = 'none';
+    const sale = EASE.in2(clamp((u - 1.25) / .35, 0, 1));
+    // Recuperar la luz del plano mientras se retira la carta evita un salto
+    // brusco de brillo al volver al juego.
+    ctx.save(); ctx.filter = `saturate(${lerp(.7, 1, sale)}) brightness(${lerp(.62, 1, sale)})`; ctx.drawImage(img, 0, 0); ctx.filter = 'none';
     const H = Math.min(M.h * .74, (M.y1 - M.y0) * k * .8), W = H * .64, cx = M.w / 2, cy = M.h / 2;
-    const entra = EASE.outBack(clamp(u / .38, 0, 1)), sale = EASE.in2(clamp((u - 1.25) / .35, 0, 1));
+    const entra = EASE.outBack(clamp(u / .38, 0, 1));
     ctx.translate(cx + (1 - entra) * M.w * .55, cy + (1 - entra) * H * .1); ctx.rotate((1 - entra) * .5 - .035 + sale * .2); ctx.scale(Math.max(.02, 1 - sale), 1); ctx.globalAlpha = 1 - sale * .6;
     ctx.shadowColor = 'rgba(0,0,0,.55)'; ctx.shadowBlur = 24 * k; ctx.shadowOffsetY = 8 * k;
     ctx.fillStyle = '#f3e6c4'; ctx.beginPath(); roundRect(ctx, -W / 2, -H / 2, W, H, 9 * k); ctx.fill(); ctx.shadowColor = 'transparent';
@@ -197,7 +200,7 @@
     const n = ORDEN.indexOf(tipo) + 1;
     ctx.textAlign = 'left'; ctx.textBaseline = 'top'; ctx.font = `800 ${20 * k}px Alegreya, Georgia, serif`; ctx.lineWidth = 4 * k; ctx.strokeStyle = '#f3e6c4'; ctx.strokeText(String(n), ix + 6 * k, iy + 4 * k); ctx.fillStyle = '#1a1210'; ctx.fillText(String(n), ix + 6 * k, iy + 4 * k);
     const nombre = CARTA[tipo] || JEFES[tipo].nombre.toUpperCase(), forma = tipo === 'ruptura' && S.formaRuptura ? S.formaRuptura.nombre : null;
-    let fs = 19 * k; ctx.font = `800 ${fs}px Alegreya, Georgia, serif`; while (ctx.measureText(nombre).width > iw && fs > 8) { fs *= .92; ctx.font = `800 ${fs}px Alegreya, Georgia, serif`; }
+    let fs = 19 * k; ctx.font = `800 ${fs}px Alegreya, Georgia, serif`; while (ctx.measureText(nombre).width > iw - 24 * k && fs > 8 * k) { fs *= .92; ctx.font = `800 ${fs}px Alegreya, Georgia, serif`; }
     const yNombre = iy + ih + (H / 2 - 16 * k - iy - ih) / 2 + 1 * k;
     ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#1a1210'; ctx.fillText(nombre, 0, yNombre - (forma ? 8 * k : 0));
     if (forma) { let f = 13 * k; ctx.font = `700 ${f}px Alegreya, Georgia, serif`; while (ctx.measureText(forma).width > iw - 12 * k && f > 7 * k) { f *= .92; ctx.font = `700 ${f}px Alegreya, Georgia, serif`; } ctx.fillStyle = '#a42b36'; ctx.fillText(forma, 0, yNombre + 12 * k); }
@@ -248,6 +251,17 @@
       }
     }
     function capturaPlaca() { const c = mkCanvas(M.w, M.h); U.componer(c.getContext('2d'), M); S.plate = c; }
+    // Los cuerpos de algunos jefes se cargan al primer dibujo. Esperarlos antes
+    // de arrancar evita que la ilustración cambie a mitad de su presentación.
+    function arteListo() {
+      const estilo = view.st, id = String(window.estiloArteDerivado || estilo.id).split('~')[0];
+      if (tipo === 'mythos' && typeof MASCARA_ESTILOS !== 'undefined' && MASCARA_ESTILOS.obtenerCuerpo)
+        return !!MASCARA_ESTILOS.obtenerCuerpo(estilo);
+      const variantes = window.JEFES_VARIANTES;
+      if (variantes && variantes.archivos[tipo] && variantes.archivos[tipo][id])
+        return !!variantes.obtener(tipo, id);
+      return true;
+    }
     function restaura() {
       const G = S.guarda; if (!G) return;
       if (S.Obj && G.obj) { for (const k of Object.keys(S.Obj)) if (!(k in G.obj)) delete S.Obj[k]; Object.assign(S.Obj, G.obj); S.J = S.Obj.j; }
@@ -319,7 +333,16 @@
     }
 
     const esc = {
-      inmediata: true, cues: E.cues, subs: [], saltoDirecto: true,
+      inmediata: true, subs: [], saltoDirecto: true,
+      // El reloj del motor también avanza mientras se prepara el prólogo.
+      // Las marcas pertenecen al guion, no a ese tiempo de espera.
+      get cues() {
+        if (S.t0C == null) return [];
+        if (!S.corta) return E.cues.filter(c => S.mostrarCarta !== false || c[0] < E.tCarta).map(c => [S.t0C + c[0], c[1], c[2]]);
+        const [inicio, fin] = E.corta, duracion = fin - inicio;
+        return E.cues.filter(c => (c[0] >= inicio && c[0] < fin) || (S.mostrarCarta !== false && c[0] >= E.tCarta))
+          .map(c => [S.t0C + (c[0] < fin ? c[0] - inicio : duracion + c[0] - E.tCarta), c[1], c[2]]);
+      },
       get dur() { return S.t0C == null ? 99 : S.t0C + largo(); },
       barras(t) { return .55 * Math.min(tramo(t, 0, .35), S.t0C == null ? 1 : 1 - tramo(t, S.t0C + largo() - .45, S.t0C + largo() - .05)); },
       saltar(t) { if (!S.construyendo) { if (!S.plate) capturaPlaca(); construir(); } return S.construido && S.t0C != null ? Math.max(t, S.t0C + largo() - .05) : null; },
@@ -328,6 +351,13 @@
         revisaConstruccion();
         if (!S.plate) { capturaPlaca(); construir(); }
         if (!S.construido) { ctx.drawImage(S.plate, 0, 0); ctx.fillStyle = `rgba(13,8,6,${.5 * tramo(t, 0, .4)})`; ctx.fillRect(0, 0, M.w, M.h); return; } // se oscurece mientras se arma el prólogo
+        if (!S.artePreparado) {
+          if (S.esperaArte == null) S.esperaArte = performance.now();
+          if (!arteListo() && performance.now() - S.esperaArte < 1500) {
+            ctx.drawImage(S.plate, 0, 0); ctx.fillStyle = 'rgba(13,8,6,.5)'; ctx.fillRect(0, 0, M.w, M.h); return;
+          }
+          S.artePreparado = true; // si falta el archivo, continuar con el arte alternativo
+        }
         // antes de arrancar, con la imagen todavía quieta: se dibujan aparte las tomas clave para que el mundo
         // y el jefe armen sus cachés a esos acercamientos (si no, el primer primer plano da un tirón)
         if (!S.calentado) {
@@ -341,7 +371,9 @@
         const T = tau(t);
         // ---- la carta: se dibuja el último cuadro, se congela y se vuelve carta ----
         if (T >= E.tCarta) {
-          if (!S.mostrarCarta) return;
+          // Si la carta ya se vio, conservar la última toma también cuando se
+          // salta: el motor limpia el lienzo antes de llamar a cuadro().
+          if (!S.mostrarCarta) { escena(ctx, E.tCarta - .001, 0); return; }
           const vistas = PROG.d.tarjetasJefes || (PROG.d.tarjetasJefes = {});
           if (!vistas[S.claveCarta]) { vistas[S.claveCarta] = true; PROG.save(); }
           if (!S.congelado) {
@@ -773,8 +805,8 @@
       if (t < 1.4) S.cam = { x: L.camMin, z: claves(t, [[0, 1.1], [1.4, 1.04]]), fx: p.x + 60, fy: FLOOR - 50, nit: false };
       else if (t < 2.6) S.cam = { x: L.camMin, z: claves(t, [[1.4, 1.25], [2.6, 1.4, 'io2']]), fx: lerp(p.x + 40, rx, .6), fy: lerp(FLOOR - 70, ry + 18, tramo(t, 1.4, 2.6)), dof: .15, nit: true };
       else if (t < 3.7) S.cam = { x: L.camMin, z: claves(t, [[2.6, 2.9], [3.7, 3.2, 'io2']]), fx: rx - 2, fy: ry - 8, dof: .8, nit: true };
-      else if (t < 5.0) S.cam = { x: L.camMin, z: claves(t, [[3.7, 1.55], [5.0, 1.45]]), fx: lerp(p.x, fr ? fr.x : p.x, .5) + 8, fy: lerp(FLOOR - 30, fr ? fr.y : FLOOR - 60, .5), dof: .25, nit: true };
-      else S.cam = { x: L.camMin, z: claves(t, [[5.0, 1.42], [5.95, 1.52]]), fx: lerp(p.x, rx, .55), fy: lerp(FLOOR - 24, ry, .5), dof: .2, nit: true };
+      else if (t < 5.0) S.cam = { x: L.camMin, z: claves(t, [[3.7, 1.12], [5.0, 1.08]]), fx: lerp(p.x, rx, .5), fy: lerp(FLOOR - 25, ry - 16, .5), dof: .15, nit: true };
+      else S.cam = { x: L.camMin, z: claves(t, [[5.0, 1.08], [5.95, 1.3, 'io2']]), fx: lerp(p.x, rx, .5), fy: lerp(FLOOR - 25, ry - 16, .5), dof: .15, nit: true };
       if (t > 3.3 && t < 3.5) S.sacude = 1.4;
     },
     atras(ctx, S, t) {
@@ -820,7 +852,7 @@
   const LENTO = [3.0, 3.6, .3]; // de 3.0 a 3.6 s el tiempo corre al 30%
   const tiempoRio = t => t < LENTO[0] ? t : t < LENTO[1] ? LENTO[0] + (t - LENTO[0]) * LENTO[2] : LENTO[0] + (LENTO[1] - LENTO[0]) * LENTO[2] + (t - LENTO[1]);
   ENTRADAS.cocodrilo = {
-    tCarta: 5.95, corta: [1.5, 5.1], dejaObj: true,
+    tCarta: 5.95, cartaEn: 4.55, corta: [1.5, 5.1], dejaObj: true,
     cues: [[.2, 'ambiente', 'agua y ranas'], [1.45, 'swell', 'burbujas'], [3.0, 'golpe', 'la mordida (cámara lenta)'], [3.95, 'efecto', 'rugido y chorro'], [5.0, 'silencio', 'solo los ojos'], [5.95, 'acento', 'carta']],
     inicia(S) {
       const st = L.start, R = S.Obj, tr = R && R.tramos ? R.tramos[0] : [15, 36];
@@ -955,15 +987,15 @@
       // el barco: sale de la niebla, dispara y pasa por encima de ellas
       const pasa = EASE.io2(tramo(t, 5.0, 5.9, 'lin'));
       const atkBarco = t >= 3.95 && t < 4.7 ? 'canones' : 'navega';
-      Object.assign(J, { x: lerp(S.bx, S.px + 24, pasa) + Math.sin(t * .6) * 4, y: lerp(62, 66, pasa) + Math.sin(t * 1.3) * 3, face: -1, t, at: t, st: 'ataque', atk: atkBarco, stunT: 0, flash: 0 });
+      Object.assign(J, { x: lerp(S.bx, S.px + 24, pasa) + Math.sin(t * .6) * 4, y: lerp(86, 90, pasa) + Math.sin(t * 1.3) * 3, face: -1, t, at: t, st: 'ataque', atk: atkBarco, stunT: 0, flash: 0 });
       S.alfaJefe = tramo(t, 1.5, 2.5); if (t <= 5.95) S.finJ = [J.x, J.y];
       S.giro = t > 3.9 && t < 4.5 ? Math.sin((t - 3.9) * 18) * .015 * (1 - tramo(t, 3.9, 4.5)) : 0; // el retroceso de los cañones
       // cámara
       if (t < 1.4) S.cam = { x: L.camMin, z: claves(t, [[0, 1.06], [1.4, 1.0]]), fx: p.x + 80, fy: FLOOR - 40, nit: false };
       else if (t < 2.8) { const u = EASE.io2(tramo(t, 1.4, 2.5, 'lin')); S.cam = { x: L.camMin, z: 1.15, fx: lerp(p.x + 60, S.bx, u), fy: lerp(FLOOR - 40, J.y + 6, u), dof: .1, nit: true }; }
       else if (t < 3.9) S.cam = { x: L.camMin, z: claves(t, [[2.8, 3.0], [3.9, 3.3, 'io2']]), fx: J.x + 20, fy: J.y - 16, dof: .8, nit: true };
-      else if (t < 5.2) S.cam = { x: L.camMin, z: claves(t, [[3.9, 1.22], [5.2, 1.28]]), fx: lerp(S.px + 40, S.bx, .35), fy: FLOOR - 72, dof: .2, nit: true };
-      else S.cam = { x: L.camMin, z: claves(t, [[5.2, 1.32], [5.95, 1.4]]), fx: p.x + 16, fy: lerp(FLOOR - 24, J.y - 16, .5), dy: 6, dof: .25, nit: true };
+      else if (t < 5.2) S.cam = { x: L.camMin, z: claves(t, [[3.9, 1.05], [5.2, 1.08]]), fx: lerp(p.x, J.x, .5), fy: lerp(FLOOR - 20, J.y - 28, .5), dof: .15, nit: true };
+      else { const u = EASE.io2(tramo(t, 5.2, 5.95, 'lin')); S.cam = { x: L.camMin, z: lerp(1.08, 1.25, u), fx: lerp(lerp(p.x, J.x, .5), p.x + 16, u), fy: lerp(lerp(FLOOR - 20, J.y - 28, .5), lerp(FLOOR - 24, J.y - 16, .5), u), dy: 6 * u, dof: lerp(.15, .25, u), nit: true }; }
       for (const m of S.miras) { const f = t - m.t0 - m.espera; if (f > 0 && f < .3) S.sacude = Math.max(S.sacude, 3.5 * (1 - f / .3)); }
     },
     atras(ctx, S, t) {
@@ -1126,7 +1158,8 @@
       const hueco = (x, y, r) => { const [X, Y] = V.scr(x, y), R = r * V.sx, g = vx.createRadialGradient(X, Y, R * .2, X, Y, R); g.addColorStop(0, 'rgba(0,0,0,1)'); g.addColorStop(1, 'rgba(0,0,0,0)'); vx.fillStyle = g; vx.fillRect(X - R, Y - R, R * 2, R * 2); };
       const fr = CUR.fre, p = CUR.p; if (fr) hueco(fr.x, fr.y, (t > 5.0 ? 74 : 62) + Math.sin(CUR.t * 3) * 3); hueco(p.x, p.y - 8, 26);
       if (t > 3.85 && t < 4.4 && String(view.st.id).split('~')[0] === 'acuarela') hueco(J.x, J.y - 6, 32 * Math.min(tramo(t, 3.85, 3.95), 1 - tramo(t, 4.3, 4.4)));
-      if (t > 5.05 && String(view.st.id).split('~')[0] === 'acuarela') hueco(J.x, J.y, 35 * tramo(t, 5.05, 5.35));
+      // La luz de Fresita alcanza al jefe en todos los estilos, no solo en acuarela.
+      if (t > 5.05) hueco(J.x, J.y, 48 * tramo(t, 5.05, 5.35));
       for (const q of S.cris) hueco(q.x, q.y - 6, 40);
       ctx.drawImage(velo, 0, 0);
       // los ojos rojos brillan aunque esté oscuro
@@ -1200,8 +1233,8 @@
       if (t < 1.4) S.cam = { x: L.camMin, z: claves(t, [[0, 1.08], [1.4, 1.03]]), fx: p.x + 40, fy: FLOOR - 40, nit: false };
       else if (t < 2.7) S.cam = { x: L.camMin - 60, z: 1.15, fx: lerp(p.x, ox, EASE.io2(tramo(t, 1.4, 2.4, 'lin')) * .75), fy: lerp(FLOOR - 40, oy - 6, tramo(t, 1.4, 2.4)), dof: .1, nit: true };
       else if (t < 3.8) S.cam = { x: L.camMin - 60, z: claves(t, [[2.7, 2.7], [3.8, 3.0, 'io2']]), fx: J.x + 2, fy: J.y - 4, dof: .8, nit: true };
-      else if (t < 5.0) S.cam = { x: L.camMin - 60, z: claves(t, [[3.8, 1.75], [5.0, 1.65]]), fx: lerp(fr ? fr.x : p.x, ox, .4), fy: lerp(FLOOR - 40, oy, .5), dof: .3, nit: true };
-      else S.cam = { x: L.camMin - 60, z: claves(t, [[5.0, 1.2], [5.95, 1.25]]), fx: lerp(ox, p.x, .45), fy: lerp(oy, FLOOR - 30, .4), dof: .15, nit: true };
+      else if (t < 5.0) S.cam = { x: L.camMin - 60, z: claves(t, [[3.8, 1.12], [5.0, 1.1]]), fx: lerp(p.x, ox, .5), fy: lerp(FLOOR - 30, oy - 15, .5), dof: .15, nit: true };
+      else { const u = EASE.io2(tramo(t, 5.0, 5.95, 'lin')); S.cam = { x: L.camMin - 60, z: lerp(1.1, 1.25, u), fx: lerp(lerp(p.x, ox, .5), lerp(ox, p.x, .45), u), fy: lerp(lerp(FLOOR - 30, oy - 15, .5), lerp(oy, FLOOR - 30, .4), u), dof: .15, nit: true }; }
       if (enojo) S.sacude = 2;
     },
     frente(ctx, S, t) {

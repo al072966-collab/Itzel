@@ -100,7 +100,7 @@
   const btn = document.createElement('button'); btn.id = 'btnAuto'; btn.type = 'button'; btn.setAttribute('aria-label', 'Fresita automática');
   const css = document.createElement('style');
   css.textContent = '#btnAuto{position:fixed;right:8px;top:110px;z-index:9998;width:40px;height:40px;border-radius:9px;border:0;padding:0;cursor:pointer;background:rgba(26,18,13,.62);color:#f3e7cf;font:800 13px/1.05 "Alegreya Sans",sans-serif;box-shadow:0 0 0 2px rgba(243,231,207,.55);display:none}'
-    + '#btnAuto.on{background:rgba(63,138,74,.85)} @media (pointer:coarse){#btnAuto{display:block}} #btnAuto.siempre{display:block}';
+    + '#btnAuto.on{background:rgba(63,138,74,.85)} @media (pointer:coarse){#btnAuto{display:none}} #btnAuto.siempre{display:block}';
   document.head.appendChild(css);
   function pintaBoton() { btn.innerHTML = 'Fresita<br>' + (activa ? 'auto' : 'manual'); btn.classList.toggle('on', activa); btn.title = activa ? 'Fresita te sigue y usa su poder sola (toca para apagarla)' : 'Fresita la manejas tú (toca para que sea automática)'; }
   btn.addEventListener('click', e => { e.stopPropagation(); window.FRESITA_AUTO.pon(!activa); if (typeof toast === 'function') toast(activa ? 'Fresita te sigue y usa su poder sola' : 'Fresita la manejas tú'); });

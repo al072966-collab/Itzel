@@ -149,7 +149,7 @@ const PRIMER_PLANO = (() => {
     x.clearRect(0, 0, cv.width, cv.height);
     x.drawImage(view.c, (cx - cw / 2) * S, (cy - ch / 2) * S, cw * S, ch * S, 0, 0, cv.width, cv.height);
     if (itzelNitida || fresitaNitida) {
-      const k = cv.width / cw, x0 = cx - cw / 2 + g.cam, y0 = cy - ch / 2, f = { t: g.t, cam: g.cam, S: k, g, st, key: st.id + '@cerca' };
+      const k = cv.width / cw, x0 = cx - cw / 2 + g.cam, y0 = cy - ch / 2, f = { t: g.t, cam: g.cam, S: k, g, st, key: st.id + '@cerca', enciclopedia: true };
       x.save(); x.setTransform(k, 0, 0, k, -x0 * k, -y0 * k); x.imageSmoothingEnabled = true;
       if (itzelNitida && solo !== 'fresita') {
         // Conservar el objeto del jugador mantiene el temporizador de reposo.

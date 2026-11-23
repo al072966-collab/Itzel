@@ -266,6 +266,15 @@ const MEC = (() => {
       e.st = 'dive'; e.tx = p.x; e.ty = Math.min(p.y - 4, VH - 4); e.tPicada = 0;
     }
   }
+  // Un disparo recién creado junto a su dueño no bloquea un pisotón desde arriba.
+  function protegePisoton(g, o) {
+    const e = o.origen || o.dueno, p = g.p;
+    if (!e || !p || e.st === 'gone' || (e.spiky && e.spiky(e)) || !(p.vy > 0)) return false;
+    if (Math.abs(p.x - o.x) > (p.w || 10) / 2 + 4 || o.y < p.y - p.h - 4 || o.y > p.y + 4) return false;
+    if (Math.abs(o.x - e.x) > e.w / 2 + 8 || Math.abs(o.y - (e.y - e.h / 2)) > e.h / 2 + 8) return false;
+    if (Math.abs(p.x - e.x) >= (p.w + e.w) / 2 || p.y > e.y - e.h + 5) return false;
+    o.dead = true; return true;
+  }
   function stepFoes(g, dt, prevY) {
     const p = g.p, ts = g.slowT > 0 ? .3 : 1;
     // contacto de un enemigo con Itzel (también los dormidos: sólidos pero inofensivos)
@@ -274,11 +283,15 @@ const MEC = (() => {
       if (Math.abs(p.x - e.x) < (e.w + p.w) / 2 - 1 && p.y > e.y - e.h && p.y - p.h < e.y) {
         if (e.st === 'shell') { e.st = 'slide'; e.dir = p.x < e.x ? 1 : -1; p.vy = Math.min(p.vy, -200); return; }
         const dormido = e.st === 'sleep';
+        const caeEncima = (p.vy > 0 || (p.on && p.y > prevY)) && prevY <= e.y - e.h + 5;
         if (e.spiky && e.spiky(e) && !dormido) { hurtFn(g, p.x < e.x ? -1 : 1); return; }
-        if (dormido && !(p.vy > 40 && prevY <= e.y - e.h + 5)) {   // de lado, el dormido hace de pared: Itzel no lo atraviesa ni sale lastimada
+        if (dormido && !caeEncima) {   // de lado, el dormido hace de pared: Itzel no lo atraviesa ni sale lastimada
           const lado = p.x < e.x ? -1 : 1; p.x = e.x + lado * ((e.w + p.w) / 2 - .5); if (p.vx * lado < 0) p.vx = 0; return;
         }
-        if (p.vy > 40 && prevY <= e.y - e.h + 5) {
+        if (caeEncima) {
+          p.y = e.y - e.h;
+          // El contacto con el cuerpo prevalece sobre las esporas que este hongo acaba de emitir.
+          if (e.k === 'esporin') for (const o of g.objs || []) if (o.k === 'esporas' && o.origen === e) o.dead = true;
           p.vy = reboteEnemigo(); p.noCut = true; p.on = false; p.plat = null; p.air = RUN.upg.dbl; RUN.stomps++;
           if (!e.sub && typeof sueltaCorazon === 'function') sueltaCorazon(g, e.x, e.y - (e.h || 10) / 2);
           if (e.hp > 1) {
@@ -615,7 +628,7 @@ const MEC = (() => {
       else if (en.t === 'foe') { const x = tx(en.x) + T / 2, y = en.y === undefined ? L.surfaceY(en.x + PAD, 0) * T : tl(en.y); g.foes.push(mkFoe(en.k || (def.fauna ? def.fauna[nf++ % def.fauna.length] : def.foe), x, y)); }
     }
   }
-  return { trazaLapiz, muroLapiz, techoLapiz, pisoLapiz, ZONAS, PINTA_ZONA, PINTA_SOLIDO, ponLuzExtra: fn => { const antes = luzExtra; luzExtra = (g, x, y) => fn(g, x, y) || antes(g, x, y); }, luzActual: () => luzExtra, init, stepPlats, stepFoes, stepGlobal, carry, land, standing, zones, power, draw, env, POW, FOE, FD, LOOK, PK, BEH, OBJ, LANDK,
+  return { protegePisoton, trazaLapiz, muroLapiz, techoLapiz, pisoLapiz, ZONAS, PINTA_ZONA, PINTA_SOLIDO, ponLuzExtra: fn => { const antes = luzExtra; luzExtra = (g, x, y) => fn(g, x, y) || antes(g, x, y); }, luzActual: () => luzExtra, init, stepPlats, stepFoes, stepGlobal, carry, land, standing, zones, power, draw, env, POW, FOE, FD, LOOK, PK, BEH, OBJ, LANDK,
     drawPlat, drawSolid, drawZone, drawFoe, mkPlat, mkFoe, walkStep, gravity, onGround, ring, lim, freeOf, snapX, snapY, surf, tx, tl, platSpan, platTop,
     VIDA, hurt: (g, d) => hurtFn(g, d), setHurt: fn => hurtFn = fn, setFoeArte: fn => foeArte = fn, DEFAULT_SKIN };
 })();

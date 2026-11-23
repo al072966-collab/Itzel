@@ -383,8 +383,9 @@ const skinsDe = m => (ELEGIDOS[m] || []).slice();
 const skinsVistas = m => { try { return ((JSON.parse(localStorage.getItem('itzel-progreso') || '{}').skins || {})[m] || {}).vistas || []; } catch (e) { return []; } };
 function ponSkinEnci(m) { aplicaElegido(m, 0); }
 try { const v = JSON.parse(localStorage.getItem('enci-ui-rel') || '{}'); catActual = v.cat || 0; itemActual = v.item || 0; vistaJugador = !!v.jugador; } catch (e) {}
+if (!window.MODO_PUBLICO) vistaJugador = false;   // en desarrollo (local, o ?dev=1) la enciclopedia se ve completa; el libro está en un marco sin ese parámetro, por eso no se lee de la dirección
 if (window.MODO_PUBLICO) vistaJugador = true;   // publicada: solo lo descubierto, como en una partida nueva
-const guardaUI = () => { try { localStorage.setItem('enci-ui-rel', JSON.stringify({ cat: catActual, item: itemActual, jugador: vistaJugador, tarjetas: typeof modoTarjetas !== 'undefined' && modoTarjetas })); } catch (e) {} };
+const guardaUI = () => { try { localStorage.setItem('enci-ui-rel', JSON.stringify({ cat: catActual, item: itemActual, jugador: window.MODO_PUBLICO ? false : vistaJugador, tarjetas: typeof modoTarjetas !== 'undefined' && modoTarjetas })); } catch (e) {} };
 const visto = it => !vistaJugador || ENCI.tiene(it.id);
 const vivo = new Escena($('escena'));
 // Vista ampliada: controla su propia escena y vuelve al reposo al terminar cada acción.
@@ -550,7 +551,12 @@ function acercarEscena(it) {
 const MINIS = new Map(), cola = [];
 // imágenes que se están descargando (se cuentan para saber cuándo una miniatura ya puede pintarse con todos sus assets)
 const PENDIENTES = new Set();
-(() => { const Nativa = window.Image; function Imagen(w, h) { const im = new Nativa(w, h); PENDIENTES.add(im); return im; } Imagen.prototype = Nativa.prototype; window.Image = Imagen; })();
+(() => { const Nativa = window.Image; function Imagen(w, h) { const im = new Nativa(w, h); PENDIENTES.add(im); return im; } Imagen.prototype = Nativa.prototype; window.Image = Imagen;
+  // también cuentan las imágenes que otros archivos crean antes o con document.createElement('img'): cualquier src nuevo queda pendiente hasta que cargue.
+  // (Sin esto, una miniatura pintada mientras llegaba un fondo grande —el panorama del bosque, por ejemplo— se quedaba con el dibujo viejo para siempre.)
+  try { const d = Object.getOwnPropertyDescriptor(HTMLImageElement.prototype, 'src');
+    if (d && d.set && !d.set._pendientes) { const set = function (v) { try { PENDIENTES.add(this); } catch (e) {} return d.set.call(this, v); }; set._pendientes = true; Object.defineProperty(HTMLImageElement.prototype, 'src', { get: d.get, set, configurable: true, enumerable: d.enumerable }); } } catch (e) {}
+})();
 const hayPendientes = () => { let n = 0; for (const im of PENDIENTES) { if (im.complete || !im.getAttribute('src')) { if (im.complete) PENDIENTES.delete(im); continue; } n++; } return n > 0; };
 // ?calienta=1: el juego abre esta página escondida al empezar solo para que el navegador baje y compile los scripts; no pinta miniaturas
 const CALIENTA = new URLSearchParams(location.search).has('calienta');
@@ -611,7 +617,7 @@ function filtrarMundos() {
   $('indice').querySelectorAll('.sello').forEach(el => {
     const it = c.items[+el.dataset.i], disponible = visto(it), g = tipoMundo(it);
     // sin filtros cada mundo es una sola tarjeta: sus otras versiones se escogen desde ella (o con el filtro de versión)
-    const agrupado = !version && !suelto(it) && ((!busca && !genero && !!it.nivel) || (/^(subida|bajada)_/.test(it.nivel || '') && c.items.some(q => !q.nivel && q.mundo === it.mundo)));
+    const agrupado = false;   // cada nivel es su propia tarjeta: ya no se esconden las versiones alternas dentro del nivel principal
     el.hidden = agrupado || !!((busca || genero || version) && (!disponible || (busca && !normaliza(it.nombre).includes(busca)) || (genero && g !== genero) || (version && versionMundo(it) !== version)));
     if (!el.hidden) { total++; const num = el.querySelector('small'); if (num) num.textContent = total; }   // la numeración sigue corrida entre las tarjetas que se ven (sin saltos como 5 → 7)
   });
@@ -836,7 +842,7 @@ function abrirItem() {
         cambiarMundo: dir => elegirMundo(mundos[(mundos.indexOf(variante) + dir + mundos.length) % mundos.length]),
         alCerrar: () => abrirItem() });
     };
-  } else if ((it.tipo === 'mundo' || it.tipo === 'modo') && ok && c.id === 'mundos' && !suelto(it) && c.items.filter(q => q.mundo === it.mundo && !suelto(q)).length > 1) {
+  } else if (false) {   // (las «versiones de este mundo» ya no se agrupan: cada nivel tiene su tarjeta)
     // las versiones de este mundo: de lado, hacia arriba, hacia abajo y demás
     const hermanos = c.items.map((q, i) => ({ q, i })).filter(({ q }) => q.mundo === it.mundo && !suelto(q));
     vv.innerHTML = `<div style="width:100%;font:italic 500 14px Alegreya;color:#7a5a44">Versiones de este mundo</div>` + hermanos.map(({ q, i }) => {
@@ -892,6 +898,11 @@ function miniatura(job) {
       return;
     }
   }
+  // Las piezas del nivel mejorado (vestirNivel) aún se descargan: se espera un poco (máx. ~12 s) en vez de pintar el dibujo de respaldo
+  // y dejar la miniatura en blanco o con el aspecto viejo para siempre.
+  if (job.it.mundo && (window.VESTIDOS || []).some(v => v.id === job.it.mundo && !v.todo()) && (job.esperasV = (job.esperasV || 0) + 1) < 40) {
+    setTimeout(() => cola.push(job), 300); return;
+  }
   // No guardar el dibujo de respaldo mientras aún se cargan los recursos del abordaje.
   if (job.it.def && job.it.def.id === 'abordaje' && MODOS.golpes.listoVista && !MODOS.golpes.listoVista()) {
     // sus hojas aún se descargan: las demás miniaturas siguen y esta vuelve al frente en cuanto estén listas
@@ -915,9 +926,9 @@ function miniatura(job) {
   // las vistas de mapas y enemigos pintan primero el dibujo de respaldo si sus imágenes aún no llegan: la miniatura se repinta
   // dos veces más, a los 2.5 y 8 segundos, para que quede igual que en el juego
   // si al pintar aún había imágenes descargándose (assets del mundo, sprites), se repinta en cuanto terminen de llegar (máx. 3 veces por vista)
-  if (!new URLSearchParams(location.search).has('demo') && hayPendientes() && (job.repintes || 0) < 3) {
+  if (!new URLSearchParams(location.search).has('demo') && hayPendientes() && (job.repintes || 0) < 6) {
     job.repintes = (job.repintes || 0) + 1; let n = 0;
-    const t = setInterval(() => { if (!hayPendientes() || ++n > 40) { clearInterval(t); MINIS.delete(job.key); cola.push(job); } }, 400);
+    const t = setInterval(() => { if (!hayPendientes() || ++n > 150) { clearInterval(t); MINIS.delete(job.key); cola.push(job); } }, 400);
   }
 }
 
@@ -952,7 +963,8 @@ function bucle(now) {
       if (demoControlada && !demoLista) {
         const cargando = (window.imagenesDemoPerezosas || []).some(im => im.demoPedida && !im.complete);
         const forgeListo = !window.ITZEL_FORGE || window.ITZEL_FORGE.listoDemo(vivo.mundo);
-        demoCuadrosListos = !cargando && forgeListo ? demoCuadrosListos + 1 : 0;
+        const vestidoListo = (window.VESTIDOS || []).filter(v => v.id === vivo.mundo).every(v => v.todo());   // las piezas del nivel mejorado ya llegaron (si no, la demostración mostraba el dibujo de antes)
+        demoCuadrosListos = !cargando && forgeListo && vestidoListo ? demoCuadrosListos + 1 : 0;
         if (demoCuadrosListos >= 3) { demoLista = true; parent.postMessage({ introDemo: 'si' }, '*'); }
       }
     } catch (e) { console.warn('escena', it.id, e); sucio = true; }

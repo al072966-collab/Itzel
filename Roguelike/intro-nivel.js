@@ -175,7 +175,7 @@ const INTRO_NIVEL = (() => {
       + (info.lugar ? `<div class="donde"><b>Dónde:</b> ${esc(info.lugar)}</div>` : '')
       + (info.epoca ? `<div class="donde"><b>Época:</b> ${esc(info.epoca)}</div>` : '')
       + (info.lema ? `<div class="lema">${esc(info.lema)}</div>` : '')
-      + (info.poder ? `<div class="poder">${iconoPoder(info.poder.id, info.poder.mundo)}<div class="poderTexto"><b>Poder de Fresita: ${esc(info.poder.nombre)}</b>${esc(info.poder.ayuda)}</div></div>` : '')
+      + (info.poder && !matchMedia('(pointer:coarse)').matches ? `<div class="poder">${iconoPoder(info.poder.id, info.poder.mundo)}<div class="poderTexto"><b>Poder de Fresita: ${esc(info.poder.nombre)}</b>${esc(info.poder.ayuda)}</div></div>` : '')
       + `</div><div class="video" hidden><i>${info.vistaNivel ? 'Vista del nivel' : 'Así se usa'}</i><span class="cargandoDemo">Preparando demostración…</span></div></div>`
       + `<button class="listo" type="button">¡Vamos!</button><div class="seguir">Tómate tu tiempo · Enter o espacio también sirven</div></div>`;
     document.body.appendChild(el);

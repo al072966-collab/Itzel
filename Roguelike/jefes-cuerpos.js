@@ -87,6 +87,15 @@
   cabezaCerrada.src = '../Roguelike/assets/jefes/kukulkan-boca-cerrada.png';
   const cuerpoKukulkan = new Image();
   cuerpoKukulkan.src = '../Roguelike/assets/jefes/kukulkan-cuerpo.png';
+  // el cuerpo lleva los colores de la cabeza de cada estilo (tools/serpiente-cuerpos.py y tools/serpiente-neon.py los generan)
+  const cuerposKukulkan = Object.create(null);
+  const texturaCuerpoKukulkan = f => {
+    const id = String(window.estiloArteDerivado || f && f.st && f.st.id || '').split('~')[0];
+    if (!id || id === 'bordado') return cuerpoKukulkan;
+    if (!cuerposKukulkan[id]) { const im = new Image(); im.src = '../Roguelike/assets/jefes/serpiente-estilos/' + id + '-cuerpo.png'; cuerposKukulkan[id] = im; }
+    const im = cuerposKukulkan[id];
+    return im.complete && im.naturalWidth ? im : cuerpoKukulkan;
+  };
   const cacheKukulkan = new WeakMap();
   const cabezasKukulkanPorEstilo = Object.create(null);
   function imagenKukulkan(pixel, abierta, estilo) {
@@ -515,11 +524,12 @@
     c.save(); c.translate(h.x, h.y); comun(c, o); c.translate(-h.x, -h.y);
     const ang = i => Math.atan2(S[i - 1].y - S[i].y, S[i - 1].x - S[i].x);
     const arribaDe = a => { let u = a - Math.PI / 2; if (Math.sin(u) > 0) u += Math.PI; return u; };
-    const cuerpoIlustrado = cuerpoKukulkan.complete && cuerpoKukulkan.naturalWidth;
+    const TXK = texturaCuerpoKukulkan(f);
+    const cuerpoIlustrado = TXK.complete && TXK.naturalWidth;
     if (cuerpoIlustrado) {
       // Cada mitad de tramo es un triángulo del mismo dibujo. Compartir
       // vértices evita huecos y permite doblar el cuerpo sin repetirlo.
-      const W = cuerpoKukulkan.naturalWidth, H = cuerpoKukulkan.naturalHeight;
+      const W = TXK.naturalWidth, H = TXK.naturalHeight;
       const lados = S.map((p, i) => {
         const u = arribaDe(ang(Math.max(1, i))), ancho = 17;
         return [{x:p.x+Math.cos(u)*ancho,y:p.y+Math.sin(u)*ancho},
@@ -535,7 +545,7 @@
         const cy=((E.y-A.y)*(b.x-a.x)-(B.y-A.y)*(e.x-a.x))/det;
         c.save(); c.beginPath(); c.moveTo(A.x,A.y); c.lineTo(B.x,B.y); c.lineTo(E.x,E.y); c.closePath(); c.clip();
         c.transform(ax,ay,cx,cy,A.x-ax*a.x-cx*a.y,A.y-ay*a.x-cy*a.y);
-        c.drawImage(cuerpoKukulkan,0,0); c.restore();
+        c.drawImage(TXK,0,0); c.restore();
       };
       for (let i=n-2; i>=0; i--) {
         const x0=W*(1-i/(n-1)), x1=W*(1-(i+1)/(n-1));

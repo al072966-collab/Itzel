@@ -25,9 +25,9 @@ window.AUDIO_ARCHIVOS = (() => {
   const abierta = archivo => !window.MODO_PUBLICO || !!desbloqueadas()[archivo];
   function marca(archivo) { if (!archivo || !window.MODO_PUBLICO || typeof PROG === 'undefined') return; const d = desbloqueadas(); if (d[archivo]) return; d[archivo] = 1; try { PROG.save(); } catch (e) {} }
   const url = nombre => 'assets/audio/' + nombre.split('/').map(encodeURIComponent).join('/');
-  const musica = new Audio(); musica.loop = true; musica.preload = 'none';
+  const musica = new Audio(); musica.loop = true; musica.preload = 'auto';
   const muestra = new Audio(); muestra.preload = 'none';
-  const musicaSub = new Audio(); musicaSub.preload = 'none'; musicaSub.loop = true;   // la canción del subjefe va en su propio elemento: la del nivel solo se pausa y sigue donde iba
+  const musicaSub = new Audio(); musicaSub.preload = 'auto'; musicaSub.loop = true;   // la canción del subjefe va en su propio elemento: la del nivel solo se pausa y sigue donde iba
   let nivelPausado = null;
   let memoriaNivel = null, actual = '', manual = false, iniciado = false, pasoAnterior = 0, enAgua = false, pausaNivel = null;
   const valor = (v, defecto = .6) => typeof v === 'number' ? Math.max(0, Math.min(1, v / 100)) : ({alta:1, media:.6, baja:.28, no:0}[v] ?? defecto);
@@ -235,8 +235,8 @@ window.AUDIO_ARCHIVOS = (() => {
   setInterval(tic, 150);
   function detenerReproductor() { manual = false; muestra.ontimeupdate = muestra.onloadedmetadata = muestra.onplay = muestra.onpause = muestra.onended = muestra.onerror = null; muestra.pause(); muestra.removeAttribute('src'); muestra.load(); }
   function detenerMusicaMenu() { detenerReproductor(); musica.pause(); musicaSub.pause(); nivelPausado = null; musica.removeAttribute('src'); musica.load(); actual = ''; pausaNivel = null; }
-  GANCHOS.en('startLevel', anterior => function (...args) { detenerMusicaMenu(); return anterior.apply(this, args); });
-  GANCHOS.en('startBoss', anterior => function (...args) { detenerMusicaMenu(); return anterior.apply(this, args); });
+  GANCHOS.en('startLevel', anterior => function (...args) { detenerMusicaMenu(); const resultado = anterior.apply(this, args); tic(); return resultado; });
+  GANCHOS.en('startBoss', anterior => function (...args) { detenerMusicaMenu(); const resultado = anterior.apply(this, args); tic(); return resultado; });
   function asegurarCampechanidad(j) {
     if (STATE === 'play' && CUR === j && actual !== 'campechanita habanera.mp3') tic();
   }

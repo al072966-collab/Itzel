@@ -36,7 +36,7 @@
     e.delante = Math.sign(toP) === e.dir && Math.abs(toP) < 40 && mismo;
     if (Math.sign(toP) !== e.dir && Math.abs(toP) < 160) { e.voltea = (e.voltea || 0) + d; if (e.voltea > 1.4) { e.dir = -e.dir; e.voltea = 0; } } else e.voltea = 0;
     e.tt = (e.tt ?? 1.5) - d; e.apunta = e.tt < .5;
-    if (e.tt <= 0) { e.tt = 2.2; if (Math.sign(toP) === e.dir && Math.abs(toP) < 170) dispara(g, { x: e.x + e.dir * 7, y: e.y - 10, vx: e.dir * 150, vy: 0, r: 1.8, dib: 'laserAlien', vida: 2.4, polvo: ['#c8a060', '#7a4a24'] }); }
+    if (e.tt <= 0) { e.tt = 2.2; if (Math.sign(toP) === e.dir && Math.abs(toP) < 170) dispara(g, { origen: e, x: e.x + e.dir * 7, y: e.y - 10, vx: e.dir * 150, vy: 0, r: 1.8, dib: 'laserAlien', vida: 2.4, polvo: ['#c8a060', '#7a4a24'] }); }
   };
   OBJ.bala.dibujos.laserAlien = (c, o) => { const d = Math.sign(o.vx) || 1; c.strokeStyle = '#7a4a24'; c.lineWidth = .8; c.beginPath(); c.moveTo(o.x - d * 8, o.y); c.lineTo(o.x, o.y); c.stroke(); c.fillStyle = '#1a1420'; c.beginPath(); c.moveTo(o.x, o.y - 1.1); c.lineTo(o.x + d * 3, o.y); c.lineTo(o.x, o.y + 1.1); c.closePath(); c.fill(); c.fillStyle = '#c8203a'; c.fillRect(o.x - d * 8 - .8, o.y - 1, 1.6, 2); };
   // teletransportador: dos plataformas hermanas; al pisar una, Itzel aparece en la otra
@@ -209,13 +209,13 @@
   BEH.incendiario = (e, g, d, toP) => {
     if (e.vy !== 0 || !onGround(e)) { gravity(e, d); return; }
     const p = g.p; e.cd = (e.cd ?? 2) - d; e.lanza = Math.max(0, (e.lanza || 0) - d);
-    if (e.cd <= 0 && Math.abs(toP) < 150) { e.cd = 3; e.lanza = .35; e.dir = Math.sign(toP) || e.dir; const tt = .9, sx = e.x + e.dir * 5, sy = e.y - 15; g.objs.push({ k: 'bomba', x: sx, y: sy, vx: (p.x - sx) / tt, vy: ((p.y - 2 - sy) - .5 * 420 * tt * tt) / tt, t: 0 }); return; }
+    if (e.cd <= 0 && Math.abs(toP) < 150) { e.cd = 3; e.lanza = .35; e.dir = Math.sign(toP) || e.dir; const tt = .9, sx = e.x + e.dir * 5, sy = e.y - 15; g.objs.push({ k: 'bomba', origen: e, x: sx, y: sy, vx: (p.x - sx) / tt, vy: ((p.y - 2 - sy) - .5 * 420 * tt * tt) / tt, t: 0 }); return; }
     if (e.lanza <= 0) walkStep(e, d, e.v);
   };
   OBJ.bomba = {
     step(o, g, dt) {
       o.t += dt; o.vy += 420 * dt; o.x += o.vx * dt; o.y += o.vy * dt;
-      if (tocaItzel(g, o.x - 2, o.y - 2, o.x + 2, o.y + 2)) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); return; }
+      if (!MEC.protegePisoton(g, o) && tocaItzel(g, o.x - 2, o.y - 2, o.x + 2, o.y + 2)) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); return; }
       if (o.y > VH + 30) { o.dead = true; return; }
       if (SOLID(o.x, o.y) || o.t > 3) { o.dead = true; const gy = Math.floor(o.y / T) * T; spawn(g, 14, o.x, gy, { v: 70, life: .5, s: 2, k: 'spark', cols: ['#ffe800', '#ff6c2f', '#3a2a2a'] }); if (SOLID(o.x, o.y)) g.objs.push({ k: 'llamarada', x0: o.x - 14, x1: o.x + 14, y: gy, t: 0 }); }
     },

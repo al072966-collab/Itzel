@@ -177,7 +177,7 @@
     // los pies de cada hoja de carrera quedan a distinta altura dentro del cuadro (medido en las hojas): se bajan al suelo
     const pies = PIES_CARRERA[carrera.id] || 0;
     c.save(); c.translate(carrera.pixel ? Math.round(p.x) : p.x, carrera.pixel ? Math.round(p.y) : p.y);
-    c.scale((p.face || 1) < 0 ? -1 : 1, 1); c.imageSmoothingEnabled = !carrera.pixel;
+    c.scale((p.face || 1) < 0 ? -1 : 1, 1); c.imageSmoothingEnabled = !carrera.pixel || carrera.id === 'pixel'; c.imageSmoothingQuality = 'high';
     const K = escalaHoja(carrera.img); c.imageSmoothingQuality = 'high';
     c.drawImage(carrera.img, ((cuadro % 2) * 256 + x) * K, (Math.floor(cuadro / 2) * 256 + y) * K, w * K, h * K, -ancho / 2, -alto + (carrera.dy || pies), ancho, alto);
     c.restore();
@@ -193,6 +193,9 @@
     if (!estilo || !datos || !datos.activada || estilo.player?._itzelForge === id) return;
     const anterior = estilo.player;
     function dibujar(c, p, f) {
+      // en el primer plano de la enciclopedia, los estilos de 8/32/64 bits usan siempre su Itzel pintada píxel por píxel (quieta, corriendo y saltando);
+      // mezclar con las hojas de animación la hacía desaparecer o estirarse
+      if (f && f.enciclopedia && (id === 'bits8' || id === 'bits32' || id === 'bits64')) return anterior(c, p, f);
       if (id === 'anime' && f && f.g && f.g.win && victoriaAnime.complete && victoriaAnime.naturalWidth) {
         const alto = 31.2, w = alto * 220 / 238;
         c.save(); c.translate(p.x, p.y); c.scale((p.face || 1) < 0 ? -1 : 1, 1); c.imageSmoothingEnabled = true;
@@ -207,7 +210,7 @@
         const cuadro = cuadroReposoNouveau(p, f, estaHerida, imagen, id);
         if (cuadro >= 0) {
           const lado = (id === 'pixel' ? 15.5 : 21) * 256 / (id === 'bits64' ? 207 : id === 'flat' ? 187 : id === 'codex' ? 183 : id === 'cielo' ? 204 : id === 'hollin' ? 192 : 217);
-          c.save(); c.translate(datos.pixel ? Math.round(p.x) : p.x, datos.pixel ? Math.round(p.y) : p.y); c.scale(((p.face || 1) < 0) !== (id === 'bordado') ? -1 : 1, 1); c.imageSmoothingEnabled = !datos.pixel;
+          c.save(); c.translate(datos.pixel ? Math.round(p.x) : p.x, datos.pixel ? Math.round(p.y) : p.y); c.scale(((p.face || 1) < 0) !== (id === 'bordado') ? -1 : 1, 1); c.imageSmoothingEnabled = !datos.pixel || id === 'pixel'; c.imageSmoothingQuality = 'high';
           c.drawImage(imagen, (cuadro % 4) * 256, Math.floor(cuadro / 4) * 256, 256, 256, -lado / 2, -(id === 'pixel' ? 235 : id === 'bits64' ? 232 : id === 'flat' ? 221 : id === 'codex' ? 220 : id === 'cielo' ? 230 : id === 'hollin' ? 224 : 236) * lado / 256, lado, lado);
           c.restore(); return;
         }
@@ -269,7 +272,7 @@
       const cuadro = estaHerida ? dano : (p.vy || 0) < 0 ? subir : caer;
       const [x, y, w, h] = datos.caja, alto = datos.alto, ancho = alto * w / h;
       c.save(); c.translate(datos.pixel ? Math.round(p.x) : p.x, datos.pixel ? Math.round(p.y) : p.y); c.scale((p.face || 1) < 0 ? -1 : 1, 1);
-      c.imageSmoothingEnabled = !datos.pixel;
+      c.imageSmoothingEnabled = !datos.pixel || id === 'pixel'; c.imageSmoothingQuality = 'high';
       const K = escalaHoja(img); c.imageSmoothingQuality = 'high';
       c.drawImage(img, ((cuadro % 2) * 256 + x) * K, (Math.floor(cuadro / 2) * 256 + y) * K, w * K, h * K, -ancho / 2, -alto + (datos.dy || 0), ancho, alto);
       c.restore();

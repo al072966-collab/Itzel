@@ -165,6 +165,8 @@ window.TITERE_MUNDOS = new Set(['anime']);
   const sprite = imgPerezosa('../Roguelike/assets/personajes/itzel-pixel16-opcion5.png');
   const anteriorPixel = STYLE_MAP.pixel.player;
   function itzelPixel16(c, p, f) {
+    // el dibujo grande reducido salía como una mancha: en el mundo de 16 bits va la Itzel pintada píxel por píxel (nítida, y la misma quieta o corriendo)
+    if (!window.ITZEL_PIXEL_GRANDE) return anteriorPixel(c, p, f);
     if (!sprite.complete || !sprite.naturalWidth) return anteriorPixel(c, p, f);
     const corre = p.on && Math.abs(p.vx || 0) > 25;
     if (corre) return anteriorPixel(c, p, f);
@@ -173,13 +175,13 @@ window.TITERE_MUNDOS = new Set(['anime']);
     const bote = corre ? -Math.abs(paso)*.22 : 0;
     // Coordenadas de las piezas en el dibujo original. Las máscaras son
     // excluyentes: al mover un brazo no queda otro debajo.
-    const sx=300, sy=150, sw=570, sh=990, e=15.5/sh;
+    const sx=300, sy=150, sw=570, sh=990, e=22/sh;
     const brazos=[[[322,704],[397,625],[449,622],[484,659],[436,734],[420,802],[335,809],[316,773]],[[660,646],[696,635],[720,680],[786,724],[802,790],[775,810],[719,793],[679,746]]];
     function traza(q,pts){q.moveTo(pts[0][0],pts[0][1]);for(let i=1;i<pts.length;i++)q.lineTo(pts[i][0],pts[i][1]);q.closePath();}
     function capa(y0,y1,transformar){
       c.save();if(transformar)transformar();c.beginPath();c.rect(sx,y0,sw,y1-y0);c.clip();c.beginPath();c.rect(0,0,sprite.width,sprite.height);for(const a of brazos)traza(c,a);c.clip('evenodd');c.drawImage(sprite,0,0);c.restore();
     }
-    c.save();c.translate(p.x,p.y);c.scale((p.face||1)<0?-e:e,e);c.translate(-585,-1140+bote/e);c.imageSmoothingEnabled=false;
+    c.save();c.translate(p.x,p.y);c.scale((p.face||1)<0?-e:e,e);c.translate(-585,-1140+bote/e);c.imageSmoothingEnabled=true;c.imageSmoothingQuality='high';
     // Piernas separadas, debajo de la falda. Un paso corto mantiene el apoyo.
     for(let k=0;k<2;k++){const x0=k?570:sx,w=k?300:270,des=(k?1:-1)*(aire?7:paso*12);c.save();c.translate(des,aire?-4:(k?Math.max(0,-paso):Math.max(0,paso))*-8);c.drawImage(sprite,x0,950,w,190,x0,950,w,190);c.restore();}
     capa(720,950,()=>{c.translate(585,720);c.transform(1,0,corre?paso*.025:aire?.025:Math.sin(t*2)*.006,1,0,0);c.translate(-585,-720);});
@@ -839,8 +841,8 @@ window.TITERE_MUNDOS = new Set(['anime']);
   function itzel8Bits(c, p, f) {
     if (!sprite.complete || !sprite.naturalWidth) return anterior(c, p, f);
     const corre = p.on && Math.abs(p.vx || 0) > 25;
-    if (corre) return anterior(c, p, f);
-    const paso = corre ? Math.sin(p.run || 0) : 0;
+    // corriendo ya no se cambia al dibujo viejo (salía enorme y con otros colores): se anima este mismo, con el paso de las piernas
+    const paso = corre ? Math.sin((p.run || 0) * 1.5) : 0;
     const aire = !p.on, bote = corre ? -Math.round(Math.abs(paso)) : 0;
     const sx=180, sy=130, sw=590, sh=1310, corte=1135, mitad=320;
     const escala=21/sh, x=-sw*escala/2, y=-21;

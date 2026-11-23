@@ -33,7 +33,7 @@
   function hazItzel(id, D, R) {
     const T = carga(D), M = D.mallas, BR = Object.keys(M).sort(), ESTADOS = new WeakMap();
     for (const k of BR) prepara(M[k]);
-    const E = (R.duro ? 15.5 : ALTO) / R.sh, CX = R.centro || R.sx + R.sw / 2, PIE = R.sy + R.sh, CIN = R.cintura, CUE = R.cuello, ORI = D.orilla, FIN = D.fin, ARR = R.sy, FALDA = FIN - CIN; // la falda llega hasta FIN; las piernas empiezan en ORI
+    const E = (R.duro ? 21 : ALTO) / R.sh, CX = R.centro || R.sx + R.sw / 2, PIE = R.sy + R.sh, CIN = R.cintura, CUE = R.cuello, ORI = D.orilla, FIN = D.fin, ARR = R.sy, FALDA = FIN - CIN; // la falda llega hasta FIN; las piernas empiezan en ORI
     // los brazos: 0 el de la izquierda del dibujo, 1 el de la derecha (con la mano hacia donde mira, al frente)
     const lado = k => M[k].n[0][0] < CX ? -1 : 1;
     const nuevo = () => ({ fase: Math.random() * 6, cara: 1 });
@@ -155,19 +155,21 @@
       c.translate(p.x, p.y);
       c.scale((cara < 0 ? -1 : 1) * E * (1 + Math.min(0, sq) * .3), E * (1 - Math.min(0, sq) * .3));
       c.translate(-CX, -PIE);
-      c.imageSmoothingEnabled = !R.duro; if (!R.duro) c.imageSmoothingQuality = 'high';
+      c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high';
       arma(c, p, f, s);
       c.restore();
     }
     return { T, dibuja };
   }
-  const HECHAS = {};
+  const HECHAS = {}, IMAGENES = {};
   for (const id of Object.keys(RIG)) {
     const D = ITZEL_MUNDOS_DATOS[id]; if (!D || !STYLE_MAP[id]) continue;
     const it = hazItzel(id, D, RIG[id]), anterior = STYLE_MAP[id].player;
+    IMAGENES[id] = it.T.img;
     HECHAS[id] = function itzelConVida(c, p, f) { if (!listo(it.T)) return anterior(c, p, f); it.dibuja(c, p, f); };
   }
   window.ITZEL_CON_VIDA = HECHAS;
+  window.precargaItzelMundo = id => { const img = IMAGENES[id]; if (img && img.pide) img.pide(); };
   function instalar(id) { if (HECHAS[id] && STYLE_MAP[id]) STYLE_MAP[id].player = HECHAS[id]; }
   for (const id of Object.keys(HECHAS)) instalar(id);
   GANCHOS.en('aplicaElegido', previo => function (id, k = 0) { const nombre = previo(id, k); instalar(id); return nombre; });

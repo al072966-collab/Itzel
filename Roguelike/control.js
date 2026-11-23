@@ -13,7 +13,16 @@
 //  · Vibra cuando Itzel recibe un golpe (si está prendido en Opciones).
 // =====================================================================
 const MANDO = (() => {
-  const conectados = () => [...(navigator.getGamepads ? navigator.getGamepads() : [])].filter(p => p && p.connected);
+  // Algunos controles aparecen dos veces (el mismo aparato como XInput y DirectInput, o por Steam): un segundo con el mismo nombre
+  // solo cuenta si de verdad se ha usado (dos controles iguales, uno por jugador).
+  const usados = new Set();
+  const conectados = () => {
+    const todos = [...(navigator.getGamepads ? navigator.getGamepads() : [])].filter(p => p && p.connected);
+    for (const p of todos) if (p.buttons.some(b => b.pressed) || p.axes.some(a => Math.abs(a) > .5)) usados.add(p.index);
+    // primero los que se han usado (el control de verdad), luego los demás; un repetido sin usar se descarta
+    const r = todos.filter(p => usados.has(p.index)).concat(todos.filter(p => !usados.has(p.index)));
+    const vistos = new Set(); return r.filter(p => { if (vistos.has(p.id) && !usados.has(p.index)) return false; vistos.add(p.id); return true; });
+  };
   const btn = (p, i) => !!(p && p.buttons[i] && (p.buttons[i].pressed || p.buttons[i].value > .5));
   const muerto = v => Math.abs(v || 0) < .2 ? 0 : v;
   const antes = {};
@@ -114,11 +123,18 @@ const MANDO = (() => {
       const cine = typeof CINE !== 'undefined' && CINE.activo(), enci = $('enci').classList.contains('on');
       if (cine) { sueltaTodo(); if (flanco('cA', btn(p1, 0) || btn(p1, 9))) toque('Space'); }
       else if (STATE === 'play' && !enci) {
-        tecla('ArrowLeft', izq); tecla('ArrowRight', der); tecla('ArrowDown', aba);
-        tecla('ArrowUp', arr && !!(CUR && CUR.modo));                     // en plataformas, arriba no salta (para eso está A)
-        tecla('Space', btn(p1, 0) && !bloqueaA); tecla('ShiftLeft', btn(p1, 1) || btn(p1, 2) || btn(p1, 5));
+        // la ventana de Multijugador puede dejar a Itzel en el teclado y/o a Fresita en el mouse
+        const cf = typeof MULTI !== 'undefined' && MULTI.config && typeof RUN !== 'undefined' && RUN.jugadores === 2 ? MULTI.config : null;
+        const itzelPad = !cf || cf.itzel === 'control', fresitaPad = !cf || cf.fresita === 'control';
+        if (itzelPad) {
+          tecla('ArrowLeft', izq); tecla('ArrowRight', der); tecla('ArrowDown', aba);
+          tecla('ArrowUp', arr && !!(CUR && CUR.modo));                     // en plataformas, arriba no salta (para eso está A)
+          tecla('Space', btn(p1, 0) && !bloqueaA); tecla('ShiftLeft', btn(p1, 1) || btn(p1, 2) || btn(p1, 5));
+        } else sueltaTodo();
         if (flanco('start', btn(p1, 9))) toque('Escape');
-        fresita(p1, p2, dt); ponFoco(null);
+        if (fresitaPad) { if (itzelPad) fresita(p1, p2, dt); else fresita(p1, null, dt); }
+        else { ret.classList.remove('on'); }
+        ponFoco(null);
       } else {
         // recién llegó a un menú: lo que ya venía apretado no cuenta como clic (si no, «Otra vez» se escoge solo)
         if (!enMenu) { antes.mA = btn(p1, 0); antes.mB = btn(p1, 1); antes.mStart = btn(p1, 9); }
@@ -130,7 +146,7 @@ const MANDO = (() => {
   const cuadro = t => { paso(t); requestAnimationFrame(cuadro); };
   requestAnimationFrame(cuadro);
 
-  addEventListener('gamepadconnected', e => { if (typeof AVISOS === 'function') AVISOS(conectados().length > 1 ? 'Segundo control' : 'Control conectado', conectados().length > 1 ? 'Ahora Fresita se mueve con este control' : 'Itzel ya se puede jugar con el control', 'control'); });
+  let avisado = 0; addEventListener('gamepadconnected', e => { if (performance.now() - avisado < 1500) return; avisado = performance.now(); setTimeout(() => { if (typeof AVISOS === 'function') AVISOS(conectados().length > 1 ? 'Segundo control' : 'Control conectado', conectados().length > 1 ? 'Ahora Fresita se mueve con este control' : 'Itzel ya se puede jugar con el control', 'control'); }, 50); });
   addEventListener('gamepaddisconnected', () => { sueltaTodo(); cursor = null; ret.classList.remove('on'); });
   // el mouse vuelve a mandar en los menús: se quita el foco del control
   addEventListener('mousemove', () => { if (foco) ponFoco(null); });

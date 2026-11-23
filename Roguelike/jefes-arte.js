@@ -345,6 +345,9 @@
       if (k === 'golem' && (o.modeloMascaron == null || o.modeloMascaron === 1) && typeof MASCARON_ESTILOS !== 'undefined' && MASCARON_ESTILOS.obtener(f.st)) return orig(c, o, f);
       // La cabeza bordada es una ilustración propia; no se debe volver a pixelar.
       if (k === 'serpiente' && id === 'bordado') return orig(c, o, f);
+      // la serpiente trae su arte propio en cada estilo (cabeza y cuerpo con los colores de ese estilo): no se vuelve a filtrar
+      // (la técnica del mundo la oscurecía o la ensuciaba); solo en neón se le deja un halo
+      if (k === 'serpiente') { c.save(); if (id === 'neon') { c.shadowColor = 'rgba(255,43,214,.75)'; c.shadowBlur = 6; } try { return orig(c, o, f); } finally { c.restore(); } }
       if (k === 'jaguar' && window.BALAM_ESTILOS && window.BALAM_ESTILOS.obtener(f.st)) return orig(c, o, f);
       if (k === 'hadas' && window.XTABAY_ESTILOS && window.XTABAY_ESTILOS.obtener(f.st)) return orig(c, o, f);
       if (k === 'cocodrilo' && window.COCODRILO_ESTILOS && window.COCODRILO_ESTILOS.obtener(f.st)) return orig(c, o, f);

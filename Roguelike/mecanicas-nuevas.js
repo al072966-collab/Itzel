@@ -141,7 +141,7 @@
   BEH.spit = (e, g, d, toP, near) => {
     if (e.vy !== 0 || !onGround(e)) { gravity(e, d); return; }
     e.tt -= d;
-    if (e.aim > 0) { e.aim -= d; if (e.aim <= 0) { g.objs.push({ k: 'fireball', kind: e.proj || 'fuego', x: e.x + e.dir * 9, y: e.y - 5, vx: e.dir * 100, vy: -150, life: 3 }); e.tt = 2.4; } return; }
+    if (e.aim > 0) { e.aim -= d; if (e.aim <= 0) { g.objs.push({ k: 'fireball', origen: e, kind: e.proj || 'fuego', x: e.x + e.dir * 9, y: e.y - 5, vx: e.dir * 100, vy: -150, life: 3 }); e.tt = 2.4; } return; }
     if (near && Math.abs(toP) < 160 && e.tt <= 0) { e.dir = Math.sign(toP) || 1; e.aim = .55; return; }
     walkStep(e, d, e.v);
   };
@@ -374,7 +374,7 @@
       o.vy += 420 * dt; o.x += o.vx * dt; o.y += o.vy * dt; o.life -= dt;
       const fire = !o.kind || o.kind === 'fuego', cols = fire ? ['#ffe800', '#ff6c2f'] : o.kind === 'hueso' ? ['#efe6d0', '#b8ac94'] : ['#8a5a2a', '#c8a060'];
       if (SOLID(o.x, o.y) || o.life <= 0 || o.y > VH + 20) { o.dead = true; spawn(g, 8, o.x, o.y, { v: 60, life: .4, s: 1.5, k: fire ? 'spark' : 'dust', cols }); return; }
-      const p = g.p; if (Math.abs(p.x - o.x) < 7 && p.y > o.y - 3 && p.y - p.h < o.y + 3) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); }
+      const p = g.p; if (!MEC.protegePisoton(g, o) && Math.abs(p.x - o.x) < 7 && p.y > o.y - 3 && p.y - p.h < o.y + 3) { o.dead = true; MEC.hurt(g, o.vx > 0 ? 1 : -1); }
       if (fire && Math.random() < .5) spawn(g, 1, o.x, o.y, { v: 8, life: .3, s: 1.4, k: 'spark', cols: ['#ff6c2f', '#ff48b0'] });
       o.rot = (o.rot || 0) + dt * 12;
     },
@@ -618,7 +618,7 @@
   };
   BEH.thrower = (e, g, d, toP) => {
     const p = g.p; e.tt -= d; e.dir = Math.sign(toP) || e.dir;
-    if (e.tt <= 0 && Math.abs(toP) < 150 && p.y >= e.y - 10) { const tt = .9; g.objs.push({ k: 'fireball', kind: 'coco', x: e.x, y: e.y - 10, vx: (p.x - e.x) / tt, vy: ((p.y - 8 - (e.y - 10)) - .5 * 420 * tt * tt) / tt, life: 3 }); e.tt = 2.2; e.throwT = .3; }
+    if (e.tt <= 0 && Math.abs(toP) < 150 && p.y >= e.y - 10) { const tt = .9; g.objs.push({ k: 'fireball', origen: e, kind: 'coco', x: e.x, y: e.y - 10, vx: (p.x - e.x) / tt, vy: ((p.y - 8 - (e.y - 10)) - .5 * 420 * tt * tt) / tt, life: 3 }); e.tt = 2.2; e.throwT = .3; }
     e.throwT = Math.max(0, (e.throwT || 0) - d);
   };
   Object.assign(FD, {

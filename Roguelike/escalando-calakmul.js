@@ -13,6 +13,20 @@
 (function () {
   const def = typeof NIVELES !== 'undefined' && NIVELES.subida_miniatura;
   if (!def) return;
+  const itzelEscala = imgPerezosa('../Roguelike/assets/forge/itzel/miniatura-escalera-v2/sheet-transparent.png');
+  def.dibujaJugador = (ctx, p, f, j, estilo) => {
+    if (!j.trepa) return estilo.player(ctx, p, f);
+    itzelEscala.pide();
+    if (!itzelEscala.complete || itzelEscala.naturalWidth !== 1024 || itzelEscala.naturalHeight !== 512)
+      return estilo.player(ctx, p, f);
+    // La distancia recorrida, no el reloj, dirige los pasos: al detenerse se
+    // queda agarrada y al bajar la secuencia se reproduce en sentido inverso.
+    const pasos = [0, 1, 2, 3, 4, 5, 6, 7, 6, 5, 4, 3, 2, 1];
+    const indice = ((Math.floor(-p.y / 4) % pasos.length) + pasos.length) % pasos.length, cuadro = pasos[indice], lado = 25;
+    ctx.save(); ctx.translate(p.x, p.y); ctx.imageSmoothingEnabled = true;
+    ctx.drawImage(itzelEscala, (cuadro % 4) * 256, Math.floor(cuadro / 4) * 256, 256, 256, -lado / 2, -23, lado, lado);
+    ctx.restore();
+  };
   const RUTA = '../Roguelike/assets/escalando/', IM = {};
   for (const n of ['fondo', 'muro', 'piso']) { const im = IM[n] = new Image(); im.decoding = 'async'; im.src = RUTA + n + '.webp'; }
   const listo = () => Object.values(IM).every(im => im.complete && im.naturalWidth);
