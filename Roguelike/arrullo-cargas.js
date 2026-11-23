@@ -16,6 +16,7 @@
     }
     ctx.restore();
     // aviso de las primeras veces: una flecha a las lunas y qué hace el segundo poder de Fresita
+    if (matchMedia('(pointer: coarse)').matches) return;   // sin cuadro de ayuda en el teléfono
     if (g._tutArr === undefined && typeof RUN !== 'undefined') { RUN.tutArrN = RUN.tutArrN || 0; g._tutArr = RUN.tutArrN < 2; if (g._tutArr) RUN.tutArrN++; }
     const usada = g.arrullos !== undefined && g.arrullos < 3;
     if (g._tutArr && !usada && g.t > .6 && g.t < 13) {

@@ -27,7 +27,9 @@ const INTRO_NIVEL = (() => {
   };
   const LUGARES = { huracan: 'Ciudad de Campeche y la Bahía de Campeche', ruptura: 'Ciudad de Campeche y la Bahía de Campeche', pirata: 'El malecón y la muralla de Campeche' };
   const quita = new Set(['mudo', 'fijo', 'sinintro', 'fotos']);
-  const salta = () => { const q = new URLSearchParams(location.search); return [...quita].some(k => q.has(k)); };
+  // en el teléfono (pantalla táctil) no hay pantalla de ayuda ni demostraciones: Fresita juega sola y los niveles arrancan de una
+  const tactilMovil = (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) && !/[?&]ayuda=1/.test(location.search);
+  const salta = () => { const q = new URLSearchParams(location.search); return tactilMovil || [...quita].some(k => q.has(k)); };
   const esc = t => String(t == null ? '' : t).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[c]));
   // Símbolos de cada poder; el nenúfar usa además el arte del propio cenote.
   const ICONOS = { paginas:'📜', bloque:'🧱', viento:'🌬️', nenufar:'🪷', avion:'🛩️', nube:'☁️', cristal:'💎', lapiz:'✏️', resorte:'🌀', asidero:'🫴', semilla:'🍃', reloj:'⌛', hackeo:'💻', portal:'🌀', congelar:'❄️', burbuja:'🫧', burbujaFlota:'🫧', cristalFlota:'💎', agua:'💧', aguja:'🪡', antorcha:'🔥', bengala:'🎆', cargar:'🤲', seda:'🕸️', cocinar:'🍲', confetiFresita:'🎉', constelacion:'🌟', eco:'🔊', espadaFresita:'⚔️', estampa:'🖨️', estrellas:'⭐', farol:'🏮', glifo:'🟨', gravedad:'↕️', gubia:'🪵', interruptor:'🔀', jaranear:'🎵', ladrillo:'🧱', luz:'🔆', luzVitral:'🌈', moldear:'🏺', pescar:'🎣', planos:'📐', pulso:'🔲', rafaga:'💨', remolino:'🌪️', tempano:'🧊', torre:'🏰', vidrio:'🔷' };

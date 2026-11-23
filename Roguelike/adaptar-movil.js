@@ -59,6 +59,14 @@
     .descubrimiento-libro{width:46px!important;height:44px!important}
   }`;
   document.head.appendChild(cn);
+  // tipografía en el teléfono: los títulos en negrita usaban Alegreya (fuente variable) y en algunos teléfonos salían pálidos o fantasmas;
+  // ahí se usa Alegreya Sans, que trae sus pesos propios (el estilo es el mismo familiar, más claro)
+  const cf = document.createElement('style'); cf.id = 'cssTipografiaMovil';
+  cf.textContent = `@media (pointer:coarse){
+    b,strong,h1,h2,h3,.opcion b,.t-txt b,.aviso b,#banner b,#introNivel h2,.skin-sel h3{font-family:'Alegreya Sans',system-ui,sans-serif!important;font-weight:800!important;font-synthesis:none;-webkit-font-smoothing:antialiased}
+    .opcion b{font-size:24px} .menu .opcion b{letter-spacing:.01em}
+  }`;
+  document.head.appendChild(cf);
   // ---------- pantalla completa ----------
   const css = document.createElement('style');
   css.textContent = '#btnCompleta{position:fixed;right:8px;top:64px;z-index:9998;width:40px;height:40px;border-radius:9px;border:0;padding:0;cursor:pointer;background:rgba(26,18,13,.62);color:#f3e7cf;font:700 22px/40px Georgia,serif;box-shadow:0 0 0 2px rgba(243,231,207,.55);display:none}'

@@ -605,7 +605,7 @@ class View {
     while (this.acc >= step) {
       this.acc -= step;
       const g = this.g;
-      const inp = this.auto ? aiInput(g) : input();
+      const inp = this.auto ? aiInput(g) : typeof input === 'function' ? input() : { dir: 0, jump: false, press: false, dashPress: false };   // (sin entrada: nadie la mueve)
       stepGame(g, inp, step, this.st);
       if (g.win && g.t - g.win > (this.auto ? 1.6 : 2.6)) { this.g = newGame(); if (this.onRestart) this.onRestart(); }
     }

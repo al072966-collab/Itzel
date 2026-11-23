@@ -21,6 +21,7 @@
   let ultimo = -99;
   GANCHOS.en('stepRun', _stepRun => function (g, inp, dt, st) {
     _stepRun(g, inp, dt, st); if (!RUN || g.win || !g.p) return;
+    if (matchMedia('(pointer: coarse)').matches) return;   // en el teléfono no salen los cuadros de consejo
     if (inp.dir || inp.jump) g.movio = true; if (g.fre.cool > .05) g.power0 = true;
     if (Math.floor(g.t * 2) === Math.floor((g.t - dt) * 2) || performance.now() / 1000 - ultimo < 7) return; // dos veces por segundo basta
     const A = AYUDA(), c = LISTA.find(q => !A[q.id] && q.si(g)); if (!c) return;

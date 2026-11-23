@@ -864,7 +864,7 @@ function startLevel() {
     STATE = 'play';
     banner(`${RUN.desdeEnciclopedia ? 'Nivel' : `Mundo ${RUN.world} de ${WORLDS}`}${def && def.lugar && def.id !== 'paper' ? ' · ' + def.lugar : ''}`, def ? def.nombre : st.name, def && def.id === 'abordaje' ? '' : def ? `${def.lema} Fresita tiene ${pw.name.toLowerCase()}.` : st.ref, { etiqueta: RUN.desdeEnciclopedia ? 'Nivel' : `Mundo ${RUN.world} de ${WORLDS}`, titulo: def ? def.nombre : st.name, nivel: def && def.id, vistaNivel: !!(def && def.modo), lugar: def && def.lugar, epoca: def && INTRO_NIVEL.epoca(def.id), lema: def ? def.lema : '', poder: pw ? { nombre: pw.name, ayuda: pw.help.replace(/^Fresita:? /, ''), id: def.power, mundo: st.id } : null });
     // cómo se usa el poder: solo la primera vez que sale (después lo recuerda la etiqueta de arriba)
-    if (pw && def.id !== 'abordaje' && def.id !== 'planos' && !(PROG.d.ayudas = PROG.d.ayudas || {})[def.power]) { PROG.d.ayudas[def.power] = 1; PROG.save(); setTimeout(() => { if (STATE === 'play' && CUR && CUR.def === def) toast(/^Fresita/.test(pw.help) ? pw.help : `Fresita: ${pw.help}`, 4500); }, 4200); }
+    if (pw && !matchMedia('(pointer: coarse)').matches && def.id !== 'abordaje' && def.id !== 'planos' && !(PROG.d.ayudas = PROG.d.ayudas || {})[def.power]) { PROG.d.ayudas[def.power] = 1; PROG.save(); setTimeout(() => { if (STATE === 'play' && CUR && CUR.def === def) toast(/^Fresita/.test(pw.help) ? pw.help : `Fresita: ${pw.help}`, 4500); }, 4200); }
     };
     INTRO_NIVEL.espera(claveDemo, 9000).then(entra);
   }, 60);
@@ -1088,7 +1088,14 @@ function hud() {
 //  BUCLE
 // ---------------------------------------------------------------------
 let last = performance.now();
+// el bucle vuelve a pedirse al empezar y la lógica va en un try: si un cuadro truena (un estilo, una pieza…) el juego sigue en el
+// siguiente cuadro; antes una sola excepción detenía el bucle para siempre y quedaba la música sonando con todo congelado
+let errorBucle = 0;
 function loop(now) {
+  requestAnimationFrame(loop);
+  try { cuadroDelBucle(now); } catch (e) { if (errorBucle++ < 5) console.error('[Itzel] cuadro con error:', e); }
+}
+function cuadroDelBucle(now) {
   const dt = Math.min(.1, (now - last) / 1000); last = now; // con pasos fijos: aunque un mundo pinte lento, el juego va a la misma velocidad
   if (STATE === 'title') { canvas.style.transform = ''; if (VISTA.H !== VH) fit(); view.y0 = 0; view.update(dt); view.render(); }
   else if (STATE === 'play' || STATE === 'win' || STATE === 'over') {
@@ -1110,7 +1117,6 @@ function loop(now) {
     if (CUR.modo) CUR.modo.pintar(CUR, view); else { view.g = CUR; view.y0 = CUR.camY ?? VH - VISTA.H; view.render(); pintaPresenciaJefe(view.ctx, CUR, view); }
   } else if (STATE === 'pause' || STATE === 'ofrenda') { /* congelado */ }
   pintaRelleno(); TEXTOS.pintar();
-  requestAnimationFrame(loop);
 }
 // las fuentes se piden al abrir, para que el primer letrero del lienzo ya salga con ellas
 if (document.fonts && document.fonts.load) for (const f of ['500 12px "Alegreya Sans"', '700 12px "Alegreya Sans"', '800 12px "Alegreya Sans"', '700 12px Alegreya', 'italic 500 12px Alegreya']) document.fonts.load(f);
