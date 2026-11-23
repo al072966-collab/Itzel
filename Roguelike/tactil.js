@@ -71,7 +71,7 @@ const TACTIL = (() => {
     const b = dentro.get(e.pointerId); if (!b) return; dentro.delete(e.pointerId);
     if (![...dentro.values()].includes(b)) { b.classList.remove('on'); if (b.dataset.k) tecla(b.dataset.k, false); }
   }
-  for (const b of capa.querySelectorAll('.bt')) { b.addEventListener('pointerdown', botonDown); b.addEventListener('pointerup', botonUp); b.addEventListener('pointercancel', botonUp); }
+  for (const b of capa.querySelectorAll('.bt')) { b.addEventListener('pointerdown', botonDown); b.addEventListener('pointerup', botonUp); b.addEventListener('pointercancel', botonUp); b.addEventListener('lostpointercapture', botonUp); }
 
   // ---------- Fresita: el dedo sobre el mundo ----------
   const lienzo = document.getElementById('game');
@@ -99,7 +99,9 @@ const TACTIL = (() => {
   // ---------- cuándo se ven los botones ----------
   setInterval(() => {
     const jugando = typeof STATE !== 'undefined' && STATE === 'play' && !document.getElementById('enci')?.classList.contains('on');
-    capa.classList.toggle('on', jugando); capa.classList.toggle('vert', !!(typeof CUR !== 'undefined' && CUR && CUR.modo && CUR.modo.vertical));
+    capa.classList.toggle('on', jugando);
+    // La carrera también usa izquierda y derecha para acelerar y frenar.
+    capa.classList.remove('vert');
     // ¿este nivel tiene escaleras («H» en su mapa)? se mira una sola vez por nivel
     let esc = false;
     try {
@@ -108,7 +110,12 @@ const TACTIL = (() => {
         esc = CUR._tieneEscaleras && !(CUR.modo && CUR.modo.vertical);
       }
     } catch (e) {}
-    capa.classList.toggle('esc', !!esc);   // carreras: ▲ ▼ cambian de carril
+    // Los modos con movimiento en profundidad o cuatro carriles necesitan las cuatro flechas.
+    const modo = jugando && CUR && CUR.def && CUR.def.modo;
+    const cuatroDirecciones = ['iso', 'planos', 'propio', 'cocina', 'golpes', 'torres', 'vuelo', 'campechanidad', 'carrera'].includes(modo);
+    const poder = jugando && CUR && (CUR.power || CUR.def?.power);
+    const requiereArribaAbajo = ['seda', 'asidero'].includes(poder) || (jugando && CUR && (CUR.objs || []).some(o => o.k === 'escondite'));
+    capa.classList.toggle('esc', !!esc || cuatroDirecciones || !!requiereArribaAbajo);
     if (!jugando) for (const k of [...teclas]) tecla(k, false);
   }, 120);
 

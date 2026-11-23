@@ -169,7 +169,7 @@
     HECHAS[id] = function itzelConVida(c, p, f) { if (!listo(it.T)) return anterior(c, p, f); it.dibuja(c, p, f); };
   }
   window.ITZEL_CON_VIDA = HECHAS;
-  window.precargaItzelMundo = id => { const img = IMAGENES[id]; if (img && img.pide) img.pide(); };
+  window.precargaItzelMundo = id => { const img = IMAGENES[id]; if (img && img.pide) img.pide(); return img || null; };
   function instalar(id) { if (HECHAS[id] && STYLE_MAP[id]) STYLE_MAP[id].player = HECHAS[id]; }
   for (const id of Object.keys(HECHAS)) instalar(id);
   GANCHOS.en('aplicaElegido', previo => function (id, k = 0) { const nombre = previo(id, k); instalar(id); return nombre; });

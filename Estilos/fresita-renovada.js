@@ -133,7 +133,7 @@ window.hazFresita = D => {
     if (T.q.boca && (s.boca > 0 || presa || feliz)) pon(c, T, 'boca');
     rama('g1'); rama('g2'); rama('g3'); rama('g4'); pata('ptn'); pata('pdn');
   }
-  return function nuevaFresita(c, fr, f) {
+  const nuevaFresita = function (c, fr, f) {
     if (!listo(T)) return; const s = estado(fr, f, nuevo, ESTADOS); siente(s, fr); const v = suave(s, 'vista', s.gira ? s.sentido : s.cara, 15), giro = (v < 0 ? -1 : 1) * Math.max(.28, Math.abs(v)); // al voltearse da la vuelta en vez de cambiar de golpe
     const kO = suave(s, 'kO', s.gira ? 1 : 0, s.gira ? 8 : 11); // cuánto está enrollada
     const ajusta = q => { q.translate(fr.x, fr.y); q.rotate(s.rot); q.scale(giro * E, E); q.translate(-CX, -CY); if (kO > .03) enO(q, fr, f, s, kO); else arma(q, fr, f, s); };
@@ -143,9 +143,12 @@ window.hazFresita = D => {
     c.save(); c.imageSmoothingEnabled = true; c.imageSmoothingQuality = 'high'; ajusta(c); c.restore();
     if (s.mareo > 0) { c.save(); estrellitas(c, s, fr, giro, f.t || 0, esPixel(f)); c.restore(); }
   };
+  nuevaFresita.img = T.img;
+  return nuevaFresita;
 };
 (() => {
   const nuevaFresita = hazFresita(TITERES_DATOS.fresita);
+  window.precargaFresita = () => { const img = nuevaFresita.img; if (img && img.pide) img.pide(); return img || null; };
   // va en los mismos mundos que la Itzel ilustrada, para que las dos sean del mismo dibujo
   function instalar(id) { if (!TITERE_MUNDOS.has(id)) return; const st = STYLE_MAP[id]; if (!st) return; const base = st.base && STYLE_MAP[st.base]; if (base) base.fresita = nuevaFresita; else st.fresita = nuevaFresita; }
   for (const id of Object.keys(STYLE_MAP)) instalar(id);

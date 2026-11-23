@@ -30,7 +30,8 @@ const CATS = [
   { id: 'mundos', nombre: 'Mundos', icono: 'globo', color: '#3f8a4a', intro: 'Cada run toca cuatro mundos al azar. Cada mundo es un lugar o un suceso de Campeche, pintado con su propio estilo de arte, con su nivel, enemigo, plataforma y poder de Fresita.',
     items: MUNDOS_LIBRO.flatMap(m => { const d = NIVELES[m], st = STYLE_MAP[m], GEN = { iso: '2.5D isométrico', torres: 'Tower defense', vuelo: "Shoot 'em up", cocina: 'Cocina cooperativa', jarana: 'Ritmo (jarana)', campechanidad: 'Baile de la Campechanita', carrera: 'Carreras', pesca: 'Pesca cooperativa', planos: 'Planta y alzado', fruncido: 'Plataformas 2D', vela: 'Navegación a vela', propio: 'Plataformas 2D', golpes: "Beat 'em up" };
       const base = { id: 'mundo:' + m, tipo: d.modo ? 'modo' : 'mundo', def: d, mundo: m, nombre: d.nombre, sub: `${st.name} · ${st.ref}`, datos: [['Género', d.modo ? GEN[d.modo] : 'Plataformas 2D'], ['Poder de Fresita', POW[d.power].name], ['Plataforma', PLAT_NOMBRE[d.plat.look || 'plain']], ['Lugar', d.lugar || 'Campeche'], ...VENTAJAS.filaTerreno(m)], tecnica: st.desc, nota: d.lema };
-      const alt = (typeof NIVELES_ALT !== 'undefined' && NIVELES_ALT[m] || []).map(k => NIVELES[k]).filter(Boolean).map(a => ({ id: 'mundo:' + a.id, tipo: a.modo ? 'modo' : 'mundo', def: a, mundo: m, nivel: a.id, nombre: a.nombre, sub: `${(a.genero || (a.modo ? (GEN[a.modo] || a.modo) : 'Plataformas 2D'))} · ${st.name}`, datos: [['Género', (a.genero || (a.modo ? (GEN[a.modo] || a.modo) : 'Plataformas 2D'))], ['Fresita', POW[a.power].name], ['Cómo se juega', POW[a.power].help]], tecnica: st.desc, nota: a.lema }));
+      const ocultarPescaMovil = typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches;
+      const alt = (typeof NIVELES_ALT !== 'undefined' && NIVELES_ALT[m] || []).map(k => NIVELES[k]).filter(a => a && !(ocultarPescaMovil && a.id === 'pesca')).map(a => ({ id: 'mundo:' + a.id, tipo: a.modo ? 'modo' : 'mundo', def: a, mundo: m, nivel: a.id, nombre: a.nombre, sub: `${(a.genero || (a.modo ? (GEN[a.modo] || a.modo) : 'Plataformas 2D'))} · ${st.name}`, datos: [['Género', (a.genero || (a.modo ? (GEN[a.modo] || a.modo) : 'Plataformas 2D'))], ['Fresita', POW[a.power].name], ['Cómo se juega', POW[a.power].help]], tecnica: st.desc, nota: a.lema }));
       return [base, ...alt]; }) },
   { id: 'campeche', nombre: 'Campeche', icono: 'catedral', color: '#c98a2a', intro: 'Lo que van aprendiendo al jugar: cada mundo nuevo regala un dato y cada doblón de Lorencillo descubre otro. Todo esto es de verdad.',
     items: CAMPECHE_SABER.HALLAZGOS.map(h => ({ id: 'campeche:' + h.id, tipo: 'vista', mundo: STYLE_MAP[h.mundo] ? h.mundo : (MUNDOS_LIBRO.find(m => (NIVELES_ALT[m] || []).includes(h.mundo)) || h.mundo), niveles: h.mundos, nombre: h.titulo, sub: h.tema, datos: [['En corto', h.breve]], nota: h.largo })) },
@@ -943,7 +944,14 @@ if (demoControlada) addEventListener('message', e => {
   else if (e.data.controlDemo === 'reproducir') demoReproduciendo = true;
   else if (e.data.controlDemo === 'pausar') demoReproduciendo = false;
 });
+// Un libro precargado dentro del juego no debe renderizar durante la cinemática.
+function libroOculto() {
+  if (window.parent === window || demoControlada) return false;
+  try { const caja = window.parent.document.getElementById('enci'); return !!caja && !caja.classList.contains('on'); }
+  catch (_) { return false; }
+}
 function bucle(now) {
+  if (libroOculto()) { last = now; setTimeout(() => requestAnimationFrame(bucle), 250); return; }
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   if (cercaActivo) { requestAnimationFrame(bucle); return; }
   const c = CATS[catActual], it = c.items[itemActual];
@@ -1001,7 +1009,7 @@ if ($('modo')) $('modo').onclick = () => ponTarjetas(!modoTarjetas);
 document.body.classList.toggle('modo-tarjetas', modoTarjetas); if ($('modo')) $('modo').textContent = modoTarjetas ? 'Ver como libro' : 'Ver en tarjetas';
 vistaBoton(); abrirCat(); requestAnimationFrame(bucle);
 // las miniaturas también avanzan aunque el navegador frene los cuadros (pestaña en segundo plano)
-setInterval(() => { if (cola.length && !sucio && performance.now() - last > 120) { const job = cola.shift(); try { miniatura(job); } catch (e) { console.warn('miniatura', job.key, e); } roto = true; } }, 40);
+setInterval(() => { if (!libroOculto() && cola.length && !sucio && performance.now() - last > 120) { const job = cola.shift(); try { miniatura(job); } catch (e) { console.warn('miniatura', job.key, e); } roto = true; } }, 40);
 
 // ===================== DENTRO DEL JUEGO =====================
 // Si la enciclopedia se abre desde el menú del juego (en un iframe), «Jugar»

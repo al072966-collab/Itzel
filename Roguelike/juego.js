@@ -199,6 +199,21 @@ function precargaPersonajes() {
   for (const st of RUN.styles) { if (!st) continue; if (window.precargaItzelMundo) window.precargaItzelMundo(st.id); const fn = st.player || (st.base && STYLE_MAP[st.base] && STYLE_MAP[st.base].player); if (typeof fn !== 'function') continue;
     try { c.save(); fn(c, { x: 4, y: 8, vx: 0, vy: 0, on: true, face: 1, run: 0, inv: 0, sq: 0 }, { t: 0, st }); } catch (e) { /* solo importa que pida la imagen */ } finally { c.restore(); } }
 }
+function esperaImagenDePersonaje(img, limite = 5000) {
+  if (!img) return Promise.resolve(false);
+  if (img.pide) img.pide();
+  if (img.complete && img.naturalWidth > 0) return Promise.resolve(true);
+  return Promise.race([
+    // imgPerezosa intenta primero WebP y puede caer al PNG; no soltar la espera con el primer error.
+    new Promise(resolve => { img.addEventListener('load', () => resolve(true), { once: true }); }),
+    new Promise(resolve => setTimeout(() => resolve(false), limite)),
+  ]);
+}
+function esperaArteDelMundo(st) {
+  const itzel = window.precargaItzelMundo && window.precargaItzelMundo(st && st.id);
+  const fresita = window.precargaFresita && window.precargaFresita();
+  return Promise.all([esperaImagenDePersonaje(itzel), esperaImagenDePersonaje(fresita)]);
+}
 
 // ---------------------------------------------------------------------
 //  ESTADO DE UN NIVEL
@@ -848,7 +863,8 @@ function startLevel() {
   const st = curStyle();
   $('loadName').textContent = st.name;
   if (!RUN.reintentando) fotoNivel(false); RUN.reintentando = false;
-  setTimeout(() => {
+  setTimeout(async () => {
+    await esperaArteDelMundo(st);
     const def = (RUN.reintentoDef && NIVELES[RUN.reintentoDef]) || (RUN.presentacion && NIVELES[(PRESENTACION.mundo(RUN.world) || {}).nivel]) || nivelPara(st.id, RUN.rand, TIPOS_RUN[RUN.world - 1]); RUN.reintentoDef = null;
     if (RUN.reintento) RUN.reintento.def = def ? def.id : null;
     RUN.nivelGuardado = def ? def.id : null;
@@ -880,7 +896,8 @@ function startBoss() {
   if (!RUN.reintentando) fotoNivel(true); RUN.reintentando = false;
   const st = curStyle(), def = NIVELES[st.id], tipo = RUN.jefeOrden[(RUN.bossIdx = (RUN.bossIdx || 0) + 1) - 1] || 'ruptura';
   $('loadName').textContent = JEFES[tipo].nombre;
-  setTimeout(() => {
+  setTimeout(async () => {
+    await esperaArteDelMundo(st);
     const nv = construirArena(def, tipo); setLevel(buildLevelFromRows(nv.rows)); L.goal = { x: -9999, y: -9999 };
     CUR = makeGame(); MEC.init(CUR, def, nv.ents); CUR.def = def; CUR.isBoss = true;
     // La forma se elige al crear el jefe, después de guardar la foto del nivel.

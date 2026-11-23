@@ -177,9 +177,10 @@
     .listones { grid-column:1 / -1; flex-wrap:nowrap; gap:3px; margin:0 0 4px; }
     .liston, .liston:hover, .liston.on { width:34px; height:28px; flex:none; }
     .liston img { height:17px; }
-    .pagina { min-height:0; height:100%; overflow:auto; padding:8px; }
-    .indice { max-height:none; overflow:auto; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); }
-    .derecha-scroll { overflow:auto; }
+    .pagina { min-height:0; height:100%; overflow-y:auto; overflow-x:hidden; padding:8px; touch-action:pan-y; overscroll-behavior:contain; -webkit-overflow-scrolling:touch; scrollbar-width:thin; }
+    .indice { flex:none; max-height:none; overflow:visible; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); }
+    .entrada { height:auto; min-height:100%; }
+    .derecha-scroll { flex:none; overflow:visible; }
   }
   @media (max-width: 520px) {
     .boton { font-size:12.5px; padding:6px 10px; }
@@ -258,8 +259,8 @@
 <script src="titere.js?v=f85a4174"></script>
 <script src="itzel-renovada.js?v=5f09787d"></script>
 <script src="itzel-mundos-datos.js?v=0023804c"></script>
-<script src="itzel-mundos.js?v=70efa8b8"></script>
-<script src="fresita-renovada.js?v=f467a444"></script>
+<script src="itzel-mundos.js?v=70efa8b9"></script>
+<script src="fresita-renovada.js?v=f467a445"></script>
 <script src="itzel-assets-nuevos.js?v=79b2711e"></script>
 <script src="itzel-forge.js?v=04b296f6"></script>
 <script src="../Roguelike/ui-bordado.js?v=aab41970"></script>
@@ -289,7 +290,7 @@
 <script src="../Roguelike/jefes-arte.js?v=249d0c67"></script>
 <script src="../Roguelike/jefes-estilos-nuevos.js?v=ce5af76b"></script>
 <script src="../Roguelike/cooperacion.js?v=dee9cd67"></script>
-<script src="../Roguelike/modos.js?v=4a978211"></script>
+<script src="../Roguelike/modos.js?v=4a978212"></script>
 <script src="../Roguelike/assets/defensa-mapa/manifiesto-local.js?v=760bea14"></script>
 <script src="../Roguelike/defensa-mapa.js?v=5836447b"></script>
 <script src="../Roguelike/modos-torres.js?v=0025a3b5"></script>
@@ -391,7 +392,7 @@
 <script src="../Roguelike/escalando-calakmul.js?v=bc8e9a35"></script>
 <script src="../Roguelike/tramoya-vertical.js?v=7e4265c4"></script>
 <script src="../Roguelike/estados-nuevos.js?v=7c8f6e15"></script>
-<script src="enciclopedia.js?v=a2b60783"></script>
+<script src="enciclopedia.js?v=a2b60784"></script>
 <script src="../Roguelike/tamanos-enemigos.js?v=b54ff7c4"></script>
 <script src="itzel-contraste.js?v=5538cbfa"></script>
 <script src="itzel-pixel-nitida.js?v=6065a689"></script>

@@ -11,7 +11,9 @@ const NIVELES_ALT = {};
 // un nivel especial es el de otro género; los modos que siguen siendo plataformas (la tela fruncida) no cuentan
 const esEspecial = d => !!(d && d.modo && !(MODOS[d.modo] && MODOS[d.modo].plataformas));
 function nivelesDe(stId, tipo) {
-  const ops = [NIVELES[stId], ...(NIVELES_ALT[stId] || []).map(k => NIVELES[k])].filter(Boolean);
+  let ops = [NIVELES[stId], ...(NIVELES_ALT[stId] || []).map(k => NIVELES[k])].filter(Boolean);
+  // Pesca todavía no es cómoda con controles táctiles; no la sortees ni la ofrezcas en móvil.
+  if (typeof matchMedia === 'function' && matchMedia('(pointer: coarse)').matches) ops = ops.filter(d => d.id !== 'pesca');
   return !tipo ? ops : ops.filter(d => (tipo === 'especial') === esEspecial(d));
 }
 function nivelPara(stId, rand, tipo) {

@@ -98,7 +98,7 @@ MODOS.vuelo = (() => {
       if (e.tipo === 'escorpion') { e.x -= 80 * dt; e.y = e.y0 + Math.sin(e.t * 3) * 26; }
       else if (e.tipo === 'cometa') { if (e.aviso > 0) { e.aviso -= dt; e.x = VW + 20; } else e.x -= 330 * dt; }
       else if (e.tipo === 'meteoro') { e.x -= 34 * dt; e.rot = e.t * .8; }
-      else if (e.tipo === 'torreta') { e.x = Math.max(VW - 60, e.x - 70 * dt); if (e.t > 1.5 && e.t < 8) { e.cd = (e.cd || 0) - dt; if (e.cd <= 0) { e.cd = 1.1; const blanco = Math.random() < .35 ? fr : p, a = Math.atan2(blanco.y - e.y, blanco.x - e.x); j.balas.push({ x: e.x, y: e.y, vx: Math.cos(a) * 95, vy: Math.sin(a) * 95 }); } } if (e.t > 9) e.x -= 120 * dt; }
+      else if (e.tipo === 'torreta') { e.x = e.t > 9 ? e.x - 120 * dt : Math.max(VW - 60, e.x - 70 * dt); if (e.t > 1.5 && e.t < 8) { e.cd = (e.cd || 0) - dt; if (e.cd <= 0) { e.cd = 1.1; const blanco = Math.random() < .35 ? fr : p, a = Math.atan2(blanco.y - e.y, blanco.x - e.x); j.balas.push({ x: e.x, y: e.y, vx: Math.cos(a) * 95, vy: Math.sin(a) * 95 }); } } }
       else if (e.tipo === 'serpiente') {
         // la cabeza ondula; cada segmento sigue el camino de la cabeza
         e.x -= 62 * dt; e.y = e.y0 + Math.sin(e.t * 2.4) * 34; e.rastro.unshift([e.x, e.y]); if (e.rastro.length > 80) e.rastro.pop();
