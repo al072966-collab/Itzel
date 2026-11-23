@@ -796,7 +796,7 @@ function empezar() {
   newRun((Math.random() * 1e6) | 0); precargaPersonajes();
   if (RUN.jefeDirecto) startBoss(); else startLevel();
 }
-$('enciCerrar').onclick = cerrarEnci;
+$('enciCerrar').onclick = volverMenuDesdeEnci;
 // un botón con el foco se activaría con Espacio (el salto): al hacer clic, se suelta el foco
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('button'); if (b) b.blur(); });
 $('menuBtn').onclick = () => { if (STATE === 'play') pause(true); else if (STATE === 'pause') pause(false); };

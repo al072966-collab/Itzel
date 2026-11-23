@@ -60,7 +60,8 @@
   #enci { position:fixed; inset:0; z-index:50; display:none; background:#1a120d; }
   #enci.on { display:block; }
   #enci iframe { width:100%; height:100%; border:0; display:block; }
-  #enci .patch { display:none; }   /* el libro ya trae su «Volver al juego» arriba; este flotante tapaba el contenido */
+  #enci .patch { display:none; }
+  @media (pointer:coarse) { #enci.on .patch { display:block; position:absolute; z-index:60; top:8px; left:8px; margin:0; padding:8px 20px; font-size:16px; } }   /* el libro ya trae su «Volver al juego» arriba; este flotante tapaba el contenido */
   /* Acceso constante al menú desde los submenús principales. */
   #screen .volver-esquina { position:fixed; top:clamp(32px, 10vh, 85px); left:clamp(26px, 3vw, 48px); z-index:20; margin:0; }
   #screen.on > div:has(.volver-esquina) { animation:none; padding-top:70px; }

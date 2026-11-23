@@ -3,18 +3,8 @@
 <head>
 <script src="../webp-shim.js"></script>
 <meta charset="utf-8">
-<meta name="viewport" id="vistaEnciclopedia" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="color-scheme" content="only light">
-<script>
-  // En teléfono horizontal caben las dos páginas del libro a una escala menor.
-  function ajustaVistaLibro() {
-    const movil = matchMedia('(pointer:coarse)').matches;
-    const horizontal = matchMedia('(orientation:landscape)').matches;
-    document.getElementById('vistaEnciclopedia').content = movil && horizontal ? 'width=1200' : 'width=device-width, initial-scale=1';
-  }
-  ajustaVistaLibro();
-  addEventListener('orientationchange', () => setTimeout(ajustaVistaLibro, 100));
-</script>
 <title>Enciclopedia de Itzel</title>
 <link href="../Roguelike/assets/fuentes/fuentes.css" rel="stylesheet">
 <style>
@@ -176,6 +166,20 @@
     .liston span { display:none; }
     .liston::after { inset:4px 4px 8px 4px; border-radius:0 0 5px 5px; }
     .tarjetas { grid-template-columns:repeat(auto-fill, minmax(min(330px, 100%), 1fr)); }
+  }
+  /* En horizontal se ven las dos páginas sin alterar el viewport del iframe. */
+  @media (pointer:coarse) and (orientation:landscape) and (max-width:900px) {
+    body { height:100dvh; overflow:hidden; padding:5px 8px 8px; display:flex; flex-direction:column; }
+    .arriba { flex:none; padding:0; margin:0 auto 4px; min-height:32px; }
+    .arriba img.titulo { height:25px; }
+    #volverMenu { display:none; }
+    .libro { flex:1; min-height:0; grid-template-columns:1fr 1fr; grid-template-rows:auto minmax(0,1fr); padding:6px; }
+    .listones { grid-column:1 / -1; flex-wrap:nowrap; gap:3px; margin:0 0 4px; }
+    .liston, .liston:hover, .liston.on { width:34px; height:28px; flex:none; }
+    .liston img { height:17px; }
+    .pagina { min-height:0; height:100%; overflow:auto; padding:8px; }
+    .indice { max-height:none; overflow:auto; grid-template-columns:repeat(auto-fill,minmax(72px,1fr)); }
+    .derecha-scroll { overflow:auto; }
   }
   @media (max-width: 520px) {
     .boton { font-size:12.5px; padding:6px 10px; }

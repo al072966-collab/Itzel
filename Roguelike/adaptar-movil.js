@@ -66,7 +66,7 @@
     b,strong,h1,h2,h3,.opcion b,.t-txt b,.aviso b,#banner b,#introNivel h2,.skin-sel h3{font-family:'Alegreya Sans',system-ui,sans-serif!important;font-weight:800!important;font-synthesis:none;-webkit-font-smoothing:antialiased}
     .opcion b{font-size:24px} .menu .opcion b{letter-spacing:.01em}
     /* El color fijo sobre los paneles claros evita que el modo oscuro fuerce letras blancas. */
-    .ctrl2 .panel p, .opcion b, .t-txt b, .aviso b, .op-txt b, .est b, .logro b, #banner b, #introNivel h2, #where .where-nombre { color:#2e190f!important; background-image:linear-gradient(#2e190f,#2e190f)!important; background-clip:text!important; -webkit-background-clip:text!important; -webkit-text-fill-color:transparent!important; }
+    .ctrl2 .panel p, .opcion span, .opcion b, .t-txt b, .aviso b, .op-txt b, .est b, .logro b, #banner b, #introNivel h2, #where .where-nombre { color:#2e190f!important; background-image:linear-gradient(#2e190f,#2e190f)!important; background-clip:text!important; -webkit-background-clip:text!important; -webkit-text-fill-color:transparent!important; }
     .ctrl2 .panel p kbd { -webkit-text-fill-color:#fff6e4!important; color:#fff6e4!important; }
   }`;
   document.head.appendChild(cf);
