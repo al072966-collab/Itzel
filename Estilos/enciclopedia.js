@@ -1009,7 +1009,7 @@ if ($('modo')) $('modo').onclick = () => ponTarjetas(!modoTarjetas);
 document.body.classList.toggle('modo-tarjetas', modoTarjetas); if ($('modo')) $('modo').textContent = modoTarjetas ? 'Ver como libro' : 'Ver en tarjetas';
 vistaBoton(); abrirCat(); requestAnimationFrame(bucle);
 // las miniaturas también avanzan aunque el navegador frene los cuadros (pestaña en segundo plano)
-setInterval(() => { if (!libroOculto() && cola.length && !sucio && performance.now() - last > 120) { const job = cola.shift(); try { miniatura(job); } catch (e) { console.warn('miniatura', job.key, e); } roto = true; } }, 40);
+setInterval(() => { if (cola.length && !sucio && performance.now() - last > 120) { const job = cola.shift(); try { miniatura(job); } catch (e) { console.warn('miniatura', job.key, e); } roto = true; } }, 40);
 
 // ===================== DENTRO DEL JUEGO =====================
 // Si la enciclopedia se abre desde el menú del juego (en un iframe), «Jugar»
