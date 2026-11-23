@@ -202,7 +202,7 @@
       // El visor de la enciclopedia presenta poses completas como muestra.
       // Mantener el arte base seleccionado evita sustituir el modelo de idle
       // por otra interpretación generada de la pose.
-      if (hojasReposo[id] && (!(f && f.enciclopedia) || id === 'pixel')) {
+      if (hojasReposo[id] && (!(f && f.enciclopedia) || id === 'pixel' || (f.g && f.g.demo))) {
         const imagen = hojasReposo[id]; imagen.pide();
         const cuadro = cuadroReposoNouveau(p, f, estaHerida, imagen, id);
         if (cuadro >= 0) {

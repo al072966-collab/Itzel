@@ -26,7 +26,7 @@
       ctx.fillStyle = '#fff4d6'; ctx.strokeStyle = '#8a1f35'; ctx.lineWidth = .8;
       ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax - 5, ay + 6); ctx.lineTo(ax - 1.8, ay + 6); ctx.lineTo(ax - 1.8, ay + 12); ctx.lineTo(ax + 1.8, ay + 12); ctx.lineTo(ax + 1.8, ay + 6); ctx.lineTo(ax + 5, ay + 6); ctx.closePath(); ctx.fill(); ctx.stroke();
       // el letrero
-      const lineas = ['Segundo poder de Fresita: clic derecho', 'Canta una canción de cuna y duerme a los', 'enemigos de cerca. Solo tienes 3 usos por', 'nivel: son las lunitas de aquí arriba.'];
+      const lineas = matchMedia('(pointer:coarse)').matches ? ['2º poder: toca el botón ♪', 'Fresita canta y duerme a los', 'enemigos cercanos. 3 usos por nivel.'] : ['Segundo poder de Fresita: clic derecho', 'Canta una canción de cuna y duerme a los', 'enemigos de cerca. Solo tienes 3 usos por', 'nivel: son las lunitas de aquí arriba.'];
       ctx.font = '6.2px "Alegreya Sans", sans-serif'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
       const w = Math.max(...lineas.map(t => ctx.measureText(t).width)) + 12, h = lineas.length * 8 + 8, bx = x0 - 6, by = ay + 14;
       ctx.fillStyle = 'rgba(60,40,30,.25)'; ctx.fillRect(bx + 1.5, by + 1.5, w, h);

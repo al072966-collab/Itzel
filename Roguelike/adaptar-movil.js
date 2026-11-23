@@ -42,10 +42,23 @@
     #introNivel .iconoPoder{width:34px!important;height:34px!important;font-size:20px!important}
     #introNivel .listo{margin:6px auto 0!important;padding:5px 24px!important;font-size:14px!important}
     #introNivel .seguir{margin-top:3px!important;font-size:9.5px!important}
-    .tarjeta{transform:scale(.8);transform-origin:right bottom} #tarjetas{right:6px!important;bottom:6px!important}
     #banner{top:4%!important;width:min(360px,60vw)!important} #banner .panel{padding:7px 14px 8px 28px!important} #banner b{font-size:17px!important}
   }`;
   document.head.appendChild(cb);
+  // avisos de descubrimiento, logros y toasts: pequeños y en la esquina, sin tapar los botones de juego (teléfonos y ventanas bajas)
+  const cn = document.createElement('style'); cn.id = 'cssAvisosChicos';
+  cn.textContent = `@media (pointer:coarse), (max-height:520px){
+    #tarjetas{left:50%!important;right:auto!important;transform:translateX(-50%)!important;bottom:auto!important;top:44px!important;width:min(240px,46vw)!important}
+    #avisos{right:56px!important;top:44px!important;max-width:min(240px,40vw)!important;gap:3px!important}
+    .tarjeta{gap:6px!important;padding:4px 8px 4px 5px!important;outline-offset:-3px!important;box-shadow:0 2px 8px rgba(0,0,0,.4)!important}
+    .tarjeta .t-foto{width:30px!important;height:26px!important} .tarjeta .t-foto canvas{width:30px!important;height:25px!important} .tarjeta .t-foto img,.tarjeta .t-foto img.real{height:22px!important;width:auto!important;max-width:30px!important}
+    .t-txt small{font-size:8px!important;letter-spacing:.06em!important} .t-txt b{font-size:12px!important;line-height:1.1!important} .t-txt span{display:none!important} .t-txt em{display:none!important}
+    .aviso{gap:6px!important;padding:3px 9px 4px 6px!important;box-shadow:0 0 0 2px #ffd23f,0 3px 10px rgba(0,0,0,.45)!important;outline-offset:-4px!important}
+    .aviso img{height:20px!important} .aviso small{font-size:8px!important;letter-spacing:.08em!important} .aviso b{font-size:12px!important}
+    #toasts{bottom:62px!important;gap:3px!important} .toast{padding:3px 10px!important;font-size:11px!important;outline-offset:-3px!important}
+    .descubrimiento-libro{width:46px!important;height:44px!important}
+  }`;
+  document.head.appendChild(cn);
   // ---------- pantalla completa ----------
   const css = document.createElement('style');
   css.textContent = '#btnCompleta{position:fixed;right:8px;top:64px;z-index:9998;width:40px;height:40px;border-radius:9px;border:0;padding:0;cursor:pointer;background:rgba(26,18,13,.62);color:#f3e7cf;font:700 22px/40px Georgia,serif;box-shadow:0 0 0 2px rgba(243,231,207,.55);display:none}'
