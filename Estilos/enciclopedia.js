@@ -951,7 +951,11 @@ function libroOculto() {
   catch (_) { return false; }
 }
 function bucle(now) {
-  if (libroOculto()) { last = now; setTimeout(() => requestAnimationFrame(bucle), 250); return; }
+  if (libroOculto()) {
+    // Mantener quieta la escena grande, pero procesar las miniaturas precargadas.
+    if (!CALIENTA && cola.length) { const job = cola.shift(); try { miniatura(job); } catch (e) { console.warn('miniatura', job.key, e); } }
+    sucio = false; roto = false; last = now; setTimeout(() => requestAnimationFrame(bucle), 80); return;
+  }
   const dt = Math.min(.05, (now - last) / 1000); last = now;
   if (cercaActivo) { requestAnimationFrame(bucle); return; }
   const c = CATS[catActual], it = c.items[itemActual];
