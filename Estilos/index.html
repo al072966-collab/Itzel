@@ -3,11 +3,22 @@
 <head>
 <script src="../webp-shim.js"></script>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" id="vistaEnciclopedia" content="width=device-width, initial-scale=1">
+<meta name="color-scheme" content="only light">
+<script>
+  // En teléfono horizontal caben las dos páginas del libro a una escala menor.
+  function ajustaVistaLibro() {
+    const movil = matchMedia('(pointer:coarse)').matches;
+    const horizontal = matchMedia('(orientation:landscape)').matches;
+    document.getElementById('vistaEnciclopedia').content = movil && horizontal ? 'width=1200' : 'width=device-width, initial-scale=1';
+  }
+  ajustaVistaLibro();
+  addEventListener('orientationchange', () => setTimeout(ajustaVistaLibro, 100));
+</script>
 <title>Enciclopedia de Itzel</title>
 <link href="../Roguelike/assets/fuentes/fuentes.css" rel="stylesheet">
 <style>
-  :root { --hilo:#3a2418; --papel:#f3e7cf; --papel2:#e9d9b8; --tinta:#3a2418; --tenue:#7a5a44; --rojo:#b8203a; --piel:#5a2216; --piel2:#3e160d; }
+  :root { color-scheme:only light; --hilo:#3a2418; --papel:#f3e7cf; --papel2:#e9d9b8; --tinta:#3a2418; --tenue:#7a5a44; --rojo:#b8203a; --piel:#5a2216; --piel2:#3e160d; }
   * { box-sizing:border-box; }
   html, body { margin:0; min-height:100%; overflow-x:hidden; }
   body { background:#24150e; color:var(--tinta); font-family:'Alegreya Sans', system-ui, sans-serif;
